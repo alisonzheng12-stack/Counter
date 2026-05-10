@@ -1,5 +1,6 @@
 const storageKey = "minimal-study-counter-v1";
 const themeStorageKey = "minimal-study-counter-theme-v1";
+const themeCollapsedStorageKey = "minimal-study-counter-theme-collapsed";
 const defaultTheme = {
   bg: "#FCFAF2",
   text: "#1C1C1C",
@@ -40,6 +41,8 @@ const els = {
   correctionResetBtn: document.querySelector("#correctionResetBtn"),
   countdownMinutesInput: document.querySelector("#countdownMinutesInput"),
   countdownSetBtn: document.querySelector("#countdownSetBtn"),
+  focusModeInput: document.querySelector("#focusModeInput"),
+  focusExitBtn: document.querySelector("#focusExitBtn"),
   timerToggleBtn: document.querySelector("#timerToggleBtn"),
   timerResetBtn: document.querySelector("#timerResetBtn"),
   resetAllBtn: document.querySelector("#resetAllBtn"),
@@ -57,6 +60,8 @@ const els = {
   bgColorInput: document.querySelector("#bgColorInput"),
   textColorInput: document.querySelector("#textColorInput"),
   lineColorInput: document.querySelector("#lineColorInput"),
+  themeControl: document.querySelector(".theme-control"),
+  themeToggleBtn: document.querySelector("#themeToggleBtn"),
 };
 
 function load() {
@@ -154,6 +159,15 @@ function saveTheme() {
   };
   localStorage.setItem(themeStorageKey, JSON.stringify(theme));
   applyTheme(theme);
+}
+
+function setThemeCollapsed(collapsed) {
+  els.themeControl.classList.toggle("collapsed", collapsed);
+  els.themeToggleBtn.setAttribute(
+    "aria-label",
+    collapsed ? "\u5c55\u958b\u8272\u5f69\u8a2d\u5b9a" : "\u6536\u5408\u8272\u5f69\u8a2d\u5b9a",
+  );
+  localStorage.setItem(themeCollapsedStorageKey, collapsed ? "1" : "0");
 }
 
 function showSaved() {
@@ -294,6 +308,20 @@ function hideBomb() {
   els.bombOverlay.hidden = true;
 }
 
+function setFocusMode(enabled) {
+  if (enabled && !state.active) {
+    if (currentRemainingMs() <= 0) {
+      state.remainingMs = state.countdownMinutes * 60 * 1000;
+    }
+    state.startedAt = Date.now();
+    state.active = true;
+    save();
+  }
+  document.body.classList.toggle("focus-mode", enabled);
+  els.focusModeInput.checked = enabled;
+  render();
+}
+
 function playExplosionSound() {
   const AudioContext = window.AudioContext || window.webkitAudioContext;
   if (!AudioContext) return;
@@ -370,6 +398,13 @@ els.countdownMinutesInput.addEventListener("keydown", (event) => {
     updateCountdownSetting();
   }
 });
+els.focusModeInput.addEventListener("change", () => setFocusMode(els.focusModeInput.checked));
+els.focusExitBtn.addEventListener("click", () => setFocusMode(false));
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && document.body.classList.contains("focus-mode")) {
+    setFocusMode(false);
+  }
+});
 els.timerToggleBtn.addEventListener("click", toggleTimer);
 els.timerResetBtn.addEventListener("click", resetTimer);
 els.resetAllBtn.addEventListener("click", resetAll);
@@ -382,11 +417,13 @@ els.timeGoalInput.addEventListener("input", saveGoals);
 els.bgColorInput.addEventListener("change", saveTheme);
 els.textColorInput.addEventListener("change", saveTheme);
 els.lineColorInput.addEventListener("change", saveTheme);
+els.themeToggleBtn.addEventListener("click", () => setThemeCollapsed(!els.themeControl.classList.contains("collapsed")));
 
 load();
 const theme = loadTheme();
 populateThemeControls(theme);
 applyTheme(theme);
+setThemeCollapsed(localStorage.getItem(themeCollapsedStorageKey) === "1");
 render();
 window.setInterval(() => {
   if (!state.active) return;

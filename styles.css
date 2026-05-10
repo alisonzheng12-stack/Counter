@@ -1,5 +1,6 @@
 :root {
   color-scheme: light;
+  --jp-font: "Yu Gothic", "Yu Mincho", "Hiragino Kaku Gothic ProN", "Hiragino Mincho ProN", "Noto Sans JP", "Noto Serif JP", "Meiryo", "Microsoft JhengHei", sans-serif;
   --bg: #f5f1ea;
   --paper: #fffdf8;
   --paper-soft: #f2ede4;
@@ -18,7 +19,7 @@
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", system-ui, sans-serif;
+  font-family: var(--jp-font);
   background: var(--bg);
   color: var(--ink);
 }
@@ -58,9 +59,19 @@ button {
 
 .device-header h1 {
   margin: 0;
+  font-family: var(--jp-font);
   font-size: clamp(2rem, 5vw, 3.5rem);
-  font-weight: 500;
+  font-weight: 800;
   line-height: 1.1;
+}
+
+.device-header h1 span {
+  display: inline-block;
+  margin-left: 10px;
+  color: var(--muted);
+  font-size: 0.52em;
+  font-weight: 800;
+  vertical-align: middle;
 }
 
 .device-header .tagline {
@@ -180,19 +191,23 @@ button {
 .time-card strong {
   font-family: "Consolas", "SFMono-Regular", "Microsoft JhengHei", monospace;
   width: 100%;
-  justify-content: space-between;
+  justify-content: center;
   gap: 6px;
-  font-size: clamp(2.1rem, 4vw, 3.35rem);
+  font-size: clamp(1.72rem, 3vw, 2.72rem);
   letter-spacing: 0;
 }
 
 .time-card {
-  grid-template-rows: auto auto minmax(72px, 1fr) auto;
+  grid-template-rows: auto auto minmax(72px, 1fr) auto auto;
 }
 
 .time-card #studyTime {
+  display: block;
+  max-width: 100%;
   font-variant-numeric: tabular-nums;
   min-width: 0;
+  overflow: hidden;
+  text-align: center;
 }
 
 .countdown-setting {
@@ -223,6 +238,200 @@ button {
 #countdownSetBtn {
   min-height: 38px;
   padding: 0 12px;
+}
+
+.focus-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.focus-toggle input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+
+.focus-exit {
+  display: none;
+}
+
+.running-cat-image {
+  display: none;
+}
+
+body.focus-mode {
+  overflow: hidden;
+}
+
+body.focus-mode .device-shell {
+  min-height: 100vh;
+  padding: 0;
+}
+
+body.focus-mode .device-panel {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 100vh;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+body.focus-mode .device-header,
+body.focus-mode .goal-panel,
+body.focus-mode .device-footer,
+body.focus-mode .reflection-panel,
+body.focus-mode .theme-control {
+  display: none;
+}
+
+body.focus-mode .counter-grid {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  margin: 0;
+  padding: 24px;
+}
+
+body.focus-mode .counter-card:not(.time-card) {
+  display: none;
+}
+
+body.focus-mode .time-card {
+  display: grid;
+  grid-template-rows: auto auto;
+  place-items: center;
+  align-content: center;
+  gap: clamp(28px, 5vw, 54px);
+  width: 100%;
+  min-height: 100vh;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+body.focus-mode .time-card .counter-label,
+body.focus-mode .time-card .countdown-setting,
+body.focus-mode .time-card .counter-actions,
+body.focus-mode .time-card .focus-toggle {
+  display: none;
+}
+
+body.focus-mode .time-card strong {
+  grid-row: 2;
+  font-size: clamp(4.2rem, 14vw, 11rem);
+  font-weight: 800;
+  line-height: 1;
+}
+
+body.focus-mode .time-card #studyTime {
+  overflow: visible;
+}
+
+body.focus-mode .focus-exit {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  display: block;
+  min-height: 36px;
+  padding: 0 14px;
+  opacity: 0.52;
+}
+
+body.focus-mode .running-cat-image {
+  position: relative;
+  grid-row: 1;
+  display: block;
+  width: min(72vw, 560px);
+  aspect-ratio: 3 / 2;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 18px 0 color-mix(in srgb, var(--ink) 14%, transparent));
+}
+
+.cat-photo-base,
+.cat-photo-part {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background-image: url("assets/focus-cat.png");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  image-rendering: pixelated;
+}
+
+.cat-photo-base {
+  animation: focus-cat-breath 520ms steps(2, end) infinite;
+}
+
+.cat-photo-part {
+  pointer-events: none;
+  transform-origin: center center;
+}
+
+.cat-photo-tail {
+  clip-path: polygon(20% 38%, 46% 42%, 47% 56%, 31% 57%, 18% 48%);
+  animation: focus-cat-tail 300ms steps(2, end) infinite;
+}
+
+.cat-photo-back-leg {
+  clip-path: polygon(30% 63%, 45% 64%, 45% 82%, 31% 82%, 27% 73%);
+  animation: focus-cat-back-leg 280ms steps(2, end) infinite;
+}
+
+.cat-photo-front-leg {
+  clip-path: polygon(61% 61%, 73% 62%, 72% 82%, 61% 82%, 58% 72%);
+  animation: focus-cat-front-leg 280ms steps(2, end) infinite;
+}
+
+@keyframes focus-cat-breath {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes focus-cat-tail {
+  0%,
+  100% {
+    transform: translateX(0) translateY(0) rotate(-3deg);
+  }
+  50% {
+    transform: translateX(-10px) translateY(-3px) rotate(5deg);
+  }
+}
+
+@keyframes focus-cat-back-leg {
+  0%,
+  100% {
+    transform: translateX(-8px) translateY(5px);
+  }
+  50% {
+    transform: translateX(10px) translateY(-3px);
+  }
+}
+
+@keyframes focus-cat-front-leg {
+  0%,
+  100% {
+    transform: translateX(10px) translateY(-3px);
+  }
+  50% {
+    transform: translateX(-8px) translateY(5px);
+  }
+}
+
+body.focus-mode .focus-exit:hover,
+body.focus-mode .focus-exit:focus-visible {
+  opacity: 1;
 }
 
 .counter-card small {
@@ -286,6 +495,80 @@ button:focus-visible {
   font-size: 0.85rem;
 }
 
+.reflection-panel {
+  margin-top: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  font-family: var(--jp-font);
+}
+
+.reflection-panel summary {
+  min-height: 48px;
+  padding: 14px 16px;
+  color: var(--ink);
+  cursor: pointer;
+  font-size: clamp(1.25rem, 2.8vw, 1.5rem);
+  font-weight: 800;
+  list-style-position: inside;
+}
+
+.reflection-panel summary::marker {
+  color: var(--accent);
+}
+
+.action-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0 16px 16px 42px;
+  color: var(--muted);
+  font-size: clamp(1.15rem, 2.7vw, 1.5rem);
+  font-weight: 800;
+  line-height: 1.75;
+}
+
+.action-list li {
+  padding-left: 2px;
+}
+
+.reflection-list {
+  display: grid;
+  gap: 12px;
+  padding: 0 16px 16px;
+}
+
+.reflection-list article {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--paper-soft) 72%, var(--paper));
+}
+
+.reflection-list article > span {
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.reflection-list h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(1.18rem, 2.7vw, 1.5rem);
+  font-weight: 800;
+  line-height: 1.55;
+}
+
+.reflection-list p {
+  margin: 0;
+  color: var(--muted);
+  font-size: clamp(1.08rem, 2.5vw, 1.5rem);
+  font-weight: 800;
+  line-height: 1.75;
+}
+
 .theme-control {
   position: fixed;
   left: 18px;
@@ -298,6 +581,46 @@ button:focus-visible {
   border-radius: 8px;
   background: rgba(255, 253, 248, 0.92);
   box-shadow: 0 12px 28px rgba(62, 53, 42, 0.1);
+  transition: transform 180ms ease, width 180ms ease;
+}
+
+.theme-toggle {
+  display: none;
+}
+
+.theme-control.collapsed {
+  width: auto;
+  padding: 0;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+.theme-control.collapsed label {
+  display: none;
+}
+
+.theme-control.collapsed .theme-toggle {
+  display: grid;
+}
+
+.theme-control .theme-toggle {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: 0 10px 24px rgba(62, 53, 42, 0.16);
+}
+
+.theme-control:not(.collapsed) .theme-toggle {
+  display: block;
+  justify-self: end;
+  min-width: 38px;
+  min-height: 32px;
+  border-radius: 6px;
+  box-shadow: none;
 }
 
 .theme-control label {
@@ -429,6 +752,10 @@ button:focus-visible {
     width: min(100%, 420px);
     margin: 0 auto 14px;
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  .theme-control:not(.collapsed) .theme-toggle {
+    grid-column: 1 / -1;
   }
 
   .theme-control label {
