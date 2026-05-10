@@ -265,9 +265,9 @@ function resetTimer() {
 
 function updateCountdownSetting() {
   state.countdownMinutes = Math.max(1, Number.parseInt(els.countdownMinutesInput.value, 10) || 1);
-  if (!state.active) {
-    state.remainingMs = state.countdownMinutes * 60 * 1000;
-  }
+  state.active = false;
+  state.startedAt = null;
+  state.remainingMs = state.countdownMinutes * 60 * 1000;
   save();
   render();
 }
