@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>&#20320;&#33021;&#20570;&#21040;</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="device-shell">
+      <section class="device-panel" aria-label="study counter device">
+        <header class="device-header">
+          <p>Study Counter</p>
+          <h1>&#20320;&#33021;&#20570;&#21040;</h1>
+          <p class="tagline">Boring&rsquo; = simple things that bring value and enjoyment to life.</p>
+        </header>
+
+        <section class="goal-panel" aria-label="today goals">
+          <div class="goal-head">
+            <span>&#20170;&#26085;&#30446;&#27161;</span>
+            <button id="goalResetBtn" type="button">&#28165;&#31354;</button>
+          </div>
+          <div class="goal-grid">
+            <label>
+              <span>&#36984;&#25799;&#38988; <strong id="choiceGoalCongrats" hidden>&#24685;&#21916;!&#20170;&#26085;&#24050;&#36948;&#27161;</strong></span>
+              <input id="choiceGoalInput" type="number" min="0" step="1" inputmode="numeric" />
+            </label>
+            <label>
+              <span>&#30003;&#35542;&#38988; <strong id="essayGoalCongrats" hidden>&#24685;&#21916;!&#20170;&#26085;&#24050;&#36948;&#27161;</strong></span>
+              <input id="essayGoalInput" type="number" min="0" step="1" inputmode="numeric" />
+            </label>
+            <label>
+              <span>&#37679;&#38988;&#35330;&#27491; <strong id="correctionGoalCongrats" hidden>&#24685;&#21916;!&#20170;&#26085;&#24050;&#36948;&#27161;</strong></span>
+              <input id="correctionGoalInput" type="number" min="0" step="1" inputmode="numeric" />
+            </label>
+            <label>
+              <span>&#23416;&#32722;&#20998;&#37912; <strong id="timeGoalCongrats" hidden>&#24685;&#21916;!&#20170;&#26085;&#24050;&#36948;&#27161;</strong></span>
+              <input id="timeGoalInput" type="number" min="0" step="1" inputmode="numeric" />
+            </label>
+          </div>
+        </section>
+
+        <section class="counter-grid" aria-label="study counters">
+          <article class="counter-card">
+            <span class="counter-label">&#36984;&#25799;&#38988;&#32317;&#31572;&#38988;&#25976;</span>
+            <strong><span id="choiceCount">0</span><small>&#38988;</small></strong>
+            <div class="counter-actions">
+              <button id="choiceMinusBtn" type="button" aria-label="&#36984;&#25799;&#38988;&#28187;&#23569;&#19968;&#38988;">-</button>
+              <button id="choicePlusBtn" type="button" aria-label="&#36984;&#25799;&#38988;&#22686;&#21152;&#19968;&#38988;">+</button>
+              <button id="choiceResetBtn" type="button">&#27512;&#38646;</button>
+            </div>
+          </article>
+
+          <article class="counter-card">
+            <span class="counter-label">&#30003;&#35542;&#38988;&#23436;&#25104;&#25976;</span>
+            <strong><span id="essayCount">0</span><small>&#38988;</small></strong>
+            <div class="counter-actions">
+              <button id="essayMinusBtn" type="button" aria-label="&#30003;&#35542;&#38988;&#28187;&#23569;&#19968;&#38988;">-</button>
+              <button id="essayPlusBtn" type="button" aria-label="&#30003;&#35542;&#38988;&#22686;&#21152;&#19968;&#38988;">+</button>
+              <button id="essayResetBtn" type="button">&#27512;&#38646;</button>
+            </div>
+          </article>
+
+          <article class="counter-card">
+            <span class="counter-label">&#37679;&#38988;&#35330;&#27491;&#25976;</span>
+            <strong><span id="correctionCount">0</span><small>&#38988;</small></strong>
+            <div class="counter-actions">
+              <button id="correctionMinusBtn" type="button" aria-label="&#37679;&#38988;&#35330;&#27491;&#28187;&#23569;&#19968;&#38988;">-</button>
+              <button id="correctionPlusBtn" type="button" aria-label="&#37679;&#38988;&#35330;&#27491;&#22686;&#21152;&#19968;&#38988;">+</button>
+              <button id="correctionResetBtn" type="button">&#27512;&#38646;</button>
+            </div>
+          </article>
+
+          <article class="counter-card time-card">
+            <span class="counter-label">&#23416;&#32722;&#26178;&#38263;</span>
+            <strong><span id="studyTime">00:00:00</span></strong>
+            <div class="counter-actions">
+              <button id="timerToggleBtn" type="button">&#38283;&#22987;</button>
+              <button id="timerResetBtn" type="button">&#27512;&#38646;</button>
+            </div>
+          </article>
+        </section>
+
+        <footer class="device-footer">
+          <button id="resetAllBtn" type="button">&#20840;&#37096;&#27512;&#38646;</button>
+          <span id="saveStatus" aria-live="polite"></span>
+        </footer>
+      </section>
+    </main>
+
+    <aside class="theme-control" aria-label="theme color controls">
+      <label>
+        <span>&#32972;&#26223;</span>
+        <select id="bgColorInput"></select>
+      </label>
+      <label>
+        <span>&#23383;&#39636;</span>
+        <select id="textColorInput"></select>
+      </label>
+      <label>
+        <span>&#26694;&#32218;</span>
+        <select id="lineColorInput"></select>
+      </label>
+    </aside>
+
+    <script src="nippon-colors.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
