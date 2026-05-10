@@ -72,8 +72,12 @@
           </article>
 
           <article class="counter-card time-card">
-            <span class="counter-label">&#23416;&#32722;&#26178;&#38263;</span>
-            <strong><span id="studyTime">00:00:00</span></strong>
+            <span class="counter-label">&#20498;&#25976;&#26178;&#38291;</span>
+            <label class="countdown-setting">
+              <span>&#35373;&#23450;&#20998;&#37912;</span>
+              <input id="countdownMinutesInput" type="number" min="1" step="1" inputmode="numeric" />
+            </label>
+            <strong><span id="studyTime">25:00</span></strong>
             <div class="counter-actions">
               <button id="timerToggleBtn" type="button">&#38283;&#22987;</button>
               <button id="timerResetBtn" type="button">&#27512;&#38646;</button>
@@ -102,6 +106,15 @@
         <select id="lineColorInput"></select>
       </label>
     </aside>
+
+    <div id="bombOverlay" class="bomb-overlay" hidden role="alert" aria-live="assertive">
+      <div class="bomb-card">
+        <div class="bomb-icon" aria-hidden="true">&#128163;</div>
+        <strong>&#26178;&#38291;&#21040;&#65281;</strong>
+        <span>&#20241;&#24687;&#19968;&#19979;&#65292;&#28982;&#24460;&#32380;&#32396;&#21069;&#36914;&#12290;</span>
+        <button id="bombCloseBtn" type="button">&#30693;&#36947;&#20102;</button>
+      </div>
+    </div>
 
     <script src="nippon-colors.js"></script>
     <script src="app.js"></script>

@@ -10,7 +10,9 @@ const state = {
   choiceCount: 0,
   essayCount: 0,
   correctionCount: 0,
-  accumulatedMs: 0,
+  completedStudyMinutes: 0,
+  countdownMinutes: 25,
+  remainingMs: 25 * 60 * 1000,
   startedAt: null,
   active: false,
   goals: {
@@ -36,9 +38,12 @@ const els = {
   correctionMinusBtn: document.querySelector("#correctionMinusBtn"),
   correctionPlusBtn: document.querySelector("#correctionPlusBtn"),
   correctionResetBtn: document.querySelector("#correctionResetBtn"),
+  countdownMinutesInput: document.querySelector("#countdownMinutesInput"),
   timerToggleBtn: document.querySelector("#timerToggleBtn"),
   timerResetBtn: document.querySelector("#timerResetBtn"),
   resetAllBtn: document.querySelector("#resetAllBtn"),
+  bombOverlay: document.querySelector("#bombOverlay"),
+  bombCloseBtn: document.querySelector("#bombCloseBtn"),
   choiceGoalCongrats: document.querySelector("#choiceGoalCongrats"),
   essayGoalCongrats: document.querySelector("#essayGoalCongrats"),
   correctionGoalCongrats: document.querySelector("#correctionGoalCongrats"),
@@ -60,7 +65,12 @@ function load() {
     state.choiceCount = Math.max(0, Number.parseInt(saved.choiceCount, 10) || 0);
     state.essayCount = Math.max(0, Number.parseInt(saved.essayCount, 10) || 0);
     state.correctionCount = Math.max(0, Number.parseInt(saved.correctionCount, 10) || 0);
-    state.accumulatedMs = Math.max(0, Number.parseInt(saved.accumulatedMs, 10) || 0);
+    state.completedStudyMinutes = Math.max(
+      0,
+      Number.parseInt(saved.completedStudyMinutes, 10) || Math.floor((Number.parseInt(saved.accumulatedMs, 10) || 0) / 60000),
+    );
+    state.countdownMinutes = Math.max(1, Number.parseInt(saved.countdownMinutes, 10) || 25);
+    state.remainingMs = Math.max(0, Number.parseInt(saved.remainingMs, 10) || state.countdownMinutes * 60 * 1000);
     state.startedAt = Number.isFinite(saved.startedAt) ? saved.startedAt : null;
     state.active = Boolean(saved.active && state.startedAt);
     state.goals = {
@@ -72,13 +82,13 @@ function load() {
   }
 }
 
-function currentStudyMs() {
-  const liveMs = state.active && state.startedAt ? Date.now() - state.startedAt : 0;
-  return Math.max(0, state.accumulatedMs + liveMs);
+function currentRemainingMs() {
+  const elapsedMs = state.active && state.startedAt ? Date.now() - state.startedAt : 0;
+  return Math.max(0, state.remainingMs - elapsedMs);
 }
 
 function save() {
-  localStorage.setItem(storageKey, JSON.stringify({ ...state, accumulatedMs: currentStudyMs() }));
+  localStorage.setItem(storageKey, JSON.stringify({ ...state, remainingMs: currentRemainingMs() }));
   showSaved();
 }
 
@@ -158,14 +168,18 @@ function formatTime(ms) {
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
-  return [hours, minutes, seconds].map((value) => String(value).padStart(2, "0")).join(":");
+  if (hours > 0) {
+    return [hours, minutes, seconds].map((value) => String(value).padStart(2, "0")).join(":");
+  }
+  return [minutes, seconds].map((value) => String(value).padStart(2, "0")).join(":");
 }
 
 function render() {
   els.choiceCount.textContent = state.choiceCount;
   els.essayCount.textContent = state.essayCount;
   els.correctionCount.textContent = state.correctionCount;
-  els.studyTime.textContent = formatTime(currentStudyMs());
+  els.studyTime.textContent = formatTime(currentRemainingMs());
+  els.countdownMinutesInput.value = state.countdownMinutes;
   els.timerToggleBtn.textContent = state.active ? "\u66ab\u505c" : "\u958b\u59cb";
   els.choiceGoalInput.value = state.goals.choice;
   els.essayGoalInput.value = state.goals.essay;
@@ -180,12 +194,11 @@ function numericGoal(value) {
 }
 
 function renderGoalStatus() {
-  const studyMinutes = Math.floor(currentStudyMs() / 60000);
   const statuses = [
     [els.choiceGoalCongrats, numericGoal(state.goals.choice), state.choiceCount],
     [els.essayGoalCongrats, numericGoal(state.goals.essay), state.essayCount],
     [els.correctionGoalCongrats, numericGoal(state.goals.correction), state.correctionCount],
-    [els.timeGoalCongrats, numericGoal(state.goals.minutes), studyMinutes],
+    [els.timeGoalCongrats, numericGoal(state.goals.minutes), state.completedStudyMinutes],
   ];
 
   statuses.forEach(([element, goal, current]) => {
@@ -229,10 +242,13 @@ function resetCounter(key) {
 
 function toggleTimer() {
   if (state.active) {
-    state.accumulatedMs = currentStudyMs();
+    state.remainingMs = currentRemainingMs();
     state.startedAt = null;
     state.active = false;
   } else {
+    if (currentRemainingMs() <= 0) {
+      state.remainingMs = state.countdownMinutes * 60 * 1000;
+    }
     state.startedAt = Date.now();
     state.active = true;
   }
@@ -241,17 +257,45 @@ function toggleTimer() {
 }
 
 function resetTimer() {
-  state.accumulatedMs = 0;
+  state.remainingMs = state.countdownMinutes * 60 * 1000;
   state.startedAt = state.active ? Date.now() : null;
   save();
   render();
+}
+
+function updateCountdownSetting() {
+  state.countdownMinutes = Math.max(1, Number.parseInt(els.countdownMinutesInput.value, 10) || 1);
+  if (!state.active) {
+    state.remainingMs = state.countdownMinutes * 60 * 1000;
+  }
+  save();
+  render();
+}
+
+function finishCountdown() {
+  state.active = false;
+  state.startedAt = null;
+  state.remainingMs = 0;
+  state.completedStudyMinutes += state.countdownMinutes;
+  save();
+  render();
+  showBomb();
+}
+
+function showBomb() {
+  els.bombOverlay.hidden = false;
+}
+
+function hideBomb() {
+  els.bombOverlay.hidden = true;
 }
 
 function resetAll() {
   state.choiceCount = 0;
   state.essayCount = 0;
   state.correctionCount = 0;
-  state.accumulatedMs = 0;
+  state.completedStudyMinutes = 0;
+  state.remainingMs = state.countdownMinutes * 60 * 1000;
   state.startedAt = state.active ? Date.now() : null;
   save();
   render();
@@ -266,9 +310,11 @@ els.essayResetBtn.addEventListener("click", () => resetCounter("essayCount"));
 els.correctionMinusBtn.addEventListener("click", () => adjustCounter("correctionCount", -1));
 els.correctionPlusBtn.addEventListener("click", () => adjustCounter("correctionCount", 1));
 els.correctionResetBtn.addEventListener("click", () => resetCounter("correctionCount"));
+els.countdownMinutesInput.addEventListener("change", updateCountdownSetting);
 els.timerToggleBtn.addEventListener("click", toggleTimer);
 els.timerResetBtn.addEventListener("click", resetTimer);
 els.resetAllBtn.addEventListener("click", resetAll);
+els.bombCloseBtn.addEventListener("click", hideBomb);
 els.goalResetBtn.addEventListener("click", resetGoals);
 els.choiceGoalInput.addEventListener("input", saveGoals);
 els.essayGoalInput.addEventListener("input", saveGoals);
@@ -284,5 +330,10 @@ populateThemeControls(theme);
 applyTheme(theme);
 render();
 window.setInterval(() => {
-  if (state.active) render();
+  if (!state.active) return;
+  if (currentRemainingMs() <= 0) {
+    finishCountdown();
+    return;
+  }
+  render();
 }, 1000);
