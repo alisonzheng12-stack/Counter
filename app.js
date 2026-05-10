@@ -39,6 +39,7 @@ const els = {
   correctionPlusBtn: document.querySelector("#correctionPlusBtn"),
   correctionResetBtn: document.querySelector("#correctionResetBtn"),
   countdownMinutesInput: document.querySelector("#countdownMinutesInput"),
+  countdownSetBtn: document.querySelector("#countdownSetBtn"),
   timerToggleBtn: document.querySelector("#timerToggleBtn"),
   timerResetBtn: document.querySelector("#timerResetBtn"),
   resetAllBtn: document.querySelector("#resetAllBtn"),
@@ -179,7 +180,9 @@ function render() {
   els.essayCount.textContent = state.essayCount;
   els.correctionCount.textContent = state.correctionCount;
   els.studyTime.textContent = formatTime(currentRemainingMs());
-  els.countdownMinutesInput.value = state.countdownMinutes;
+  if (document.activeElement !== els.countdownMinutesInput) {
+    els.countdownMinutesInput.value = state.countdownMinutes;
+  }
   els.timerToggleBtn.textContent = state.active ? "\u66ab\u505c" : "\u958b\u59cb";
   els.choiceGoalInput.value = state.goals.choice;
   els.essayGoalInput.value = state.goals.essay;
@@ -310,7 +313,13 @@ els.essayResetBtn.addEventListener("click", () => resetCounter("essayCount"));
 els.correctionMinusBtn.addEventListener("click", () => adjustCounter("correctionCount", -1));
 els.correctionPlusBtn.addEventListener("click", () => adjustCounter("correctionCount", 1));
 els.correctionResetBtn.addEventListener("click", () => resetCounter("correctionCount"));
-els.countdownMinutesInput.addEventListener("change", updateCountdownSetting);
+els.countdownSetBtn.addEventListener("click", updateCountdownSetting);
+els.countdownMinutesInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    updateCountdownSetting();
+  }
+});
 els.timerToggleBtn.addEventListener("click", toggleTimer);
 els.timerResetBtn.addEventListener("click", resetTimer);
 els.resetAllBtn.addEventListener("click", resetAll);

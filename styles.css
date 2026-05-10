@@ -203,6 +203,12 @@ button {
   font-weight: 600;
 }
 
+.countdown-setting div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
 .countdown-setting input {
   width: 100%;
   height: 38px;
@@ -212,6 +218,11 @@ button {
   background: var(--paper);
   color: var(--ink);
   font: inherit;
+}
+
+#countdownSetBtn {
+  min-height: 38px;
+  padding: 0 12px;
 }
 
 .counter-card small {
