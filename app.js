@@ -283,6 +283,7 @@ function finishCountdown() {
   save();
   render();
   showBomb();
+  playExplosionSound();
 }
 
 function showBomb() {
@@ -291,6 +292,55 @@ function showBomb() {
 
 function hideBomb() {
   els.bombOverlay.hidden = true;
+}
+
+function playExplosionSound() {
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContext) return;
+
+  const audio = new AudioContext();
+  const duration = 0.9;
+  const sampleRate = audio.sampleRate;
+  const buffer = audio.createBuffer(1, sampleRate * duration, sampleRate);
+  const data = buffer.getChannelData(0);
+
+  for (let index = 0; index < data.length; index += 1) {
+    const progress = index / data.length;
+    const decay = (1 - progress) ** 3;
+    data[index] = (Math.random() * 2 - 1) * decay;
+  }
+
+  const noise = audio.createBufferSource();
+  noise.buffer = buffer;
+
+  const lowpass = audio.createBiquadFilter();
+  lowpass.type = "lowpass";
+  lowpass.frequency.setValueAtTime(900, audio.currentTime);
+  lowpass.frequency.exponentialRampToValueAtTime(80, audio.currentTime + duration);
+
+  const boomGain = audio.createGain();
+  boomGain.gain.setValueAtTime(0.0001, audio.currentTime);
+  boomGain.gain.exponentialRampToValueAtTime(0.9, audio.currentTime + 0.03);
+  boomGain.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + duration);
+
+  const thump = audio.createOscillator();
+  thump.type = "sine";
+  thump.frequency.setValueAtTime(95, audio.currentTime);
+  thump.frequency.exponentialRampToValueAtTime(38, audio.currentTime + 0.45);
+
+  const thumpGain = audio.createGain();
+  thumpGain.gain.setValueAtTime(0.0001, audio.currentTime);
+  thumpGain.gain.exponentialRampToValueAtTime(0.75, audio.currentTime + 0.02);
+  thumpGain.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + 0.5);
+
+  noise.connect(lowpass).connect(boomGain).connect(audio.destination);
+  thump.connect(thumpGain).connect(audio.destination);
+  noise.start();
+  thump.start();
+  noise.stop(audio.currentTime + duration);
+  thump.stop(audio.currentTime + 0.5);
+
+  window.setTimeout(() => audio.close(), duration * 1000 + 120);
 }
 
 function resetAll() {
