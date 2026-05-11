@@ -205,7 +205,7 @@ button {
 }
 
 .time-card {
-  grid-template-rows: auto auto minmax(72px, 1fr) auto auto;
+  grid-template-rows: auto auto minmax(72px, 1fr) auto auto auto;
 }
 
 .time-card #studyTime {
@@ -215,6 +215,23 @@ button {
   min-width: 0;
   overflow: hidden;
   text-align: center;
+}
+
+.focus-total {
+  display: grid;
+  gap: 4px;
+  margin: -4px 0 2px;
+  color: var(--ink);
+  font-size: clamp(0.92rem, 2vw, 1.08rem);
+  font-weight: 800;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.focus-total b {
+  display: block;
+  font-size: clamp(1.28rem, 3vw, 1.75rem);
+  font-variant-numeric: tabular-nums;
 }
 
 .countdown-setting {
@@ -326,7 +343,8 @@ body.focus-mode .time-card {
 body.focus-mode .time-card .counter-label,
 body.focus-mode .time-card .countdown-setting,
 body.focus-mode .time-card .counter-actions,
-body.focus-mode .time-card .focus-toggle {
+body.focus-mode .time-card .focus-toggle,
+body.focus-mode .time-card .focus-total {
   display: none;
 }
 

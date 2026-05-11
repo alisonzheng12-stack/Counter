@@ -113,6 +113,7 @@ const els = {
   remainingWrongCount: document.querySelector("#remainingWrongCount"),
   totalWrongInput: document.querySelector("#totalWrongInput"),
   studyTime: document.querySelector("#studyTime"),
+  focusTotalMinutes: document.querySelector("#focusTotalMinutes"),
   saveStatus: document.querySelector("#saveStatus"),
   choiceMinusBtn: document.querySelector("#choiceMinusBtn"),
   choicePlusBtn: document.querySelector("#choicePlusBtn"),
@@ -189,6 +190,13 @@ function normalizeTodos(todos) {
 function currentRemainingMs() {
   const elapsedMs = state.active && state.startedAt ? Date.now() - state.startedAt : 0;
   return Math.max(0, state.remainingMs - elapsedMs);
+}
+
+function currentSessionFocusMinutes() {
+  const totalMs = state.countdownMinutes * 60 * 1000;
+  const remainingMs = currentRemainingMs();
+  if (remainingMs <= 0 || remainingMs >= totalMs) return 0;
+  return Math.floor((totalMs - remainingMs) / 60000);
 }
 
 function save() {
@@ -419,6 +427,7 @@ function render() {
     els.totalWrongInput.value = state.totalWrongCount;
   }
   els.studyTime.textContent = formatTime(currentRemainingMs());
+  els.focusTotalMinutes.textContent = state.completedStudyMinutes + currentSessionFocusMinutes();
   if (document.activeElement !== els.countdownMinutesInput) {
     els.countdownMinutesInput.value = state.countdownMinutes;
   }
