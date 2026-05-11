@@ -4,15 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>&#20320;&#33021;&#20570;&#21040;</title>
-    <link rel="stylesheet" href="styles.css?v=20260511-4" />
+    <link rel="stylesheet" href="styles.css?v=20260512-11" />
   </head>
   <body>
     <main class="device-shell">
       <section class="device-panel" aria-label="study counter device">
         <header class="device-header">
-          <p>Study Counter</p>
-          <h1>&#20320;&#33021;&#20570;&#21040; <span>&#12354;&#12394;&#12383;&#12394;&#12425;&#12391;&#12365;&#12427;</span></h1>
-          <p class="tagline">Boring&rsquo; = simple things that bring value and enjoyment to life.</p>
+          <div>
+            <p>Study Counter</p>
+            <h1>&#20320;&#33021;&#20570;&#21040; <span>&#12354;&#12394;&#12383;&#12394;&#12425;&#12391;&#12365;&#12427;</span></h1>
+            <p class="tagline">Boring&rsquo; = simple things that bring value and enjoyment to life.</p>
+          </div>
+          <div class="current-time" aria-live="polite">
+            <span>&#29694;&#22312;&#26178;&#38291;</span>
+            <b id="currentTime">--:--:--</b>
+          </div>
         </header>
 
         <section class="goal-panel" aria-label="today goals">
@@ -79,42 +85,34 @@
               <span>EXP <b id="xpValue">0</b>/<b id="xpNeedValue">100</b></span>
               <div class="xp-bar" aria-hidden="true"><i id="xpBar"></i></div>
             </div>
-            <p class="xp-note">&#21097;&#39192;&#37679;&#38988;&#28187;&#23569;&#26178;&#33258;&#21205;&#29554;&#24471; EXP</p>
+            <p class="xp-note">&#27599;&#19968;&#27425;&#21069;&#36914;&#37117;&#26371;&#32047;&#31309;&#25104;&#33258;&#24049;&#30340;&#32147;&#39511;</p>
             <button id="levelResetBtn" type="button">&#31561;&#32026;&#27512;&#38646;</button>
           </article>
 
-          <article class="counter-card">
-            <span class="counter-label">&#21097;&#39192;&#37679;&#38988;</span>
-            <strong><span id="remainingWrongCount">0</span><small>&#38988;</small></strong>
-            <div class="quick-actions">
-              <button type="button" data-total-wrong="10">+10</button>
-              <button type="button" data-total-wrong="50">+50</button>
-              <button type="button" data-total-wrong="100">+100</button>
-            </div>
-            <div class="counter-actions">
-              <button id="remainingWrongMinusBtn" type="button" aria-label="&#21097;&#39192;&#37679;&#38988;&#28187;&#23569;&#19968;&#38988;">-</button>
-              <button id="remainingWrongPlusBtn" type="button" aria-label="&#21097;&#39192;&#37679;&#38988;&#22686;&#21152;&#19968;&#38988;">+</button>
-              <button id="wrongResetBtn" type="button">&#27512;&#38646;</button>
-            </div>
-            <label class="wrong-total-field">
-              <span>&#32047;&#31309;&#32317;&#37679;&#38988;</span>
-              <input id="totalWrongInput" type="number" min="0" step="1" inputmode="numeric" />
+          <article class="counter-card future-card">
+            <span class="counter-label">&#26410;&#20358;&#27963;&#21205;</span>
+            <label class="future-activity-field">
+              <textarea id="futureActivitiesInput" rows="6" placeholder="&#19968;&#34892;&#19968;&#20491;&#26410;&#20358;&#27963;&#21205;"></textarea>
             </label>
           </article>
 
-          <article class="counter-card">
-            <span class="counter-label">&#36984;&#25799;&#38988;&#32317;&#31572;&#38988;&#25976;</span>
-            <strong><span id="choiceCount">0</span><small>&#38988;</small></strong>
-            <div class="quick-actions">
-              <button type="button" data-counter="choiceCount" data-amount="10">+10</button>
-              <button type="button" data-counter="choiceCount" data-amount="50">+50</button>
-              <button type="button" data-counter="choiceCount" data-amount="100">+100</button>
+          <article class="counter-card news-card">
+            <div class="news-head">
+              <span class="counter-label">&#20170;&#26085;&#37325;&#40670;&#26032;&#32862;</span>
+              <div class="news-actions">
+                <button id="newsRefreshBtn" type="button">&#26356;&#26032;</button>
+                <a id="newsMoreLink" href="https://news.google.com/topstories?hl=zh-TW&gl=TW&ceid=TW:zh-Hant" target="_blank" rel="noreferrer">&#26356;&#22810;</a>
+              </div>
             </div>
-            <div class="counter-actions">
-              <button id="choiceMinusBtn" type="button" aria-label="&#36984;&#25799;&#38988;&#28187;&#23569;&#19968;&#38988;">-</button>
-              <button id="choicePlusBtn" type="button" aria-label="&#36984;&#25799;&#38988;&#22686;&#21152;&#19968;&#38988;">+</button>
-              <button id="choiceResetBtn" type="button">&#27512;&#38646;</button>
+            <div class="news-sources" aria-label="news sources">
+              <button type="button" data-news-source="tw">TW</button>
+              <button type="button" data-news-source="bbc">BBC</button>
+              <button type="button" data-news-source="dw">DW</button>
             </div>
+            <ol id="newsList" class="news-list">
+              <li>&#36617;&#20837;&#26032;&#32862;&#20013;</li>
+            </ol>
+            <p id="newsStatus" class="news-status"></p>
           </article>
         </section>
 
@@ -249,7 +247,7 @@
       </div>
     </div>
 
-    <script src="nippon-colors.js?v=20260511-4"></script>
-    <script src="app.js?v=20260511-4"></script>
+    <script src="nippon-colors.js?v=20260512-11"></script>
+    <script src="app.js?v=20260512-11"></script>
   </body>
 </html>

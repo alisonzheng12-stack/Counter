@@ -3,6 +3,28 @@ const themeStorageKey = "minimal-study-counter-theme-v1";
 const themeCollapsedStorageKey = "minimal-study-counter-theme-collapsed";
 const themeMemoryStorageKey = "minimal-study-counter-theme-memory-v1";
 const themeMemoryBundleVersionKey = "minimal-study-counter-theme-memory-bundle-20260511-2";
+const newsSourceStorageKey = "minimal-study-counter-news-source-v1";
+const newsSources = {
+  tw: {
+    label: "TW",
+    feedUrl: "https://news.google.com/rss?hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    moreUrl: "https://news.google.com/topstories?hl=zh-TW&gl=TW&ceid=TW:zh-Hant",
+    fallbackText: "\u958b\u555f Google News \u67e5\u770b\u4eca\u65e5\u91cd\u9ede",
+  },
+  bbc: {
+    label: "BBC",
+    feedUrl: "https://feeds.bbci.co.uk/news/rss.xml",
+    moreUrl: "https://www.bbc.com/news",
+    fallbackText: "\u958b\u555f BBC News \u67e5\u770b\u4eca\u65e5\u91cd\u9ede",
+  },
+  dw: {
+    label: "DW",
+    feedUrl: "https://rss.dw.com/rdf/rss-de-all",
+    moreUrl: "https://www.dw.com/de/themen/s-9077",
+    fallbackText: "\u958b\u555f DW \u5fb7\u8a9e\u65b0\u805e\u67e5\u770b\u4eca\u65e5\u91cd\u9ede",
+  },
+};
+let sharedAudio = null;
 const fallbackNipponColors = [
   { name: "GOFUN", romanized: "GOFUN", value: "#FCFAF2" },
   { name: "SUMI", romanized: "SUMI", value: "#1C1C1C" },
@@ -100,6 +122,7 @@ const state = {
   xp: 0,
   remainingWrongCount: 0,
   totalWrongCount: 0,
+  futureActivities: "",
   completedStudyMinutes: 0,
   countdownMinutes: 25,
   remainingMs: 25 * 60 * 1000,
@@ -121,20 +144,16 @@ const els = {
   xpValue: document.querySelector("#xpValue"),
   xpNeedValue: document.querySelector("#xpNeedValue"),
   xpBar: document.querySelector("#xpBar"),
-  remainingWrongCount: document.querySelector("#remainingWrongCount"),
-  totalWrongInput: document.querySelector("#totalWrongInput"),
+  futureActivitiesInput: document.querySelector("#futureActivitiesInput"),
   studyTime: document.querySelector("#studyTime"),
   focusTotalMinutes: document.querySelector("#focusTotalMinutes"),
+  currentTime: document.querySelector("#currentTime"),
   saveStatus: document.querySelector("#saveStatus"),
   choiceMinusBtn: document.querySelector("#choiceMinusBtn"),
   choicePlusBtn: document.querySelector("#choicePlusBtn"),
   choiceResetBtn: document.querySelector("#choiceResetBtn"),
   levelResetBtn: document.querySelector("#levelResetBtn"),
-  remainingWrongMinusBtn: document.querySelector("#remainingWrongMinusBtn"),
-  remainingWrongPlusBtn: document.querySelector("#remainingWrongPlusBtn"),
-  wrongResetBtn: document.querySelector("#wrongResetBtn"),
   quickActionBtns: document.querySelectorAll(".quick-actions button[data-counter]"),
-  totalWrongBtns: document.querySelectorAll("[data-total-wrong]"),
   countdownMinutesInput: document.querySelector("#countdownMinutesInput"),
   countdownSetBtn: document.querySelector("#countdownSetBtn"),
   focusModeInput: document.querySelector("#focusModeInput"),
@@ -158,6 +177,11 @@ const els = {
   themeLoadBtns: document.querySelectorAll("[data-theme-load]"),
   themeControl: document.querySelector(".theme-control"),
   themeToggleBtn: document.querySelector("#themeToggleBtn"),
+  newsList: document.querySelector("#newsList"),
+  newsStatus: document.querySelector("#newsStatus"),
+  newsRefreshBtn: document.querySelector("#newsRefreshBtn"),
+  newsMoreLink: document.querySelector("#newsMoreLink"),
+  newsSourceBtns: document.querySelectorAll("[data-news-source]"),
 };
 
 function load() {
@@ -172,6 +196,7 @@ function load() {
     state.totalWrongCount = Math.max(0, Number.parseInt(saved.totalWrongCount, 10) || oldCorrectionCount);
     state.remainingWrongCount = Math.max(0, Number.parseInt(saved.remainingWrongCount, 10) || oldCorrectionCount);
     state.remainingWrongCount = Math.min(state.remainingWrongCount, state.totalWrongCount);
+    state.futureActivities = typeof saved.futureActivities === "string" ? saved.futureActivities : "";
     state.completedStudyMinutes = Math.max(
       0,
       Number.parseInt(saved.completedStudyMinutes, 10) || Math.floor((Number.parseInt(saved.accumulatedMs, 10) || 0) / 60000),
@@ -416,6 +441,15 @@ function formatTime(ms) {
   return [minutes, seconds].map((value) => String(value).padStart(2, "0")).join(":");
 }
 
+function formatCurrentTime(date = new Date()) {
+  return date.toLocaleTimeString("zh-TW", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+}
+
 function xpNeed() {
   return state.level * 100;
 }
@@ -428,14 +462,13 @@ function normalizeLevel() {
 }
 
 function render() {
-  els.choiceCount.textContent = state.choiceCount;
+  if (els.choiceCount) els.choiceCount.textContent = state.choiceCount;
   els.levelValue.textContent = state.level;
   els.xpValue.textContent = state.xp;
   els.xpNeedValue.textContent = xpNeed();
   els.xpBar.style.width = `${Math.min(100, (state.xp / xpNeed()) * 100)}%`;
-  els.remainingWrongCount.textContent = state.remainingWrongCount;
-  if (document.activeElement !== els.totalWrongInput) {
-    els.totalWrongInput.value = state.totalWrongCount;
+  if (document.activeElement !== els.futureActivitiesInput) {
+    els.futureActivitiesInput.value = state.futureActivities;
   }
   els.studyTime.textContent = formatTime(currentRemainingMs());
   els.focusTotalMinutes.textContent = state.completedStudyMinutes + currentSessionFocusMinutes();
@@ -444,6 +477,88 @@ function render() {
   }
   els.timerToggleBtn.textContent = state.active ? "\u66ab\u505c" : "\u958b\u59cb";
   renderTodos();
+}
+
+function renderNewsItems(items) {
+  els.newsList.innerHTML = "";
+  items.slice(0, 5).forEach((item) => {
+    const li = document.createElement("li");
+    const link = document.createElement("a");
+    link.href = item.link;
+    link.target = "_blank";
+    link.rel = "noreferrer";
+    link.textContent = item.title;
+    li.append(link);
+    els.newsList.append(li);
+  });
+}
+
+function renderNewsFallback(message) {
+  const source = currentNewsSource();
+  els.newsList.innerHTML = "";
+  const li = document.createElement("li");
+  const link = document.createElement("a");
+  link.href = source.moreUrl;
+  link.target = "_blank";
+  link.rel = "noreferrer";
+  link.textContent = source.fallbackText;
+  li.append(link);
+  els.newsList.append(li);
+  els.newsStatus.textContent = message;
+}
+
+function currentNewsSourceKey() {
+  const saved = localStorage.getItem(newsSourceStorageKey);
+  return newsSources[saved] ? saved : "tw";
+}
+
+function currentNewsSource() {
+  return newsSources[currentNewsSourceKey()];
+}
+
+function renderNewsSourceControls() {
+  const key = currentNewsSourceKey();
+  els.newsSourceBtns.forEach((button) => {
+    const active = button.dataset.newsSource === key;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", active ? "true" : "false");
+  });
+  els.newsMoreLink.href = currentNewsSource().moreUrl;
+}
+
+async function loadNews() {
+  if (!els.newsList) return;
+  const source = currentNewsSource();
+  renderNewsSourceControls();
+  els.newsStatus.textContent = "\u66f4\u65b0\u4e2d...";
+  try {
+    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(source.feedUrl)}`;
+    const response = await fetch(proxyUrl, { cache: "no-store" });
+    if (!response.ok) throw new Error("news request failed");
+    const text = await response.text();
+    const xml = new DOMParser().parseFromString(text, "application/xml");
+    const items = Array.from(xml.querySelectorAll("item"))
+      .map((item) => ({
+        title: item.querySelector("title")?.textContent?.trim() || "",
+        link: item.querySelector("link")?.textContent?.trim() || "",
+      }))
+      .filter((item) => item.title && item.link);
+    if (!items.length) throw new Error("empty news feed");
+    renderNewsItems(items);
+    els.newsStatus.textContent = `${source.label} \u5df2\u66f4\u65b0 ${formatCurrentTime()}`;
+  } catch {
+    renderNewsFallback("\u81ea\u52d5\u8f09\u5165\u66ab\u6642\u5931\u6557\uff0c\u53ef\u5148\u9ede\u300c\u66f4\u591a\u300d\u67e5\u770b\u3002");
+  }
+}
+
+function selectNewsSource(key) {
+  if (!newsSources[key]) return;
+  localStorage.setItem(newsSourceStorageKey, key);
+  loadNews();
+}
+
+function renderCurrentTime() {
+  els.currentTime.textContent = formatCurrentTime();
 }
 
 function renderTodos() {
@@ -458,10 +573,23 @@ function renderTodos() {
 }
 
 function saveTodos() {
-  state.goals.todos = Array.from({ length: 4 }, (_, index) => ({
+  const previousTodos = state.goals.todos;
+  const nextTodos = Array.from({ length: 4 }, (_, index) => ({
     text: els.todoTexts[index].value,
     done: els.todoChecks[index].checked,
   }));
+  const newlyCompleted = nextTodos.filter((todo, index) => todo.done && !previousTodos[index]?.done).length;
+  if (newlyCompleted > 0) {
+    state.xp += newlyCompleted * 20;
+    normalizeLevel();
+  }
+  state.goals.todos = nextTodos;
+  save();
+  render();
+}
+
+function saveFutureActivities() {
+  state.futureActivities = els.futureActivitiesInput.value;
   save();
 }
 
@@ -530,6 +658,7 @@ function toggleTimer() {
     state.startedAt = null;
     state.active = false;
   } else {
+    unlockAudio();
     if (currentRemainingMs() <= 0) {
       state.remainingMs = state.countdownMinutes * 60 * 1000;
     }
@@ -564,6 +693,7 @@ function finishCountdown() {
   save();
   render();
   showBomb();
+  playTimeUpChime();
   playExplosionSound();
 }
 
@@ -575,8 +705,50 @@ function hideBomb() {
   els.bombOverlay.hidden = true;
 }
 
+function getAudioContext() {
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContext) return null;
+  if (!sharedAudio || sharedAudio.state === "closed") {
+    sharedAudio = new AudioContext();
+  }
+  if (sharedAudio.state === "suspended") {
+    sharedAudio.resume().catch(() => {});
+  }
+  return sharedAudio;
+}
+
+function unlockAudio() {
+  const audio = getAudioContext();
+  if (!audio) return;
+  const oscillator = audio.createOscillator();
+  const gain = audio.createGain();
+  gain.gain.setValueAtTime(0.0001, audio.currentTime);
+  oscillator.connect(gain).connect(audio.destination);
+  oscillator.start();
+  oscillator.stop(audio.currentTime + 0.02);
+}
+
+function playTimeUpChime() {
+  const audio = getAudioContext();
+  if (!audio) return;
+  [880, 1174.66, 1567.98].forEach((frequency, index) => {
+    const start = audio.currentTime + index * 0.16;
+    const oscillator = audio.createOscillator();
+    const gain = audio.createGain();
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(frequency, start);
+    gain.gain.setValueAtTime(0.0001, start);
+    gain.gain.exponentialRampToValueAtTime(0.45, start + 0.025);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.14);
+    oscillator.connect(gain).connect(audio.destination);
+    oscillator.start(start);
+    oscillator.stop(start + 0.16);
+  });
+}
+
 function setFocusMode(enabled) {
   if (enabled && !state.active) {
+    unlockAudio();
     if (currentRemainingMs() <= 0) {
       state.remainingMs = state.countdownMinutes * 60 * 1000;
     }
@@ -590,10 +762,8 @@ function setFocusMode(enabled) {
 }
 
 function playExplosionSound() {
-  const AudioContext = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContext) return;
-
-  const audio = new AudioContext();
+  const audio = getAudioContext();
+  if (!audio) return;
   const duration = 0.9;
   const sampleRate = audio.sampleRate;
   const buffer = audio.createBuffer(1, sampleRate * duration, sampleRate);
@@ -635,7 +805,6 @@ function playExplosionSound() {
   noise.stop(audio.currentTime + duration);
   thump.stop(audio.currentTime + 0.5);
 
-  window.setTimeout(() => audio.close(), duration * 1000 + 120);
 }
 
 function resetAll() {
@@ -644,6 +813,7 @@ function resetAll() {
   state.xp = 0;
   state.remainingWrongCount = 0;
   state.totalWrongCount = 0;
+  state.futureActivities = "";
   state.completedStudyMinutes = 0;
   state.remainingMs = state.countdownMinutes * 60 * 1000;
   state.startedAt = state.active ? Date.now() : null;
@@ -651,25 +821,17 @@ function resetAll() {
   render();
 }
 
-els.choiceMinusBtn.addEventListener("click", () => adjustCounter("choiceCount", -1));
-els.choicePlusBtn.addEventListener("click", () => adjustCounter("choiceCount", 1));
-els.choiceResetBtn.addEventListener("click", () => resetCounter("choiceCount"));
+if (els.choiceMinusBtn) els.choiceMinusBtn.addEventListener("click", () => adjustCounter("choiceCount", -1));
+if (els.choicePlusBtn) els.choicePlusBtn.addEventListener("click", () => adjustCounter("choiceCount", 1));
+if (els.choiceResetBtn) els.choiceResetBtn.addEventListener("click", () => resetCounter("choiceCount"));
 els.levelResetBtn.addEventListener("click", resetLevel);
-els.remainingWrongMinusBtn.addEventListener("click", () => adjustRemainingWrong(-1));
-els.remainingWrongPlusBtn.addEventListener("click", () => adjustRemainingWrong(1));
-els.wrongResetBtn.addEventListener("click", resetWrongCounts);
 els.quickActionBtns.forEach((button) => {
   button.addEventListener("click", () => adjustCounter(button.dataset.counter, Number.parseInt(button.dataset.amount, 10) || 0));
 });
-els.totalWrongBtns.forEach((button) => {
-  button.addEventListener("click", () => addTotalWrong(Number.parseInt(button.dataset.totalWrong, 10) || 0));
-});
-els.totalWrongInput.addEventListener("change", () => setTotalWrong(els.totalWrongInput.value));
-els.totalWrongInput.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") {
-    event.preventDefault();
-    setTotalWrong(els.totalWrongInput.value);
-  }
+els.futureActivitiesInput.addEventListener("input", saveFutureActivities);
+els.newsRefreshBtn.addEventListener("click", loadNews);
+els.newsSourceBtns.forEach((button) => {
+  button.addEventListener("click", () => selectNewsSource(button.dataset.newsSource));
 });
 els.countdownSetBtn.addEventListener("click", updateCountdownSetting);
 els.countdownMinutesInput.addEventListener("keydown", (event) => {
@@ -717,7 +879,10 @@ seedBundledThemeMemory();
 renderThemeMemoryButtons();
 setThemeCollapsed(localStorage.getItem(themeCollapsedStorageKey) === "1");
 render();
+renderCurrentTime();
+loadNews();
 window.setInterval(() => {
+  renderCurrentTime();
   if (!state.active) return;
   if (currentRemainingMs() <= 0) {
     finishCountdown();

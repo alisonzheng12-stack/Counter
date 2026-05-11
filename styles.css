@@ -47,6 +47,10 @@ button {
 }
 
 .device-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: start;
   padding-bottom: 20px;
   border-bottom: var(--line-width) solid var(--line);
 }
@@ -83,6 +87,31 @@ button {
   font-size: clamp(0.9rem, 2vw, 1.05rem);
   font-weight: 500;
   line-height: 1.6;
+}
+
+.current-time {
+  display: grid;
+  gap: 4px;
+  justify-items: end;
+  min-width: 150px;
+  padding: 10px 12px;
+  border: var(--line-width) solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+  text-align: right;
+}
+
+.current-time span {
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.current-time b {
+  font-family: "Consolas", "SFMono-Regular", "Microsoft JhengHei", monospace;
+  font-size: clamp(1.25rem, 2.8vw, 1.72rem);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
 }
 
 .goal-panel {
@@ -544,6 +573,132 @@ body.focus-mode .focus-exit:focus-visible {
   font: inherit;
 }
 
+.future-card {
+  grid-template-rows: auto 1fr;
+}
+
+.future-activity-field {
+  display: grid;
+  gap: 8px;
+  min-height: 0;
+  color: var(--ink);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.future-activity-field textarea {
+  width: 100%;
+  min-height: 148px;
+  resize: vertical;
+  padding: 12px;
+  border: var(--line-width) solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: clamp(1rem, 2.2vw, 1.18rem);
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+.future-activity-field textarea:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.news-card {
+  grid-template-rows: auto auto 1fr auto;
+}
+
+.news-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.news-actions {
+  display: flex;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.news-actions button,
+.news-actions a {
+  display: grid;
+  min-height: 32px;
+  padding: 0 10px;
+  place-items: center;
+  border: var(--line-width) solid var(--line);
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.news-sources {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.news-sources button {
+  min-height: 34px;
+  padding: 0 8px;
+  border-color: var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.news-sources button.active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 22%, var(--paper));
+}
+
+.news-list {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-height: 0;
+  margin: 0;
+  padding-left: 22px;
+  color: var(--ink);
+  font-size: clamp(0.92rem, 1.9vw, 1.05rem);
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.news-list li {
+  min-width: 0;
+}
+
+.news-list a {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--ink);
+  text-decoration: none;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.news-list a:hover,
+.news-list a:focus-visible {
+  text-decoration: underline;
+}
+
+.news-status {
+  min-height: 1.3em;
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.74rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
 .time-card .counter-actions {
   grid-template-columns: 1fr 1fr;
 }
@@ -873,6 +1028,17 @@ button:focus-visible {
   .device-shell {
     place-items: start center;
     padding: 14px;
+  }
+
+  .device-header {
+    grid-template-columns: 1fr;
+  }
+
+  .current-time {
+    justify-items: start;
+    width: 100%;
+    min-width: 0;
+    text-align: left;
   }
 
   .counter-grid {
