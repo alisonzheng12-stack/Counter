@@ -161,8 +161,8 @@ button {
 .counter-card {
   display: grid;
   grid-template-rows: auto minmax(82px, 1fr) auto auto;
-  gap: 18px;
-  min-height: 230px;
+  gap: 14px;
+  min-height: 270px;
   padding: 18px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -454,8 +454,12 @@ body.focus-mode .focus-exit:focus-visible {
 }
 
 .quick-actions button {
-  min-height: 36px;
-  font-size: 0.86rem;
+  min-height: 40px;
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 16%, var(--paper));
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 800;
 }
 
 .time-card .counter-actions {
