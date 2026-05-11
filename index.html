@@ -20,22 +20,22 @@
             <span>&#20170;&#26085;&#30446;&#27161;</span>
             <button id="goalResetBtn" type="button">&#28165;&#31354;</button>
           </div>
-          <div class="goal-grid">
-            <label>
-              <span>&#36984;&#25799;&#38988; <strong id="choiceGoalCongrats" hidden>&#24685;&#21916;!&#20170;&#26085;&#24050;&#36948;&#27161;</strong></span>
-              <input id="choiceGoalInput" type="number" min="0" step="1" inputmode="numeric" />
+          <div class="todo-grid">
+            <label class="todo-item">
+              <input class="todo-check" type="checkbox" data-todo-check="0" />
+              <input class="todo-text" type="text" data-todo-text="0" placeholder="&#36664;&#20837;&#20170;&#26085;&#35201;&#23436;&#25104;&#30340;&#20107;" />
             </label>
-            <label>
-              <span>&#30003;&#35542;&#38988; <strong id="essayGoalCongrats" hidden>&#24685;&#21916;!&#20170;&#26085;&#24050;&#36948;&#27161;</strong></span>
-              <input id="essayGoalInput" type="number" min="0" step="1" inputmode="numeric" />
+            <label class="todo-item">
+              <input class="todo-check" type="checkbox" data-todo-check="1" />
+              <input class="todo-text" type="text" data-todo-text="1" placeholder="&#36664;&#20837;&#20170;&#26085;&#35201;&#23436;&#25104;&#30340;&#20107;" />
             </label>
-            <label>
-              <span>&#37679;&#38988;&#35330;&#27491; <strong id="correctionGoalCongrats" hidden>&#24685;&#21916;!&#20170;&#26085;&#24050;&#36948;&#27161;</strong></span>
-              <input id="correctionGoalInput" type="number" min="0" step="1" inputmode="numeric" />
+            <label class="todo-item">
+              <input class="todo-check" type="checkbox" data-todo-check="2" />
+              <input class="todo-text" type="text" data-todo-text="2" placeholder="&#36664;&#20837;&#20170;&#26085;&#35201;&#23436;&#25104;&#30340;&#20107;" />
             </label>
-            <label>
-              <span>&#23416;&#32722;&#20998;&#37912; <strong id="timeGoalCongrats" hidden>&#24685;&#21916;!&#20170;&#26085;&#24050;&#36948;&#27161;</strong></span>
-              <input id="timeGoalInput" type="number" min="0" step="1" inputmode="numeric" />
+            <label class="todo-item">
+              <input class="todo-check" type="checkbox" data-todo-check="3" />
+              <input class="todo-text" type="text" data-todo-text="3" placeholder="&#36664;&#20837;&#20170;&#26085;&#35201;&#23436;&#25104;&#30340;&#20107;" />
             </label>
           </div>
         </section>
@@ -56,34 +56,34 @@
             </div>
           </article>
 
-          <article class="counter-card">
-            <span class="counter-label">&#30003;&#35542;&#38988;&#23436;&#25104;&#25976;</span>
-            <strong><span id="essayCount">0</span><small>&#38988;</small></strong>
-            <div class="quick-actions">
-              <button type="button" data-counter="essayCount" data-amount="10">+10</button>
-              <button type="button" data-counter="essayCount" data-amount="50">+50</button>
-              <button type="button" data-counter="essayCount" data-amount="100">+100</button>
+          <article class="counter-card level-card">
+            <span class="counter-label">&#31561;&#32026;&#33287;&#32147;&#39511;&#20540;</span>
+            <strong><small>Lv</small><span id="levelValue">1</span></strong>
+            <div class="xp-panel">
+              <span>EXP <b id="xpValue">0</b>/<b id="xpNeedValue">100</b></span>
+              <div class="xp-bar" aria-hidden="true"><i id="xpBar"></i></div>
             </div>
-            <div class="counter-actions">
-              <button id="essayMinusBtn" type="button" aria-label="&#30003;&#35542;&#38988;&#28187;&#23569;&#19968;&#38988;">-</button>
-              <button id="essayPlusBtn" type="button" aria-label="&#30003;&#35542;&#38988;&#22686;&#21152;&#19968;&#38988;">+</button>
-              <button id="essayResetBtn" type="button">&#27512;&#38646;</button>
-            </div>
+            <p class="xp-note">&#21097;&#39192;&#37679;&#38988;&#28187;&#23569;&#26178;&#33258;&#21205;&#29554;&#24471; EXP</p>
+            <button id="levelResetBtn" type="button">&#31561;&#32026;&#27512;&#38646;</button>
           </article>
 
           <article class="counter-card">
-            <span class="counter-label">&#37679;&#38988;&#35330;&#27491;&#25976;</span>
-            <strong><span id="correctionCount">0</span><small>&#38988;</small></strong>
+            <span class="counter-label">&#21097;&#39192;&#37679;&#38988;</span>
+            <strong><span id="remainingWrongCount">0</span><small>&#38988;</small></strong>
             <div class="quick-actions">
-              <button type="button" data-counter="correctionCount" data-amount="10">+10</button>
-              <button type="button" data-counter="correctionCount" data-amount="50">+50</button>
-              <button type="button" data-counter="correctionCount" data-amount="100">+100</button>
+              <button type="button" data-total-wrong="10">+10</button>
+              <button type="button" data-total-wrong="50">+50</button>
+              <button type="button" data-total-wrong="100">+100</button>
             </div>
             <div class="counter-actions">
-              <button id="correctionMinusBtn" type="button" aria-label="&#37679;&#38988;&#35330;&#27491;&#28187;&#23569;&#19968;&#38988;">-</button>
-              <button id="correctionPlusBtn" type="button" aria-label="&#37679;&#38988;&#35330;&#27491;&#22686;&#21152;&#19968;&#38988;">+</button>
-              <button id="correctionResetBtn" type="button">&#27512;&#38646;</button>
+              <button id="remainingWrongMinusBtn" type="button" aria-label="&#21097;&#39192;&#37679;&#38988;&#28187;&#23569;&#19968;&#38988;">-</button>
+              <button id="remainingWrongPlusBtn" type="button" aria-label="&#21097;&#39192;&#37679;&#38988;&#22686;&#21152;&#19968;&#38988;">+</button>
+              <button id="wrongResetBtn" type="button">&#27512;&#38646;</button>
             </div>
+            <label class="wrong-total-field">
+              <span>&#32047;&#31309;&#32317;&#37679;&#38988;</span>
+              <input id="totalWrongInput" type="number" min="0" step="1" inputmode="numeric" />
+            </label>
           </article>
 
           <article class="counter-card time-card">
@@ -195,6 +195,44 @@
         <span>&#26694;&#32218;</span>
         <select id="lineColorInput"></select>
       </label>
+      <label>
+        <span>&#31895;&#32048;</span>
+        <select id="lineWidthInput">
+          <option value="1px">1px</option>
+          <option value="2px">2px</option>
+          <option value="3px">3px</option>
+          <option value="4px">4px</option>
+        </select>
+      </label>
+      <label>
+        <span>&#26684;&#23376;</span>
+        <select id="paperColorInput"></select>
+      </label>
+      <label>
+        <span>&#20027;&#24213;</span>
+        <select id="timerColorInput"></select>
+      </label>
+      <div class="theme-memory" aria-label="theme memory slots">
+        <span>&#38928;&#35373;&#37197;&#33394;</span>
+        <div>
+          <button type="button" data-theme-preset="0">&#26085;&#31995;</button>
+          <button type="button" data-theme-preset="1">&#20219;&#22825;&#22530;&#39080;</button>
+          <button type="button" data-theme-preset="2">&#33258;&#28982;&#39080;</button>
+        </div>
+        <span>&#33258;&#35330;&#35352;&#25014;</span>
+        <div>
+          <button type="button" data-theme-save="0">&#23384; 1</button>
+          <button type="button" data-theme-load="0">&#21462; 1</button>
+        </div>
+        <div>
+          <button type="button" data-theme-save="1">&#23384; 2</button>
+          <button type="button" data-theme-load="1">&#21462; 2</button>
+        </div>
+        <div>
+          <button type="button" data-theme-save="2">&#23384; 3</button>
+          <button type="button" data-theme-load="2">&#21462; 3</button>
+        </div>
+      </div>
     </aside>
 
     <div id="bombOverlay" class="bomb-overlay" hidden role="alert" aria-live="assertive">

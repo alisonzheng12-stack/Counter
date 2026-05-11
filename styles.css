@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   color-scheme: light;
   --jp-font: "Yu Gothic", "Yu Mincho", "Hiragino Kaku Gothic ProN", "Hiragino Mincho ProN", "Noto Sans JP", "Noto Serif JP", "Meiryo", "Microsoft JhengHei", sans-serif;
   --bg: #f5f1ea;
@@ -7,7 +7,9 @@
   --ink: #2f2a24;
   --muted: #7a7167;
   --line: #d8d0c4;
+  --line-width: 1px;
   --accent: #6f8f72;
+  --panel-bg: rgba(255, 253, 248, 0.94);
   --accent-ink: #ffffff;
   --shadow: 0 18px 46px rgba(62, 53, 42, 0.09);
 }
@@ -38,20 +40,20 @@ button {
 .device-panel {
   width: min(1040px, 100%);
   padding: clamp(22px, 4vw, 42px);
-  border: 1px solid var(--line);
+  border: var(--line-width) solid var(--line);
   border-radius: 8px;
-  background: rgba(255, 253, 248, 0.94);
+  background: var(--panel-bg);
   box-shadow: var(--shadow);
 }
 
 .device-header {
   padding-bottom: 20px;
-  border-bottom: 1px solid var(--line);
+  border-bottom: var(--line-width) solid var(--line);
 }
 
 .device-header p {
   margin: 0 0 6px;
-  color: var(--muted);
+  color: var(--ink);
   font-size: 0.82rem;
   font-weight: 600;
   letter-spacing: 0;
@@ -68,7 +70,7 @@ button {
 .device-header h1 span {
   display: inline-block;
   margin-left: 10px;
-  color: var(--muted);
+  color: var(--ink);
   font-size: 0.52em;
   font-weight: 800;
   vertical-align: middle;
@@ -77,7 +79,7 @@ button {
 .device-header .tagline {
   max-width: 620px;
   margin: 10px 0 0;
-  color: var(--muted);
+  color: var(--ink);
   font-size: clamp(0.9rem, 2vw, 1.05rem);
   font-weight: 500;
   line-height: 1.6;
@@ -88,7 +90,7 @@ button {
   gap: 12px;
   margin-top: 22px;
   padding: 16px;
-  border: 1px solid var(--line);
+  border: var(--line-width) solid var(--line);
   border-radius: 8px;
   background: color-mix(in srgb, var(--paper) 88%, transparent);
 }
@@ -98,7 +100,7 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  color: var(--muted);
+  color: var(--ink);
   font-size: 0.9rem;
   font-weight: 700;
 }
@@ -108,47 +110,49 @@ button {
   padding: 0 12px;
 }
 
-.goal-grid {
+.todo-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
-.goal-grid label {
-  display: grid;
-  gap: 6px;
-  color: var(--muted);
-  font-size: 0.78rem;
-  font-weight: 600;
-}
-
-.goal-grid label > span {
+.todo-item {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.goal-grid strong {
-  color: var(--accent);
-  font-size: 0.74rem;
-  font-weight: 700;
-}
-
-.goal-grid strong[hidden] {
-  display: none;
-}
-
-.goal-grid input {
+  gap: 10px;
   min-width: 0;
-  height: 42px;
-  padding: 0 10px;
-  border: 1px solid var(--line);
-  border-radius: 6px;
+  padding: 10px;
+  border: var(--line-width) solid var(--line);
+  border-radius: 8px;
   background: var(--paper);
+}
+
+.todo-check {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  accent-color: var(--accent);
+}
+
+.todo-text {
+  min-width: 0;
+  width: 100%;
+  height: 42px;
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: var(--ink);
   font: inherit;
   font-size: 1rem;
+}
+
+.todo-text:focus {
+  outline: none;
+}
+
+.todo-item:has(.todo-check:checked) .todo-text {
+  color: var(--ink);
+  text-decoration: line-through;
 }
 
 .counter-grid {
@@ -164,13 +168,13 @@ button {
   gap: 14px;
   min-height: 270px;
   padding: 18px;
-  border: 1px solid var(--line);
+  border: var(--line-width) solid var(--line);
   border-radius: 8px;
   background: var(--paper);
 }
 
 .counter-label {
-  color: var(--muted);
+  color: var(--ink);
   font-size: 0.95rem;
   font-weight: 600;
 }
@@ -193,6 +197,8 @@ button {
   width: 100%;
   justify-content: center;
   gap: 6px;
+  padding: 14px 10px;
+  border-radius: 8px;
   font-size: clamp(1.72rem, 3vw, 2.72rem);
   letter-spacing: 0;
 }
@@ -213,7 +219,7 @@ button {
 .countdown-setting {
   display: grid;
   gap: 6px;
-  color: var(--muted);
+  color: var(--ink);
   font-size: 0.78rem;
   font-weight: 600;
 }
@@ -228,7 +234,7 @@ button {
   width: 100%;
   height: 38px;
   padding: 0 10px;
-  border: 1px solid var(--line);
+  border: var(--line-width) solid var(--line);
   border-radius: 6px;
   background: var(--paper);
   color: var(--ink);
@@ -244,7 +250,7 @@ button {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--muted);
+  color: var(--ink);
   font-size: 0.82rem;
   font-weight: 700;
 }
@@ -325,6 +331,8 @@ body.focus-mode .time-card .focus-toggle {
 
 body.focus-mode .time-card strong {
   grid-row: 2;
+  width: auto;
+  padding: clamp(18px, 3vw, 34px) clamp(24px, 5vw, 60px);
   font-size: clamp(4.2rem, 14vw, 11rem);
   font-weight: 800;
   line-height: 1;
@@ -435,9 +443,45 @@ body.focus-mode .focus-exit:focus-visible {
 }
 
 .counter-card small {
-  color: var(--muted);
+  color: var(--ink);
   font-size: 0.9rem;
   font-weight: 500;
+}
+
+.xp-panel {
+  display: grid;
+  gap: 8px;
+  color: var(--ink);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.xp-bar {
+  height: 10px;
+  overflow: hidden;
+  border: var(--line-width) solid var(--line);
+  border-radius: 999px;
+  background: var(--paper-soft);
+}
+
+.xp-bar i {
+  display: block;
+  width: 0%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+}
+
+.xp-note {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+#levelResetBtn {
+  min-height: 40px;
 }
 
 .counter-actions {
@@ -462,13 +506,32 @@ body.focus-mode .focus-exit:focus-visible {
   font-weight: 800;
 }
 
+.wrong-total-field {
+  display: grid;
+  gap: 6px;
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.wrong-total-field input {
+  width: 100%;
+  height: 42px;
+  padding: 0 10px;
+  border: var(--line-width) solid var(--line);
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+}
+
 .time-card .counter-actions {
   grid-template-columns: 1fr 1fr;
 }
 
 button {
   min-height: 42px;
-  border: 1px solid var(--line);
+  border: var(--line-width) solid var(--line);
   border-radius: 6px;
   background: var(--paper-soft);
   color: var(--ink);
@@ -497,7 +560,7 @@ button:focus-visible {
   gap: 12px;
   margin-top: 18px;
   padding-top: 18px;
-  border-top: 1px solid var(--line);
+  border-top: var(--line-width) solid var(--line);
 }
 
 #resetAllBtn {
@@ -506,13 +569,13 @@ button:focus-visible {
 
 #saveStatus {
   min-height: 1.4em;
-  color: var(--muted);
+  color: var(--ink);
   font-size: 0.85rem;
 }
 
 .reflection-panel {
   margin-top: 18px;
-  border: 1px solid var(--line);
+  border: var(--line-width) solid var(--line);
   border-radius: 8px;
   background: var(--paper);
   font-family: var(--jp-font);
@@ -537,7 +600,7 @@ button:focus-visible {
   gap: 10px;
   margin: 0;
   padding: 0 16px 16px 42px;
-  color: var(--muted);
+  color: var(--ink);
   font-size: clamp(1.15rem, 2.7vw, 1.5rem);
   font-weight: 800;
   line-height: 1.75;
@@ -557,7 +620,7 @@ button:focus-visible {
   display: grid;
   gap: 8px;
   padding: 16px;
-  border: 1px solid var(--line);
+  border: var(--line-width) solid var(--line);
   border-radius: 8px;
   background: color-mix(in srgb, var(--paper-soft) 72%, var(--paper));
 }
@@ -578,7 +641,7 @@ button:focus-visible {
 
 .reflection-list p {
   margin: 0;
-  color: var(--muted);
+  color: var(--ink);
   font-size: clamp(1.08rem, 2.5vw, 1.5rem);
   font-weight: 800;
   line-height: 1.75;
@@ -592,7 +655,7 @@ button:focus-visible {
   gap: 8px;
   width: 248px;
   padding: 12px;
-  border: 1px solid var(--line);
+  border: var(--line-width) solid var(--line);
   border-radius: 8px;
   background: rgba(255, 253, 248, 0.92);
   box-shadow: 0 12px 28px rgba(62, 53, 42, 0.1);
@@ -612,6 +675,10 @@ button:focus-visible {
 }
 
 .theme-control.collapsed label {
+  display: none;
+}
+
+.theme-control.collapsed .theme-memory {
   display: none;
 }
 
@@ -643,7 +710,7 @@ button:focus-visible {
   grid-template-columns: 44px minmax(0, 1fr);
   align-items: center;
   gap: 8px;
-  color: var(--muted);
+  color: var(--ink);
   font-size: 0.78rem;
   font-weight: 600;
 }
@@ -652,13 +719,52 @@ button:focus-visible {
   min-width: 0;
   height: 34px;
   padding: 0 8px;
-  border: 1px solid var(--line);
+  border: var(--line-width) solid var(--line);
   border-radius: 6px;
   background: var(--paper);
   color: var(--ink);
   cursor: pointer;
   font: inherit;
   font-size: 0.74rem;
+}
+
+.theme-memory {
+  display: grid;
+  gap: 6px;
+  padding-top: 6px;
+  border-top: var(--line-width) solid var(--line);
+}
+
+.theme-memory > span {
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.theme-memory div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.theme-memory div:first-of-type {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.theme-memory button {
+  min-height: 32px;
+  font-size: 0.76rem;
+}
+
+.theme-memory button.filled {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 18%, var(--paper));
+  font-weight: 800;
+}
+
+.theme-memory button:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
 }
 
 .bomb-overlay {
@@ -681,7 +787,7 @@ button:focus-visible {
   gap: 12px;
   width: min(360px, 100%);
   padding: 28px;
-  border: 1px solid var(--line);
+  border: var(--line-width) solid var(--line);
   border-radius: 10px;
   background: var(--paper);
   color: var(--ink);
@@ -702,7 +808,7 @@ button:focus-visible {
 }
 
 .bomb-card span {
-  color: var(--muted);
+  color: var(--ink);
   line-height: 1.6;
 }
 
@@ -739,7 +845,7 @@ button:focus-visible {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .goal-grid {
+  .todo-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -758,7 +864,7 @@ button:focus-visible {
     min-height: 190px;
   }
 
-  .goal-grid {
+  .todo-grid {
     grid-template-columns: 1fr;
   }
 
@@ -773,7 +879,13 @@ button:focus-visible {
     grid-column: 1 / -1;
   }
 
+  .theme-memory {
+    grid-column: 1 / -1;
+  }
+
   .theme-control label {
     grid-template-columns: 1fr;
   }
 }
+
+

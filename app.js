@@ -1,45 +1,110 @@
 const storageKey = "minimal-study-counter-v1";
 const themeStorageKey = "minimal-study-counter-theme-v1";
 const themeCollapsedStorageKey = "minimal-study-counter-theme-collapsed";
+const themeMemoryStorageKey = "minimal-study-counter-theme-memory-v1";
+const themeMemoryBundleVersionKey = "minimal-study-counter-theme-memory-bundle-20260511";
 const defaultTheme = {
   bg: "#FCFAF2",
   text: "#1C1C1C",
   line: "#B4A582",
+  lineWidth: "1px",
+  paper: "#FFFFFB",
+  timer: "#FFFFFB",
 };
+const themeSlotNames = ["\u65e5\u7cfb", "\u4efb\u5929\u5802\u98a8", "\u81ea\u7136\u98a8"];
+const defaultThemeMemory = [
+  {
+    bg: "#FCFAF2",
+    text: "#1C1C1C",
+    line: "#B4A582",
+    lineWidth: "1px",
+    paper: "#FFFFFB",
+    timer: "#FFFFFB",
+  },
+  {
+    bg: "#81C7D4",
+    text: "#1C1C1C",
+    line: "#CB1B45",
+    lineWidth: "3px",
+    paper: "#F9BF45",
+    timer: "#FFFFFB",
+  },
+  {
+    bg: "#86C166",
+    text: "#1C1C1C",
+    line: "#1B813E",
+    lineWidth: "2px",
+    paper: "#FCFAF2",
+    timer: "#B4A582",
+  },
+];
+const bundledCustomThemeMemory = [
+  {
+    bg: "#FCFAF2",
+    text: "#D7C4BB",
+    line: "#B4A582",
+    lineWidth: "3px",
+    paper: "#4D5139",
+    timer: "#6C6024",
+  },
+  {
+    bg: "#91989F",
+    text: "#F75C2F",
+    line: "#08192D",
+    lineWidth: "3px",
+    paper: "#4D5139",
+    timer: "#6E552F",
+  },
+  {
+    bg: "#86C166",
+    text: "#1C1C1C",
+    line: "#1B813E",
+    lineWidth: "2px",
+    paper: "#FCFAF2",
+    timer: "#B4A582",
+  },
+];
 
 const state = {
   choiceCount: 0,
-  essayCount: 0,
-  correctionCount: 0,
+  level: 1,
+  xp: 0,
+  remainingWrongCount: 0,
+  totalWrongCount: 0,
   completedStudyMinutes: 0,
   countdownMinutes: 25,
   remainingMs: 25 * 60 * 1000,
   startedAt: null,
   active: false,
   goals: {
-    choice: "",
-    essay: "",
-    correction: "",
-    minutes: "",
+    todos: [
+      { text: "", done: false },
+      { text: "", done: false },
+      { text: "", done: false },
+      { text: "", done: false },
+    ],
   },
 };
 
 const els = {
   choiceCount: document.querySelector("#choiceCount"),
-  essayCount: document.querySelector("#essayCount"),
-  correctionCount: document.querySelector("#correctionCount"),
+  levelValue: document.querySelector("#levelValue"),
+  xpValue: document.querySelector("#xpValue"),
+  xpNeedValue: document.querySelector("#xpNeedValue"),
+  xpBar: document.querySelector("#xpBar"),
+  remainingWrongCount: document.querySelector("#remainingWrongCount"),
+  totalWrongInput: document.querySelector("#totalWrongInput"),
   studyTime: document.querySelector("#studyTime"),
   saveStatus: document.querySelector("#saveStatus"),
   choiceMinusBtn: document.querySelector("#choiceMinusBtn"),
   choicePlusBtn: document.querySelector("#choicePlusBtn"),
   choiceResetBtn: document.querySelector("#choiceResetBtn"),
-  essayMinusBtn: document.querySelector("#essayMinusBtn"),
-  essayPlusBtn: document.querySelector("#essayPlusBtn"),
-  essayResetBtn: document.querySelector("#essayResetBtn"),
-  correctionMinusBtn: document.querySelector("#correctionMinusBtn"),
-  correctionPlusBtn: document.querySelector("#correctionPlusBtn"),
-  correctionResetBtn: document.querySelector("#correctionResetBtn"),
-  quickActionBtns: document.querySelectorAll(".quick-actions button"),
+  levelResetBtn: document.querySelector("#levelResetBtn"),
+  remainingWrongMinusBtn: document.querySelector("#remainingWrongMinusBtn"),
+  remainingWrongPlusBtn: document.querySelector("#remainingWrongPlusBtn"),
+  wrongResetBtn: document.querySelector("#wrongResetBtn"),
+  quickActionBtns: document.querySelectorAll(".quick-actions button[data-counter]"),
+  totalWrongBtns: document.querySelectorAll("[data-total-wrong]"),
   countdownMinutesInput: document.querySelector("#countdownMinutesInput"),
   countdownSetBtn: document.querySelector("#countdownSetBtn"),
   focusModeInput: document.querySelector("#focusModeInput"),
@@ -49,18 +114,18 @@ const els = {
   resetAllBtn: document.querySelector("#resetAllBtn"),
   bombOverlay: document.querySelector("#bombOverlay"),
   bombCloseBtn: document.querySelector("#bombCloseBtn"),
-  choiceGoalCongrats: document.querySelector("#choiceGoalCongrats"),
-  essayGoalCongrats: document.querySelector("#essayGoalCongrats"),
-  correctionGoalCongrats: document.querySelector("#correctionGoalCongrats"),
-  timeGoalCongrats: document.querySelector("#timeGoalCongrats"),
   goalResetBtn: document.querySelector("#goalResetBtn"),
-  choiceGoalInput: document.querySelector("#choiceGoalInput"),
-  essayGoalInput: document.querySelector("#essayGoalInput"),
-  correctionGoalInput: document.querySelector("#correctionGoalInput"),
-  timeGoalInput: document.querySelector("#timeGoalInput"),
+  todoChecks: document.querySelectorAll("[data-todo-check]"),
+  todoTexts: document.querySelectorAll("[data-todo-text]"),
   bgColorInput: document.querySelector("#bgColorInput"),
   textColorInput: document.querySelector("#textColorInput"),
   lineColorInput: document.querySelector("#lineColorInput"),
+  lineWidthInput: document.querySelector("#lineWidthInput"),
+  paperColorInput: document.querySelector("#paperColorInput"),
+  timerColorInput: document.querySelector("#timerColorInput"),
+  themePresetBtns: document.querySelectorAll("[data-theme-preset]"),
+  themeSaveBtns: document.querySelectorAll("[data-theme-save]"),
+  themeLoadBtns: document.querySelectorAll("[data-theme-load]"),
   themeControl: document.querySelector(".theme-control"),
   themeToggleBtn: document.querySelector("#themeToggleBtn"),
 };
@@ -70,8 +135,13 @@ function load() {
     const saved = JSON.parse(localStorage.getItem(storageKey));
     if (!saved || typeof saved !== "object") return;
     state.choiceCount = Math.max(0, Number.parseInt(saved.choiceCount, 10) || 0);
-    state.essayCount = Math.max(0, Number.parseInt(saved.essayCount, 10) || 0);
-    state.correctionCount = Math.max(0, Number.parseInt(saved.correctionCount, 10) || 0);
+    state.level = Math.max(1, Number.parseInt(saved.level, 10) || 1);
+    state.xp = Math.max(0, Number.parseInt(saved.xp, 10) || Number.parseInt(saved.essayCount, 10) || 0);
+    normalizeLevel();
+    const oldCorrectionCount = Math.max(0, Number.parseInt(saved.correctionCount, 10) || 0);
+    state.totalWrongCount = Math.max(0, Number.parseInt(saved.totalWrongCount, 10) || oldCorrectionCount);
+    state.remainingWrongCount = Math.max(0, Number.parseInt(saved.remainingWrongCount, 10) || oldCorrectionCount);
+    state.remainingWrongCount = Math.min(state.remainingWrongCount, state.totalWrongCount);
     state.completedStudyMinutes = Math.max(
       0,
       Number.parseInt(saved.completedStudyMinutes, 10) || Math.floor((Number.parseInt(saved.accumulatedMs, 10) || 0) / 60000),
@@ -84,9 +154,18 @@ function load() {
       ...state.goals,
       ...(saved.goals && typeof saved.goals === "object" ? saved.goals : {}),
     };
+    state.goals.todos = normalizeTodos(state.goals.todos);
   } catch {
     return;
   }
+}
+
+function normalizeTodos(todos) {
+  const list = Array.isArray(todos) ? todos : [];
+  return Array.from({ length: 4 }, (_, index) => ({
+    text: String(list[index]?.text ?? ""),
+    done: Boolean(list[index]?.done),
+  }));
 }
 
 function currentRemainingMs() {
@@ -116,6 +195,9 @@ function sanitizeTheme(theme) {
     bg: values.has(String(theme.bg).toLowerCase()) ? theme.bg : defaultTheme.bg,
     text: values.has(String(theme.text).toLowerCase()) ? theme.text : defaultTheme.text,
     line: values.has(String(theme.line).toLowerCase()) ? theme.line : defaultTheme.line,
+    lineWidth: ["1px", "2px", "3px", "4px"].includes(theme.lineWidth) ? theme.lineWidth : defaultTheme.lineWidth,
+    paper: values.has(String(theme.paper).toLowerCase()) ? theme.paper : defaultTheme.paper,
+    timer: values.has(String(theme.timer).toLowerCase()) ? theme.timer : defaultTheme.timer,
   };
 }
 
@@ -141,25 +223,53 @@ function populateThemeControls(theme) {
   populateColorSelect(els.bgColorInput, theme.bg);
   populateColorSelect(els.textColorInput, theme.text);
   populateColorSelect(els.lineColorInput, theme.line);
+  els.lineWidthInput.value = theme.lineWidth;
+  populateColorSelect(els.paperColorInput, theme.paper);
+  populateColorSelect(els.timerColorInput, theme.timer);
 }
 
 function applyTheme(theme) {
   document.documentElement.style.setProperty("--bg", theme.bg);
   document.documentElement.style.setProperty("--ink", theme.text);
   document.documentElement.style.setProperty("--line", theme.line);
+  document.documentElement.style.setProperty("--line-width", theme.lineWidth);
+  document.documentElement.style.setProperty("--paper", theme.paper);
+  document.documentElement.style.setProperty("--paper-soft", mixHex(theme.paper, theme.line, 0.16));
+  document.documentElement.style.setProperty("--panel-bg", theme.timer);
   els.bgColorInput.style.borderLeft = `18px solid ${theme.bg}`;
   els.textColorInput.style.borderLeft = `18px solid ${theme.text}`;
   els.lineColorInput.style.borderLeft = `18px solid ${theme.line}`;
+  els.paperColorInput.style.borderLeft = `18px solid ${theme.paper}`;
+  els.timerColorInput.style.borderLeft = `18px solid ${theme.timer}`;
 }
 
 function saveTheme() {
-  const theme = {
+  const theme = currentThemeFromInputs();
+  localStorage.setItem(themeStorageKey, JSON.stringify(theme));
+  applyTheme(theme);
+}
+
+function currentThemeFromInputs() {
+  return {
     bg: els.bgColorInput.value,
     text: els.textColorInput.value,
     line: els.lineColorInput.value,
+    lineWidth: els.lineWidthInput.value,
+    paper: els.paperColorInput.value,
+    timer: els.timerColorInput.value,
   };
-  localStorage.setItem(themeStorageKey, JSON.stringify(theme));
-  applyTheme(theme);
+}
+
+function mixHex(hexA, hexB, ratio) {
+  const a = parseHex(hexA);
+  const b = parseHex(hexB);
+  const mixed = a.map((channel, index) => Math.round(channel * (1 - ratio) + b[index] * ratio));
+  return `#${mixed.map((channel) => channel.toString(16).padStart(2, "0")).join("")}`;
+}
+
+function parseHex(hex) {
+  const value = String(hex).replace("#", "");
+  return [0, 2, 4].map((start) => Number.parseInt(value.slice(start, start + 2), 16) || 0);
 }
 
 function setThemeCollapsed(collapsed) {
@@ -169,6 +279,81 @@ function setThemeCollapsed(collapsed) {
     collapsed ? "\u5c55\u958b\u8272\u5f69\u8a2d\u5b9a" : "\u6536\u5408\u8272\u5f69\u8a2d\u5b9a",
   );
   localStorage.setItem(themeCollapsedStorageKey, collapsed ? "1" : "0");
+}
+
+function loadThemeMemory() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(themeMemoryStorageKey));
+    return Array.isArray(saved) ? saved : bundledCustomThemeMemory;
+  } catch {
+    return bundledCustomThemeMemory;
+  }
+}
+
+function saveThemeMemory(slots) {
+  localStorage.setItem(themeMemoryStorageKey, JSON.stringify(slots.slice(0, 3)));
+}
+
+function seedBundledThemeMemory() {
+  if (localStorage.getItem(themeMemoryBundleVersionKey) === "1") return;
+  saveThemeMemory(bundledCustomThemeMemory);
+  localStorage.setItem(themeMemoryBundleVersionKey, "1");
+}
+
+function renderThemeMemoryButtons() {
+  const slots = loadThemeMemory();
+  els.themeSaveBtns.forEach((button, index) => {
+    button.textContent = slots[index] ? `\u2713 \u5df2\u5b58 ${index + 1}` : `\u5b58 ${index + 1}`;
+    button.classList.toggle("filled", Boolean(slots[index]));
+  });
+  els.themeLoadBtns.forEach((button, index) => {
+    button.textContent = `\u53d6 ${index + 1}`;
+    button.disabled = !slots[index];
+  });
+}
+
+function applyThemePreset(index) {
+  const theme = sanitizeTheme(defaultThemeMemory[index]);
+  localStorage.setItem(themeStorageKey, JSON.stringify(theme));
+  populateThemeControls(theme);
+  applyTheme(theme);
+  flashThemeButton(els.themePresetBtns[index], `\u5df2\u53d6 ${themeSlotNames[index]}`);
+  showSaved();
+}
+
+function saveThemeSlot(index) {
+  const slots = loadThemeMemory();
+  if (slots[index] && !window.confirm(`\u78ba\u5b9a\u8981\u8986\u84cb\u81ea\u8a02 ${index + 1} \u7684\u914d\u8272\u55ce\uff1f`)) {
+    return;
+  }
+  slots[index] = currentThemeFromInputs();
+  saveThemeMemory(slots);
+  renderThemeMemoryButtons();
+  flashThemeButton(els.themeSaveBtns[index], `\u5df2\u5b58 ${index + 1}`);
+  showSaved();
+}
+
+function loadThemeSlot(index) {
+  const slots = loadThemeMemory();
+  if (!slots[index]) {
+    flashThemeButton(els.themeLoadBtns[index], "\u7121\u8a18\u9304");
+    return;
+  }
+  const theme = sanitizeTheme(slots[index]);
+  localStorage.setItem(themeStorageKey, JSON.stringify(theme));
+  populateThemeControls(theme);
+  applyTheme(theme);
+  flashThemeButton(els.themeLoadBtns[index], `\u5df2\u53d6 ${index + 1}`);
+  showSaved();
+}
+
+function flashThemeButton(button, text) {
+  const original = button.textContent;
+  button.textContent = text;
+  window.clearTimeout(button.flashTimer);
+  button.flashTimer = window.setTimeout(() => {
+    renderThemeMemoryButtons();
+  }, 950);
 }
 
 function showSaved() {
@@ -190,57 +375,57 @@ function formatTime(ms) {
   return [minutes, seconds].map((value) => String(value).padStart(2, "0")).join(":");
 }
 
+function xpNeed() {
+  return state.level * 100;
+}
+
+function normalizeLevel() {
+  while (state.xp >= xpNeed()) {
+    state.xp -= xpNeed();
+    state.level += 1;
+  }
+}
+
 function render() {
   els.choiceCount.textContent = state.choiceCount;
-  els.essayCount.textContent = state.essayCount;
-  els.correctionCount.textContent = state.correctionCount;
+  els.levelValue.textContent = state.level;
+  els.xpValue.textContent = state.xp;
+  els.xpNeedValue.textContent = xpNeed();
+  els.xpBar.style.width = `${Math.min(100, (state.xp / xpNeed()) * 100)}%`;
+  els.remainingWrongCount.textContent = state.remainingWrongCount;
+  if (document.activeElement !== els.totalWrongInput) {
+    els.totalWrongInput.value = state.totalWrongCount;
+  }
   els.studyTime.textContent = formatTime(currentRemainingMs());
   if (document.activeElement !== els.countdownMinutesInput) {
     els.countdownMinutesInput.value = state.countdownMinutes;
   }
   els.timerToggleBtn.textContent = state.active ? "\u66ab\u505c" : "\u958b\u59cb";
-  els.choiceGoalInput.value = state.goals.choice;
-  els.essayGoalInput.value = state.goals.essay;
-  els.correctionGoalInput.value = state.goals.correction;
-  els.timeGoalInput.value = state.goals.minutes;
-  renderGoalStatus();
+  renderTodos();
 }
 
-function numericGoal(value) {
-  const parsed = Number.parseInt(value, 10);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
-}
-
-function renderGoalStatus() {
-  const statuses = [
-    [els.choiceGoalCongrats, numericGoal(state.goals.choice), state.choiceCount],
-    [els.essayGoalCongrats, numericGoal(state.goals.essay), state.essayCount],
-    [els.correctionGoalCongrats, numericGoal(state.goals.correction), state.correctionCount],
-    [els.timeGoalCongrats, numericGoal(state.goals.minutes), state.completedStudyMinutes],
-  ];
-
-  statuses.forEach(([element, goal, current]) => {
-    element.hidden = !(goal !== null && current >= goal);
+function renderTodos() {
+  els.todoChecks.forEach((input, index) => {
+    input.checked = Boolean(state.goals.todos[index]?.done);
+  });
+  els.todoTexts.forEach((input, index) => {
+    if (document.activeElement !== input) {
+      input.value = state.goals.todos[index]?.text ?? "";
+    }
   });
 }
 
-function saveGoals() {
-  state.goals = {
-    choice: els.choiceGoalInput.value,
-    essay: els.essayGoalInput.value,
-    correction: els.correctionGoalInput.value,
-    minutes: els.timeGoalInput.value,
-  };
+function saveTodos() {
+  state.goals.todos = Array.from({ length: 4 }, (_, index) => ({
+    text: els.todoTexts[index].value,
+    done: els.todoChecks[index].checked,
+  }));
   save();
-  renderGoalStatus();
 }
 
 function resetGoals() {
   state.goals = {
-    choice: "",
-    essay: "",
-    correction: "",
-    minutes: "",
+    todos: normalizeTodos([]),
   };
   save();
   render();
@@ -254,6 +439,45 @@ function adjustCounter(key, delta) {
 
 function resetCounter(key) {
   state[key] = 0;
+  save();
+  render();
+}
+
+function resetLevel() {
+  state.level = 1;
+  state.xp = 0;
+  save();
+  render();
+}
+
+function adjustRemainingWrong(delta) {
+  const previous = state.remainingWrongCount;
+  state.remainingWrongCount = Math.max(0, Math.min(state.totalWrongCount, state.remainingWrongCount + delta));
+  const corrected = Math.max(0, previous - state.remainingWrongCount);
+  if (corrected > 0) {
+    state.xp += corrected * 10;
+    normalizeLevel();
+  }
+  save();
+  render();
+}
+
+function setTotalWrong(nextTotal) {
+  const normalizedTotal = Math.max(0, Number.parseInt(nextTotal, 10) || 0);
+  const delta = normalizedTotal - state.totalWrongCount;
+  state.totalWrongCount = normalizedTotal;
+  state.remainingWrongCount = Math.max(0, Math.min(state.totalWrongCount, state.remainingWrongCount + delta));
+  save();
+  render();
+}
+
+function addTotalWrong(amount) {
+  setTotalWrong(state.totalWrongCount + amount);
+}
+
+function resetWrongCounts() {
+  state.remainingWrongCount = 0;
+  state.totalWrongCount = 0;
   save();
   render();
 }
@@ -374,8 +598,10 @@ function playExplosionSound() {
 
 function resetAll() {
   state.choiceCount = 0;
-  state.essayCount = 0;
-  state.correctionCount = 0;
+  state.level = 1;
+  state.xp = 0;
+  state.remainingWrongCount = 0;
+  state.totalWrongCount = 0;
   state.completedStudyMinutes = 0;
   state.remainingMs = state.countdownMinutes * 60 * 1000;
   state.startedAt = state.active ? Date.now() : null;
@@ -386,14 +612,22 @@ function resetAll() {
 els.choiceMinusBtn.addEventListener("click", () => adjustCounter("choiceCount", -1));
 els.choicePlusBtn.addEventListener("click", () => adjustCounter("choiceCount", 1));
 els.choiceResetBtn.addEventListener("click", () => resetCounter("choiceCount"));
-els.essayMinusBtn.addEventListener("click", () => adjustCounter("essayCount", -1));
-els.essayPlusBtn.addEventListener("click", () => adjustCounter("essayCount", 1));
-els.essayResetBtn.addEventListener("click", () => resetCounter("essayCount"));
-els.correctionMinusBtn.addEventListener("click", () => adjustCounter("correctionCount", -1));
-els.correctionPlusBtn.addEventListener("click", () => adjustCounter("correctionCount", 1));
-els.correctionResetBtn.addEventListener("click", () => resetCounter("correctionCount"));
+els.levelResetBtn.addEventListener("click", resetLevel);
+els.remainingWrongMinusBtn.addEventListener("click", () => adjustRemainingWrong(-1));
+els.remainingWrongPlusBtn.addEventListener("click", () => adjustRemainingWrong(1));
+els.wrongResetBtn.addEventListener("click", resetWrongCounts);
 els.quickActionBtns.forEach((button) => {
   button.addEventListener("click", () => adjustCounter(button.dataset.counter, Number.parseInt(button.dataset.amount, 10) || 0));
+});
+els.totalWrongBtns.forEach((button) => {
+  button.addEventListener("click", () => addTotalWrong(Number.parseInt(button.dataset.totalWrong, 10) || 0));
+});
+els.totalWrongInput.addEventListener("change", () => setTotalWrong(els.totalWrongInput.value));
+els.totalWrongInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    setTotalWrong(els.totalWrongInput.value);
+  }
 });
 els.countdownSetBtn.addEventListener("click", updateCountdownSetting);
 els.countdownMinutesInput.addEventListener("keydown", (event) => {
@@ -414,19 +648,31 @@ els.timerResetBtn.addEventListener("click", resetTimer);
 els.resetAllBtn.addEventListener("click", resetAll);
 els.bombCloseBtn.addEventListener("click", hideBomb);
 els.goalResetBtn.addEventListener("click", resetGoals);
-els.choiceGoalInput.addEventListener("input", saveGoals);
-els.essayGoalInput.addEventListener("input", saveGoals);
-els.correctionGoalInput.addEventListener("input", saveGoals);
-els.timeGoalInput.addEventListener("input", saveGoals);
+els.todoChecks.forEach((input) => input.addEventListener("change", saveTodos));
+els.todoTexts.forEach((input) => input.addEventListener("input", saveTodos));
 els.bgColorInput.addEventListener("change", saveTheme);
 els.textColorInput.addEventListener("change", saveTheme);
 els.lineColorInput.addEventListener("change", saveTheme);
+els.lineWidthInput.addEventListener("change", saveTheme);
+els.paperColorInput.addEventListener("change", saveTheme);
+els.timerColorInput.addEventListener("change", saveTheme);
+els.themePresetBtns.forEach((button) => {
+  button.addEventListener("click", () => applyThemePreset(Number.parseInt(button.dataset.themePreset, 10) || 0));
+});
+els.themeSaveBtns.forEach((button) => {
+  button.addEventListener("click", () => saveThemeSlot(Number.parseInt(button.dataset.themeSave, 10) || 0));
+});
+els.themeLoadBtns.forEach((button) => {
+  button.addEventListener("click", () => loadThemeSlot(Number.parseInt(button.dataset.themeLoad, 10) || 0));
+});
 els.themeToggleBtn.addEventListener("click", () => setThemeCollapsed(!els.themeControl.classList.contains("collapsed")));
 
 load();
 const theme = loadTheme();
 populateThemeControls(theme);
 applyTheme(theme);
+seedBundledThemeMemory();
+renderThemeMemoryButtons();
 setThemeCollapsed(localStorage.getItem(themeCollapsedStorageKey) === "1");
 render();
 window.setInterval(() => {
