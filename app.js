@@ -39,6 +39,7 @@ const els = {
   correctionMinusBtn: document.querySelector("#correctionMinusBtn"),
   correctionPlusBtn: document.querySelector("#correctionPlusBtn"),
   correctionResetBtn: document.querySelector("#correctionResetBtn"),
+  quickActionBtns: document.querySelectorAll(".quick-actions button"),
   countdownMinutesInput: document.querySelector("#countdownMinutesInput"),
   countdownSetBtn: document.querySelector("#countdownSetBtn"),
   focusModeInput: document.querySelector("#focusModeInput"),
@@ -391,6 +392,9 @@ els.essayResetBtn.addEventListener("click", () => resetCounter("essayCount"));
 els.correctionMinusBtn.addEventListener("click", () => adjustCounter("correctionCount", -1));
 els.correctionPlusBtn.addEventListener("click", () => adjustCounter("correctionCount", 1));
 els.correctionResetBtn.addEventListener("click", () => resetCounter("correctionCount"));
+els.quickActionBtns.forEach((button) => {
+  button.addEventListener("click", () => adjustCounter(button.dataset.counter, Number.parseInt(button.dataset.amount, 10) || 0));
+});
 els.countdownSetBtn.addEventListener("click", updateCountdownSetting);
 els.countdownMinutesInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
