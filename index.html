@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>&#20320;&#33021;&#20570;&#21040;</title>
-    <link rel="stylesheet" href="styles.css?v=20260512-11" />
+    <link rel="stylesheet" href="styles.css?v=20260512-14" />
   </head>
   <body>
     <main class="device-shell">
@@ -19,6 +19,15 @@
             <span>&#29694;&#22312;&#26178;&#38291;</span>
             <b id="currentTime">--:--:--</b>
           </div>
+          <label class="language-control">
+            <span>&#35486;&#35328;</span>
+            <select id="languageSelect">
+              <option value="zh">中文</option>
+              <option value="en">English</option>
+              <option value="de">Deutsch</option>
+              <option value="ja">日本語</option>
+            </select>
+          </label>
         </header>
 
         <section class="goal-panel" aria-label="today goals">
@@ -59,7 +68,7 @@
             <strong><span id="studyTime">25:00</span></strong>
             <p class="focus-total">
               <span>&#24050;&#32047;&#31309;&#23560;&#27880;&#26178;&#38291;</span>
-              <b><span id="focusTotalMinutes">0</span> &#20998;&#37912;</b>
+              <b><span id="focusTotalMinutes">0</span> <span id="focusTotalUnit">&#20998;&#37912;</span></b>
             </p>
             <div class="running-cat-image" aria-hidden="true">
               <span class="cat-photo-base"></span>
@@ -247,7 +256,7 @@
       </div>
     </div>
 
-    <script src="nippon-colors.js?v=20260512-11"></script>
-    <script src="app.js?v=20260512-11"></script>
+    <script src="nippon-colors.js?v=20260512-14"></script>
+    <script src="app.js?v=20260512-14"></script>
   </body>
 </html>

@@ -28,6 +28,8 @@ body {
 
 button {
   font: inherit;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .device-shell {
@@ -48,7 +50,7 @@ button {
 
 .device-header {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   gap: 18px;
   align-items: start;
   padding-bottom: 20px;
@@ -112,6 +114,25 @@ button {
   font-size: clamp(1.25rem, 2.8vw, 1.72rem);
   font-variant-numeric: tabular-nums;
   line-height: 1;
+}
+
+.language-control {
+  display: grid;
+  gap: 4px;
+  min-width: 124px;
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.language-control select {
+  height: 40px;
+  padding: 0 10px;
+  border: var(--line-width) solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
 }
 
 .goal-panel {
@@ -207,6 +228,8 @@ button {
   color: var(--ink);
   font-size: 0.95rem;
   font-weight: 600;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .counter-card strong {
@@ -254,6 +277,7 @@ button {
   font-size: clamp(0.92rem, 2vw, 1.08rem);
   font-weight: 800;
   line-height: 1.4;
+  overflow-wrap: anywhere;
   text-align: center;
 }
 
@@ -269,11 +293,13 @@ button {
   color: var(--ink);
   font-size: 0.78rem;
   font-weight: 600;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
 }
 
 .countdown-setting div {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) minmax(56px, auto);
   gap: 8px;
 }
 
@@ -300,6 +326,8 @@ button {
   color: var(--ink);
   font-size: 0.82rem;
   font-weight: 700;
+  min-width: 0;
+  line-height: 1.3;
 }
 
 .focus-toggle input {
@@ -530,6 +558,7 @@ body.focus-mode .focus-exit:focus-visible {
 
 #levelResetBtn {
   min-height: 40px;
+  padding: 4px 10px;
 }
 
 .counter-actions {
@@ -611,9 +640,9 @@ body.focus-mode .focus-exit:focus-visible {
 }
 
 .news-head {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
   gap: 10px;
 }
 
@@ -621,13 +650,14 @@ body.focus-mode .focus-exit:focus-visible {
   display: flex;
   gap: 6px;
   flex: 0 0 auto;
+  min-width: 0;
 }
 
 .news-actions button,
 .news-actions a {
   display: grid;
   min-height: 32px;
-  padding: 0 10px;
+  padding: 4px 8px;
   place-items: center;
   border: var(--line-width) solid var(--line);
   border-radius: 6px;
@@ -635,6 +665,7 @@ body.focus-mode .focus-exit:focus-visible {
   color: var(--ink);
   font-size: 0.76rem;
   font-weight: 800;
+  line-height: 1.15;
   text-decoration: none;
 }
 
@@ -711,6 +742,7 @@ button {
   color: var(--ink);
   cursor: pointer;
   font-weight: 600;
+  line-height: 1.2;
 }
 
 button:hover,
@@ -739,6 +771,7 @@ button:focus-visible {
 
 #resetAllBtn {
   padding: 0 18px;
+  max-width: 100%;
 }
 
 #saveStatus {
@@ -1034,7 +1067,8 @@ button:focus-visible {
     grid-template-columns: 1fr;
   }
 
-  .current-time {
+  .current-time,
+  .language-control {
     justify-items: start;
     width: 100%;
     min-width: 0;

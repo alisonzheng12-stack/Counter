@@ -4,6 +4,7 @@ const themeCollapsedStorageKey = "minimal-study-counter-theme-collapsed";
 const themeMemoryStorageKey = "minimal-study-counter-theme-memory-v1";
 const themeMemoryBundleVersionKey = "minimal-study-counter-theme-memory-bundle-20260511-2";
 const newsSourceStorageKey = "minimal-study-counter-news-source-v1";
+const languageStorageKey = "minimal-study-counter-language-v1";
 const newsSources = {
   tw: {
     label: "TW",
@@ -25,6 +26,266 @@ const newsSources = {
   },
 };
 let sharedAudio = null;
+const translatedPresetNames = {
+  zh: ["日系", "任天堂風", "自然風", "夏日清霜"],
+  en: ["Japanese", "Nintendo", "Nature", "Summer Frost"],
+  de: ["Japanisch", "Nintendo", "Natur", "Sommerfrost"],
+  ja: ["和風", "任天堂風", "自然風", "夏の霜"],
+};
+const translations = {
+  zh: {
+    htmlLang: "zh-Hant",
+    title: "你能做到",
+    brand: "你能做到 <span>あなたならできる</span>",
+    currentTime: "現在時間",
+    language: "語言",
+    todayGoals: "今日目標",
+    clear: "清空",
+    todoPlaceholder: "輸入今日要完成的事",
+    countdown: "倒數時間",
+    setMinutes: "設定分鐘",
+    set: "設置",
+    focusTotal: "已累積專注時間",
+    minuteUnit: "分鐘",
+    focusMode: "專注模式",
+    exit: "退出",
+    start: "開始",
+    pause: "暫停",
+    reset: "歸零",
+    level: "等級與經驗值",
+    xpNote: "每一次前進都會累積成自己的經驗",
+    levelReset: "等級歸零",
+    future: "未來活動",
+    futurePlaceholder: "一行一個未來活動",
+    news: "今日重點新聞",
+    refresh: "更新",
+    more: "更多",
+    loadingNews: "載入新聞中",
+    updating: "更新中...",
+    updated: "已更新",
+    newsFail: "自動載入暫時失敗，可先點「更多」查看。",
+    resetAll: "全部歸零",
+    saved: "已儲存",
+    go: "出發",
+    lost: "當你迷惘時",
+    themeToggleOpen: "展開色彩設定",
+    themeToggleClose: "收合色彩設定",
+    colorToggle: "色",
+    bg: "背景",
+    text: "字體",
+    line: "框線",
+    width: "粗細",
+    paper: "格子",
+    panel: "主底",
+    presets: "預設配色",
+    customMemory: "自訂記憶",
+    save: "存",
+    load: "取",
+    savedSlot: "已存",
+    noRecord: "無記錄",
+    confirmOverwrite: "確定要覆蓋自訂 {n} 的配色嗎？",
+    loaded: "已取",
+    timeUp: "時間到！",
+    bombMessage: "休息一下，然後繼續前進。",
+    ok: "知道了",
+    actionItems: [
+      "「今天不用超神，只要不要停下來。」",
+      "「哪怕只前進1%，也比原地焦慮強。」",
+      "「大腦會騙你很累，但做下去後常常就進狀態了。」",
+      "「行動會消滅焦慮，拖延只會餵大焦慮。」",
+    ],
+    reflectionHtml: `<article><span>1.</span><h2>真正厲害的人，不會每天追求「感覺很好」</h2><p>很多人讀書時會一直觀察：</p><p>我今天有沒有動力？<br />我今天狀態好不好？<br />我今天想不想讀？</p><p>但高穩定型學生通常比較像：</p><p>「反正現在就是讀書時間。」</p><p>情緒權重很低。</p></article><article><span>2.</span><h2>頂尖學生更重視「單位時間輸出」</h2><p>真正厲害的人會開始思考：</p><p>不是：我今天讀幾小時？</p><p>而是：我今天真正吸收多少？<br />解決多少問題？<br />記住多少東西？<br />寫出多少輸出？</p><p>這其實是：「結果導向」而不是「坐牢導向」。</p></article><article><span>3.</span><h2>「減少學習時間」不代表偷懶</h2><p>它不是說不努力、躺平、隨便讀，而是刪除低效率學習。</p><p>像是重複閱讀、假筆記、情緒式努力，以及一直追求完美。</p><p>真正重要的是把時間放回輸出、檢索、刷題和思考。</p></article>`,
+  },
+  en: {
+    htmlLang: "en",
+    title: "You Can Do It",
+    brand: "You Can Do It <span>あなたならできる</span>",
+    currentTime: "Current Time",
+    language: "Language",
+    todayGoals: "Today's Goals",
+    clear: "Clear",
+    todoPlaceholder: "Enter something to complete today",
+    countdown: "Countdown",
+    setMinutes: "Set minutes",
+    set: "Set",
+    focusTotal: "Accumulated Focus Time",
+    minuteUnit: "min",
+    focusMode: "Focus Mode",
+    exit: "Exit",
+    start: "Start",
+    pause: "Pause",
+    reset: "Reset",
+    level: "Level & EXP",
+    xpNote: "Every step forward becomes part of your experience.",
+    levelReset: "Reset Level",
+    future: "Future Events",
+    futurePlaceholder: "One future event per line",
+    news: "Today's Key News",
+    refresh: "Refresh",
+    more: "More",
+    loadingNews: "Loading news",
+    updating: "Updating...",
+    updated: "updated",
+    newsFail: "Auto loading failed for now. Use More to view news.",
+    resetAll: "Reset All",
+    saved: "Saved",
+    go: "Launch",
+    lost: "When You Feel Lost",
+    themeToggleOpen: "Open color settings",
+    themeToggleClose: "Collapse color settings",
+    colorToggle: "Color",
+    bg: "Background",
+    text: "Text",
+    line: "Border",
+    width: "Width",
+    paper: "Card",
+    panel: "Panel",
+    presets: "Presets",
+    customMemory: "Custom Memory",
+    save: "Save",
+    load: "Load",
+    savedSlot: "Saved",
+    noRecord: "Empty",
+    confirmOverwrite: "Overwrite custom palette {n}?",
+    loaded: "Loaded",
+    timeUp: "Time's up!",
+    bombMessage: "Take a short break, then keep going.",
+    ok: "OK",
+    actionItems: [
+      "\"You do not need to be superhuman today. Just do not stop.\"",
+      "\"Even 1% forward beats anxious stillness.\"",
+      "\"Your brain may say it is tired, but action often brings you into flow.\"",
+      "\"Action dissolves anxiety; delay feeds it.\"",
+    ],
+    reflectionHtml: `<article><span>1.</span><h2>Strong learners do not chase “feeling good” every day</h2><p>Many people keep checking: Do I feel motivated? Am I in good condition? Do I want to study?</p><p>Stable students are more like: “It is study time, so I study.”</p><p>Emotion has a much smaller vote.</p></article><article><span>2.</span><h2>Top students care more about output per unit of time</h2><p>The question is not only “How many hours did I sit here?”</p><p>It is: What did I absorb? What problems did I solve? What did I remember? What did I produce?</p><p>That is results-oriented learning, not prison-time learning.</p></article><article><span>3.</span><h2>Reducing study time does not mean being lazy</h2><p>It means deleting low-efficiency studying: rereading, pretty-but-empty notes, emotional overwork, and perfectionism.</p><p>The real work is output, retrieval, practice, and thinking.</p></article>`,
+  },
+  de: {
+    htmlLang: "de",
+    title: "Du schaffst das",
+    brand: "Du schaffst das <span>あなたならできる</span>",
+    currentTime: "Aktuelle Uhrzeit",
+    language: "Sprache",
+    todayGoals: "Tagesziele",
+    clear: "Leeren",
+    todoPlaceholder: "Aufgabe für heute eingeben",
+    countdown: "Countdown",
+    setMinutes: "Minuten einstellen",
+    set: "Setzen",
+    focusTotal: "Gesammelte Fokuszeit",
+    minuteUnit: "Min.",
+    focusMode: "Fokusmodus",
+    exit: "Beenden",
+    start: "Start",
+    pause: "Pause",
+    reset: "Reset",
+    level: "Level & Erfahrung",
+    xpNote: "Jeder Schritt nach vorn wird Teil deiner Erfahrung.",
+    levelReset: "Level zurücksetzen",
+    future: "Künftige Termine",
+    futurePlaceholder: "Ein künftiger Termin pro Zeile",
+    news: "Wichtige Nachrichten heute",
+    refresh: "Neu",
+    more: "Mehr",
+    loadingNews: "Nachrichten werden geladen",
+    updating: "Aktualisiere...",
+    updated: "aktualisiert",
+    newsFail: "Automatisches Laden ist gerade fehlgeschlagen. Nutze Mehr.",
+    resetAll: "Alles resetten",
+    saved: "Gespeichert",
+    go: "Loslegen",
+    lost: "Wenn du unsicher bist",
+    themeToggleOpen: "Farbeinstellungen öffnen",
+    themeToggleClose: "Farbeinstellungen einklappen",
+    colorToggle: "Farbe",
+    bg: "Hintergrund",
+    text: "Text",
+    line: "Rahmen",
+    width: "Stärke",
+    paper: "Karten",
+    panel: "Panel",
+    presets: "Vorgaben",
+    customMemory: "Eigene Speicher",
+    save: "Speich.",
+    load: "Laden",
+    savedSlot: "Gespeichert",
+    noRecord: "Leer",
+    confirmOverwrite: "Eigene Palette {n} überschreiben?",
+    loaded: "Geladen",
+    timeUp: "Zeit ist um!",
+    bombMessage: "Mach kurz Pause und geh dann weiter.",
+    ok: "OK",
+    actionItems: [
+      "Heute musst du nicht überragend sein. Bleib nur in Bewegung.",
+      "Ein Prozent vorwärts ist besser als Stillstand in Sorge.",
+      "Dein Gehirn meldet Müdigkeit; Handeln bringt dich oft in den Zustand.",
+      "Handeln löst Angst, Aufschieben füttert sie.",
+    ],
+    reflectionHtml: `<article><span>1.</span><h2>Starke Lernende jagen nicht jeden Tag einem guten Gefühl hinterher</h2><p>Viele fragen ständig: Habe ich Motivation? Bin ich gut drauf? Will ich lernen?</p><p>Stabile Lernende denken eher: „Jetzt ist Lernzeit.“</p><p>Gefühle haben weniger Gewicht.</p></article><article><span>2.</span><h2>Top-Lernende achten stärker auf Output pro Zeiteinheit</h2><p>Die Frage ist nicht nur: Wie viele Stunden habe ich gelernt?</p><p>Sondern: Was habe ich wirklich verstanden, gelöst, behalten und produziert?</p><p>Das ist ergebnisorientiertes Lernen.</p></article><article><span>3.</span><h2>Weniger Lernzeit bedeutet nicht Faulheit</h2><p>Es bedeutet, ineffizientes Lernen zu streichen: wiederholtes Lesen, Scheinnotizen, emotionale Überlastung und Perfektionismus.</p><p>Wichtig sind Output, Abruf, Übung und Denken.</p></article>`,
+  },
+  ja: {
+    htmlLang: "ja",
+    title: "あなたならできる",
+    brand: "あなたならできる <span>你能做到</span>",
+    currentTime: "現在時刻",
+    language: "言語",
+    todayGoals: "今日の目標",
+    clear: "クリア",
+    todoPlaceholder: "今日やることを入力",
+    countdown: "カウントダウン",
+    setMinutes: "分を設定",
+    set: "設定",
+    focusTotal: "累積集中時間",
+    minuteUnit: "分",
+    focusMode: "集中モード",
+    exit: "退出",
+    start: "開始",
+    pause: "一時停止",
+    reset: "リセット",
+    level: "レベルと経験値",
+    xpNote: "一歩ずつの前進が、自分の経験になる。",
+    levelReset: "レベルリセット",
+    future: "今後の予定",
+    futurePlaceholder: "1行に1つ予定を入力",
+    news: "今日の主要ニュース",
+    refresh: "更新",
+    more: "もっと見る",
+    loadingNews: "ニュース読み込み中",
+    updating: "更新中...",
+    updated: "更新済み",
+    newsFail: "自動読み込みに失敗しました。「もっと見る」を使ってください。",
+    resetAll: "すべてリセット",
+    saved: "保存しました",
+    go: "出発",
+    lost: "迷ったとき",
+    themeToggleOpen: "色設定を開く",
+    themeToggleClose: "色設定を閉じる",
+    colorToggle: "色",
+    bg: "背景",
+    text: "文字",
+    line: "枠線",
+    width: "太さ",
+    paper: "カード",
+    panel: "パネル",
+    presets: "プリセット",
+    customMemory: "カスタム記憶",
+    save: "保存",
+    load: "読込",
+    savedSlot: "保存済",
+    noRecord: "なし",
+    confirmOverwrite: "カスタム {n} の配色を上書きしますか？",
+    loaded: "読込済",
+    timeUp: "時間です！",
+    bombMessage: "少し休んで、また進もう。",
+    ok: "OK",
+    actionItems: [
+      "今日は超人にならなくていい。ただ止まらない。",
+      "1%でも前に進めば、不安なまま止まるより強い。",
+      "脳は疲れたと言う。でも動き出すと調子が出ることがある。",
+      "行動は不安を消し、先延ばしは不安を育てる。",
+    ],
+    reflectionHtml: `<article><span>1.</span><h2>本当に強い人は、毎日「気分がいい」を追い求めない</h2><p>多くの人は、やる気があるか、状態がいいか、勉強したいかを確認し続けます。</p><p>安定している人は「今は勉強時間だから勉強する」と考えます。</p><p>感情の比重が低いのです。</p></article><article><span>2.</span><h2>上位の学生は単位時間あたりのアウトプットを重視する</h2><p>大切なのは何時間座ったかだけではありません。</p><p>何を吸収し、何問解き、何を覚え、何を出力したかです。</p><p>これは結果志向の学習です。</p></article><article><span>3.</span><h2>学習時間を減らすことは、怠けることではない</h2><p>低効率な学習を削るということです。繰り返し読むだけ、見た目だけのノート、感情的な頑張り、完璧主義を減らします。</p><p>大切なのは出力、想起、演習、思考です。</p></article>`,
+  },
+};
 const fallbackNipponColors = [
   { name: "GOFUN", romanized: "GOFUN", value: "#FCFAF2" },
   { name: "SUMI", romanized: "SUMI", value: "#1C1C1C" },
@@ -147,7 +408,9 @@ const els = {
   futureActivitiesInput: document.querySelector("#futureActivitiesInput"),
   studyTime: document.querySelector("#studyTime"),
   focusTotalMinutes: document.querySelector("#focusTotalMinutes"),
+  focusTotalUnit: document.querySelector("#focusTotalUnit"),
   currentTime: document.querySelector("#currentTime"),
+  languageSelect: document.querySelector("#languageSelect"),
   saveStatus: document.querySelector("#saveStatus"),
   choiceMinusBtn: document.querySelector("#choiceMinusBtn"),
   choicePlusBtn: document.querySelector("#choicePlusBtn"),
@@ -183,6 +446,80 @@ const els = {
   newsMoreLink: document.querySelector("#newsMoreLink"),
   newsSourceBtns: document.querySelectorAll("[data-news-source]"),
 };
+
+function currentLanguage() {
+  const saved = localStorage.getItem(languageStorageKey);
+  return translations[saved] ? saved : "zh";
+}
+
+function t(key) {
+  return translations[currentLanguage()][key] ?? translations.zh[key] ?? key;
+}
+
+function setText(selector, text) {
+  const element = document.querySelector(selector);
+  if (element) element.textContent = text;
+}
+
+function setHtml(selector, html) {
+  const element = document.querySelector(selector);
+  if (element) element.innerHTML = html;
+}
+
+function applyLanguage() {
+  const lang = currentLanguage();
+  const dict = translations[lang];
+  document.documentElement.lang = dict.htmlLang;
+  document.title = dict.title;
+  els.languageSelect.value = lang;
+  setText(".device-header > div:first-child > p", "Study Counter");
+  setHtml(".device-header h1", dict.brand);
+  setText(".current-time span", dict.currentTime);
+  setText(".language-control span", dict.language);
+  setText(".goal-head span", dict.todayGoals);
+  els.goalResetBtn.textContent = dict.clear;
+  els.todoTexts.forEach((input) => {
+    input.placeholder = dict.todoPlaceholder;
+  });
+  setText(".time-card .counter-label", dict.countdown);
+  setText(".countdown-setting > span", dict.setMinutes);
+  els.countdownSetBtn.textContent = dict.set;
+  setText(".focus-total > span", dict.focusTotal);
+  els.focusTotalUnit.textContent = dict.minuteUnit;
+  setText(".focus-toggle span", dict.focusMode);
+  els.focusExitBtn.textContent = dict.exit;
+  els.timerResetBtn.textContent = dict.reset;
+  setText(".level-card .counter-label", dict.level);
+  setText(".xp-note", dict.xpNote);
+  els.levelResetBtn.textContent = dict.levelReset;
+  setText(".future-card .counter-label", dict.future);
+  els.futureActivitiesInput.placeholder = dict.futurePlaceholder;
+  setText(".news-card .counter-label", dict.news);
+  els.newsRefreshBtn.textContent = dict.refresh;
+  els.newsMoreLink.textContent = dict.more;
+  els.resetAllBtn.textContent = dict.resetAll;
+  setText(".action-panel summary", dict.go);
+  setText(".reflection-panel:not(.action-panel) summary", dict.lost);
+  const actionList = document.querySelector(".action-list");
+  if (actionList) {
+    actionList.innerHTML = dict.actionItems.map((item) => `<li>${item}</li>`).join("");
+  }
+  setHtml(".reflection-list", dict.reflectionHtml);
+  translateThemePanel();
+  (translatedPresetNames[lang] || translatedPresetNames.zh).forEach((name, index) => {
+    if (els.themePresetBtns[index]) els.themePresetBtns[index].textContent = name;
+  });
+  translateBomb();
+  render();
+  renderThemeMemoryButtons();
+}
+
+function changeLanguage(lang) {
+  if (!translations[lang]) return;
+  localStorage.setItem(languageStorageKey, lang);
+  applyLanguage();
+  loadNews();
+}
 
 function load() {
   try {
@@ -342,9 +679,27 @@ function setThemeCollapsed(collapsed) {
   els.themeControl.classList.toggle("collapsed", collapsed);
   els.themeToggleBtn.setAttribute(
     "aria-label",
-    collapsed ? "\u5c55\u958b\u8272\u5f69\u8a2d\u5b9a" : "\u6536\u5408\u8272\u5f69\u8a2d\u5b9a",
+    collapsed ? t("themeToggleOpen") : t("themeToggleClose"),
   );
   localStorage.setItem(themeCollapsedStorageKey, collapsed ? "1" : "0");
+}
+
+function translateThemePanel() {
+  els.themeToggleBtn.textContent = t("colorToggle");
+  const labels = els.themeControl.querySelectorAll(":scope > label > span");
+  [t("bg"), t("text"), t("line"), t("width"), t("paper"), t("panel")].forEach((text, index) => {
+    if (labels[index]) labels[index].textContent = text;
+  });
+  const memoryLabels = els.themeControl.querySelectorAll(".theme-memory > span");
+  if (memoryLabels[0]) memoryLabels[0].textContent = t("presets");
+  if (memoryLabels[1]) memoryLabels[1].textContent = t("customMemory");
+  setThemeCollapsed(els.themeControl.classList.contains("collapsed"));
+}
+
+function translateBomb() {
+  setText(".bomb-card strong", t("timeUp"));
+  setText(".bomb-card span", t("bombMessage"));
+  els.bombCloseBtn.textContent = t("ok");
 }
 
 function loadThemeMemory() {
@@ -369,47 +724,48 @@ function seedBundledThemeMemory() {
 function renderThemeMemoryButtons() {
   const slots = loadThemeMemory();
   els.themeSaveBtns.forEach((button, index) => {
-    button.textContent = slots[index] ? `\u2713 \u5df2\u5b58 ${index + 1}` : `\u5b58 ${index + 1}`;
+    button.textContent = slots[index] ? `\u2713 ${t("savedSlot")} ${index + 1}` : `${t("save")} ${index + 1}`;
     button.classList.toggle("filled", Boolean(slots[index]));
   });
   els.themeLoadBtns.forEach((button, index) => {
-    button.textContent = `\u53d6 ${index + 1}`;
+    button.textContent = `${t("load")} ${index + 1}`;
     button.disabled = !slots[index];
   });
 }
 
 function applyThemePreset(index) {
   const theme = sanitizeTheme(defaultThemeMemory[index]);
+  const presetName = (translatedPresetNames[currentLanguage()] || translatedPresetNames.zh)[index] || themeSlotNames[index];
   localStorage.setItem(themeStorageKey, JSON.stringify(theme));
   populateThemeControls(theme);
   applyTheme(theme);
-  flashThemeButton(els.themePresetBtns[index], `\u5df2\u53d6 ${themeSlotNames[index]}`);
+  flashThemeButton(els.themePresetBtns[index], `${t("loaded")} ${presetName}`);
   showSaved();
 }
 
 function saveThemeSlot(index) {
   const slots = loadThemeMemory();
-  if (slots[index] && !window.confirm(`\u78ba\u5b9a\u8981\u8986\u84cb\u81ea\u8a02 ${index + 1} \u7684\u914d\u8272\u55ce\uff1f`)) {
+  if (slots[index] && !window.confirm(t("confirmOverwrite").replace("{n}", index + 1))) {
     return;
   }
   slots[index] = currentThemeFromInputs();
   saveThemeMemory(slots);
   renderThemeMemoryButtons();
-  flashThemeButton(els.themeSaveBtns[index], `\u5df2\u5b58 ${index + 1}`);
+  flashThemeButton(els.themeSaveBtns[index], `${t("savedSlot")} ${index + 1}`);
   showSaved();
 }
 
 function loadThemeSlot(index) {
   const slots = loadThemeMemory();
   if (!slots[index]) {
-    flashThemeButton(els.themeLoadBtns[index], "\u7121\u8a18\u9304");
+    flashThemeButton(els.themeLoadBtns[index], t("noRecord"));
     return;
   }
   const theme = sanitizeTheme(slots[index]);
   localStorage.setItem(themeStorageKey, JSON.stringify(theme));
   populateThemeControls(theme);
   applyTheme(theme);
-  flashThemeButton(els.themeLoadBtns[index], `\u5df2\u53d6 ${index + 1}`);
+  flashThemeButton(els.themeLoadBtns[index], `${t("loaded")} ${index + 1}`);
   showSaved();
 }
 
@@ -423,7 +779,7 @@ function flashThemeButton(button, text) {
 }
 
 function showSaved() {
-  els.saveStatus.textContent = "\u5df2\u5132\u5b58";
+  els.saveStatus.textContent = t("saved");
   window.clearTimeout(showSaved.timer);
   showSaved.timer = window.setTimeout(() => {
     els.saveStatus.textContent = "";
@@ -475,7 +831,7 @@ function render() {
   if (document.activeElement !== els.countdownMinutesInput) {
     els.countdownMinutesInput.value = state.countdownMinutes;
   }
-  els.timerToggleBtn.textContent = state.active ? "\u66ab\u505c" : "\u958b\u59cb";
+  els.timerToggleBtn.textContent = state.active ? t("pause") : t("start");
   renderTodos();
 }
 
@@ -501,7 +857,7 @@ function renderNewsFallback(message) {
   link.href = source.moreUrl;
   link.target = "_blank";
   link.rel = "noreferrer";
-  link.textContent = source.fallbackText;
+  link.textContent = `${t("more")} ${source.label}`;
   li.append(link);
   els.newsList.append(li);
   els.newsStatus.textContent = message;
@@ -530,7 +886,7 @@ async function loadNews() {
   if (!els.newsList) return;
   const source = currentNewsSource();
   renderNewsSourceControls();
-  els.newsStatus.textContent = "\u66f4\u65b0\u4e2d...";
+  els.newsStatus.textContent = t("updating");
   try {
     const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(source.feedUrl)}`;
     const response = await fetch(proxyUrl, { cache: "no-store" });
@@ -545,9 +901,9 @@ async function loadNews() {
       .filter((item) => item.title && item.link);
     if (!items.length) throw new Error("empty news feed");
     renderNewsItems(items);
-    els.newsStatus.textContent = `${source.label} \u5df2\u66f4\u65b0 ${formatCurrentTime()}`;
+    els.newsStatus.textContent = `${source.label} ${t("updated")} ${formatCurrentTime()}`;
   } catch {
-    renderNewsFallback("\u81ea\u52d5\u8f09\u5165\u66ab\u6642\u5931\u6557\uff0c\u53ef\u5148\u9ede\u300c\u66f4\u591a\u300d\u67e5\u770b\u3002");
+    renderNewsFallback(t("newsFail"));
   }
 }
 
@@ -670,6 +1026,7 @@ function toggleTimer() {
 }
 
 function resetTimer() {
+  state.completedStudyMinutes = 0;
   state.remainingMs = state.countdownMinutes * 60 * 1000;
   state.startedAt = state.active ? Date.now() : null;
   save();
@@ -870,15 +1227,15 @@ els.themeLoadBtns.forEach((button) => {
   button.addEventListener("click", () => loadThemeSlot(Number.parseInt(button.dataset.themeLoad, 10) || 0));
 });
 els.themeToggleBtn.addEventListener("click", () => setThemeCollapsed(!els.themeControl.classList.contains("collapsed")));
+els.languageSelect.addEventListener("change", () => changeLanguage(els.languageSelect.value));
 
 load();
 const theme = loadTheme();
 populateThemeControls(theme);
 applyTheme(theme);
 seedBundledThemeMemory();
-renderThemeMemoryButtons();
 setThemeCollapsed(localStorage.getItem(themeCollapsedStorageKey) === "1");
-render();
+applyLanguage();
 renderCurrentTime();
 loadNews();
 window.setInterval(() => {
