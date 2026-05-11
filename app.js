@@ -17,6 +17,9 @@ const fallbackNipponColors = [
   { name: "UGUISUCHA", romanized: "UGUISUCHA", value: "#6C6024" },
   { name: "AIKOBICHA", romanized: "AIKOBICHA", value: "#4D5139" },
   { name: "ARAZOME", romanized: "ARAZOME", value: "#D7C4BB" },
+  { name: "KAMENOZOKI", romanized: "KAMENOZOKI", value: "#A5DEE4" },
+  { name: "BYAKUROKU", romanized: "BYAKUROKU", value: "#A8D8B9" },
+  { name: "ASAGI", romanized: "ASAGI", value: "#33A6B8" },
   { name: "MIZUASAGI", romanized: "MIZUASAGI", value: "#81C7D4" },
   { name: "KARAKURENAI", romanized: "KARAKURENAI", value: "#CB1B45" },
   { name: "YAMABUKI", romanized: "YAMABUKI", value: "#F9BF45" },
@@ -29,7 +32,7 @@ const defaultTheme = {
   paper: "#FFFFFB",
   timer: "#FFFFFB",
 };
-const themeSlotNames = ["\u65e5\u7cfb", "\u4efb\u5929\u5802\u98a8", "\u81ea\u7136\u98a8"];
+const themeSlotNames = ["\u65e5\u7cfb", "\u4efb\u5929\u5802\u98a8", "\u81ea\u7136\u98a8", "\u590f\u65e5\u6e05\u971c"];
 const defaultThemeMemory = [
   {
     bg: "#FCFAF2",
@@ -54,6 +57,14 @@ const defaultThemeMemory = [
     lineWidth: "2px",
     paper: "#FCFAF2",
     timer: "#B4A582",
+  },
+  {
+    bg: "#A5DEE4",
+    text: "#08192D",
+    line: "#33A6B8",
+    lineWidth: "2px",
+    paper: "#FFFFFB",
+    timer: "#FCFAF2",
   },
 ];
 const bundledCustomThemeMemory = [
