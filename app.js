@@ -1,8 +1,26 @@
-const storageKey = "minimal-study-counter-v1";
+﻿const storageKey = "minimal-study-counter-v1";
 const themeStorageKey = "minimal-study-counter-theme-v1";
 const themeCollapsedStorageKey = "minimal-study-counter-theme-collapsed";
 const themeMemoryStorageKey = "minimal-study-counter-theme-memory-v1";
-const themeMemoryBundleVersionKey = "minimal-study-counter-theme-memory-bundle-20260511";
+const themeMemoryBundleVersionKey = "minimal-study-counter-theme-memory-bundle-20260511-2";
+const fallbackNipponColors = [
+  { name: "GOFUN", romanized: "GOFUN", value: "#FCFAF2" },
+  { name: "SUMI", romanized: "SUMI", value: "#1C1C1C" },
+  { name: "SHIRONERI", romanized: "SHIRONERI", value: "#FFFFFB" },
+  { name: "GINNEZUMI", romanized: "GINNEZUMI", value: "#91989F" },
+  { name: "SANGOSYU", romanized: "SANGOSYU", value: "#F75C2F" },
+  { name: "KONJYO", romanized: "KONJYO", value: "#08192D" },
+  { name: "NAE", romanized: "NAE", value: "#86C166" },
+  { name: "TOKIWA", romanized: "TOKIWA", value: "#1B813E" },
+  { name: "RIKYUSHIRACHA", romanized: "RIKYUSHIRACHA", value: "#B4A582" },
+  { name: "KOBICHA", romanized: "KOBICHA", value: "#6E552F" },
+  { name: "UGUISUCHA", romanized: "UGUISUCHA", value: "#6C6024" },
+  { name: "AIKOBICHA", romanized: "AIKOBICHA", value: "#4D5139" },
+  { name: "ARAZOME", romanized: "ARAZOME", value: "#D7C4BB" },
+  { name: "MIZUASAGI", romanized: "MIZUASAGI", value: "#81C7D4" },
+  { name: "KARAKURENAI", romanized: "KARAKURENAI", value: "#CB1B45" },
+  { name: "YAMABUKI", romanized: "YAMABUKI", value: "#F9BF45" },
+];
 const defaultTheme = {
   bg: "#FCFAF2",
   text: "#1C1C1C",
@@ -188,7 +206,7 @@ function loadTheme() {
 }
 
 function sanitizeTheme(theme) {
-  const colors = Array.isArray(window.NIPPON_COLORS) ? window.NIPPON_COLORS : [];
+  const colors = getNipponColors();
   if (!colors.length) return theme;
   const values = new Set(colors.map((color) => color.value.toLowerCase()));
   return {
@@ -201,12 +219,16 @@ function sanitizeTheme(theme) {
   };
 }
 
+function getNipponColors() {
+  return Array.isArray(window.NIPPON_COLORS) && window.NIPPON_COLORS.length ? window.NIPPON_COLORS : fallbackNipponColors;
+}
+
 function colorOptionLabel(color) {
   return `${color.name} / ${color.romanized} ${color.value}`;
 }
 
 function populateColorSelect(select, selectedValue) {
-  const colors = Array.isArray(window.NIPPON_COLORS) ? window.NIPPON_COLORS : [];
+  const colors = getNipponColors();
   select.innerHTML = "";
   colors.forEach((color) => {
     const option = document.createElement("option");
@@ -683,3 +705,4 @@ window.setInterval(() => {
   }
   render();
 }, 1000);
+
