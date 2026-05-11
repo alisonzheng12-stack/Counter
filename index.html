@@ -41,18 +41,30 @@
         </section>
 
         <section class="counter-grid" aria-label="study counters">
-          <article class="counter-card">
-            <span class="counter-label">&#36984;&#25799;&#38988;&#32317;&#31572;&#38988;&#25976;</span>
-            <strong><span id="choiceCount">0</span><small>&#38988;</small></strong>
-            <div class="quick-actions">
-              <button type="button" data-counter="choiceCount" data-amount="10">+10</button>
-              <button type="button" data-counter="choiceCount" data-amount="50">+50</button>
-              <button type="button" data-counter="choiceCount" data-amount="100">+100</button>
+          <article class="counter-card time-card">
+            <span class="counter-label">&#20498;&#25976;&#26178;&#38291;</span>
+            <label class="countdown-setting">
+              <span>&#35373;&#23450;&#20998;&#37912;</span>
+              <div>
+                <input id="countdownMinutesInput" type="number" min="1" step="1" inputmode="numeric" />
+                <button id="countdownSetBtn" type="button">&#35373;&#32622;</button>
+              </div>
+            </label>
+            <strong><span id="studyTime">25:00</span></strong>
+            <div class="running-cat-image" aria-hidden="true">
+              <span class="cat-photo-base"></span>
+              <span class="cat-photo-part cat-photo-tail"></span>
+              <span class="cat-photo-part cat-photo-back-leg"></span>
+              <span class="cat-photo-part cat-photo-front-leg"></span>
             </div>
+            <label class="focus-toggle">
+              <input id="focusModeInput" type="checkbox" />
+              <span>&#23560;&#27880;&#27169;&#24335;</span>
+            </label>
+            <button id="focusExitBtn" class="focus-exit" type="button">&#36864;&#20986;</button>
             <div class="counter-actions">
-              <button id="choiceMinusBtn" type="button" aria-label="&#36984;&#25799;&#38988;&#28187;&#23569;&#19968;&#38988;">-</button>
-              <button id="choicePlusBtn" type="button" aria-label="&#36984;&#25799;&#38988;&#22686;&#21152;&#19968;&#38988;">+</button>
-              <button id="choiceResetBtn" type="button">&#27512;&#38646;</button>
+              <button id="timerToggleBtn" type="button">&#38283;&#22987;</button>
+              <button id="timerResetBtn" type="button">&#27512;&#38646;</button>
             </div>
           </article>
 
@@ -86,30 +98,18 @@
             </label>
           </article>
 
-          <article class="counter-card time-card">
-            <span class="counter-label">&#20498;&#25976;&#26178;&#38291;</span>
-            <label class="countdown-setting">
-              <span>&#35373;&#23450;&#20998;&#37912;</span>
-              <div>
-                <input id="countdownMinutesInput" type="number" min="1" step="1" inputmode="numeric" />
-                <button id="countdownSetBtn" type="button">&#35373;&#32622;</button>
-              </div>
-            </label>
-            <strong><span id="studyTime">25:00</span></strong>
-            <div class="running-cat-image" aria-hidden="true">
-              <span class="cat-photo-base"></span>
-              <span class="cat-photo-part cat-photo-tail"></span>
-              <span class="cat-photo-part cat-photo-back-leg"></span>
-              <span class="cat-photo-part cat-photo-front-leg"></span>
+          <article class="counter-card">
+            <span class="counter-label">&#36984;&#25799;&#38988;&#32317;&#31572;&#38988;&#25976;</span>
+            <strong><span id="choiceCount">0</span><small>&#38988;</small></strong>
+            <div class="quick-actions">
+              <button type="button" data-counter="choiceCount" data-amount="10">+10</button>
+              <button type="button" data-counter="choiceCount" data-amount="50">+50</button>
+              <button type="button" data-counter="choiceCount" data-amount="100">+100</button>
             </div>
-            <label class="focus-toggle">
-              <input id="focusModeInput" type="checkbox" />
-              <span>&#23560;&#27880;&#27169;&#24335;</span>
-            </label>
-            <button id="focusExitBtn" class="focus-exit" type="button">&#36864;&#20986;</button>
             <div class="counter-actions">
-              <button id="timerToggleBtn" type="button">&#38283;&#22987;</button>
-              <button id="timerResetBtn" type="button">&#27512;&#38646;</button>
+              <button id="choiceMinusBtn" type="button" aria-label="&#36984;&#25799;&#38988;&#28187;&#23569;&#19968;&#38988;">-</button>
+              <button id="choicePlusBtn" type="button" aria-label="&#36984;&#25799;&#38988;&#22686;&#21152;&#19968;&#38988;">+</button>
+              <button id="choiceResetBtn" type="button">&#27512;&#38646;</button>
             </div>
           </article>
         </section>
