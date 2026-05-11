@@ -67,7 +67,6 @@ const translations = {
     resetAll: "全部歸零",
     saved: "已儲存",
     go: "出發",
-    lost: "當你迷惘時",
     themeToggleOpen: "展開色彩設定",
     themeToggleClose: "收合色彩設定",
     colorToggle: "色",
@@ -94,7 +93,6 @@ const translations = {
       "「大腦會騙你很累，但做下去後常常就進狀態了。」",
       "「行動會消滅焦慮，拖延只會餵大焦慮。」",
     ],
-    reflectionHtml: `<article><span>1.</span><h2>真正厲害的人，不會每天追求「感覺很好」</h2><p>很多人讀書時會一直觀察：</p><p>我今天有沒有動力？<br />我今天狀態好不好？<br />我今天想不想讀？</p><p>但高穩定型學生通常比較像：</p><p>「反正現在就是讀書時間。」</p><p>情緒權重很低。</p></article><article><span>2.</span><h2>頂尖學生更重視「單位時間輸出」</h2><p>真正厲害的人會開始思考：</p><p>不是：我今天讀幾小時？</p><p>而是：我今天真正吸收多少？<br />解決多少問題？<br />記住多少東西？<br />寫出多少輸出？</p><p>這其實是：「結果導向」而不是「坐牢導向」。</p></article><article><span>3.</span><h2>「減少學習時間」不代表偷懶</h2><p>它不是說不努力、躺平、隨便讀，而是刪除低效率學習。</p><p>像是重複閱讀、假筆記、情緒式努力，以及一直追求完美。</p><p>真正重要的是把時間放回輸出、檢索、刷題和思考。</p></article>`,
   },
   en: {
     htmlLang: "en",
@@ -130,7 +128,6 @@ const translations = {
     resetAll: "Reset All",
     saved: "Saved",
     go: "Launch",
-    lost: "When You Feel Lost",
     themeToggleOpen: "Open color settings",
     themeToggleClose: "Collapse color settings",
     colorToggle: "Color",
@@ -157,7 +154,6 @@ const translations = {
       "\"Your brain may say it is tired, but action often brings you into flow.\"",
       "\"Action dissolves anxiety; delay feeds it.\"",
     ],
-    reflectionHtml: `<article><span>1.</span><h2>Strong learners do not chase “feeling good” every day</h2><p>Many people keep checking: Do I feel motivated? Am I in good condition? Do I want to study?</p><p>Stable students are more like: “It is study time, so I study.”</p><p>Emotion has a much smaller vote.</p></article><article><span>2.</span><h2>Top students care more about output per unit of time</h2><p>The question is not only “How many hours did I sit here?”</p><p>It is: What did I absorb? What problems did I solve? What did I remember? What did I produce?</p><p>That is results-oriented learning, not prison-time learning.</p></article><article><span>3.</span><h2>Reducing study time does not mean being lazy</h2><p>It means deleting low-efficiency studying: rereading, pretty-but-empty notes, emotional overwork, and perfectionism.</p><p>The real work is output, retrieval, practice, and thinking.</p></article>`,
   },
   de: {
     htmlLang: "de",
@@ -193,7 +189,6 @@ const translations = {
     resetAll: "Alles resetten",
     saved: "Gespeichert",
     go: "Loslegen",
-    lost: "Wenn du unsicher bist",
     themeToggleOpen: "Farbeinstellungen öffnen",
     themeToggleClose: "Farbeinstellungen einklappen",
     colorToggle: "Farbe",
@@ -220,7 +215,6 @@ const translations = {
       "Dein Gehirn meldet Müdigkeit; Handeln bringt dich oft in den Zustand.",
       "Handeln löst Angst, Aufschieben füttert sie.",
     ],
-    reflectionHtml: `<article><span>1.</span><h2>Starke Lernende jagen nicht jeden Tag einem guten Gefühl hinterher</h2><p>Viele fragen ständig: Habe ich Motivation? Bin ich gut drauf? Will ich lernen?</p><p>Stabile Lernende denken eher: „Jetzt ist Lernzeit.“</p><p>Gefühle haben weniger Gewicht.</p></article><article><span>2.</span><h2>Top-Lernende achten stärker auf Output pro Zeiteinheit</h2><p>Die Frage ist nicht nur: Wie viele Stunden habe ich gelernt?</p><p>Sondern: Was habe ich wirklich verstanden, gelöst, behalten und produziert?</p><p>Das ist ergebnisorientiertes Lernen.</p></article><article><span>3.</span><h2>Weniger Lernzeit bedeutet nicht Faulheit</h2><p>Es bedeutet, ineffizientes Lernen zu streichen: wiederholtes Lesen, Scheinnotizen, emotionale Überlastung und Perfektionismus.</p><p>Wichtig sind Output, Abruf, Übung und Denken.</p></article>`,
   },
   ja: {
     htmlLang: "ja",
@@ -256,7 +250,6 @@ const translations = {
     resetAll: "すべてリセット",
     saved: "保存しました",
     go: "出発",
-    lost: "迷ったとき",
     themeToggleOpen: "色設定を開く",
     themeToggleClose: "色設定を閉じる",
     colorToggle: "色",
@@ -283,7 +276,6 @@ const translations = {
       "脳は疲れたと言う。でも動き出すと調子が出ることがある。",
       "行動は不安を消し、先延ばしは不安を育てる。",
     ],
-    reflectionHtml: `<article><span>1.</span><h2>本当に強い人は、毎日「気分がいい」を追い求めない</h2><p>多くの人は、やる気があるか、状態がいいか、勉強したいかを確認し続けます。</p><p>安定している人は「今は勉強時間だから勉強する」と考えます。</p><p>感情の比重が低いのです。</p></article><article><span>2.</span><h2>上位の学生は単位時間あたりのアウトプットを重視する</h2><p>大切なのは何時間座ったかだけではありません。</p><p>何を吸収し、何問解き、何を覚え、何を出力したかです。</p><p>これは結果志向の学習です。</p></article><article><span>3.</span><h2>学習時間を減らすことは、怠けることではない</h2><p>低効率な学習を削るということです。繰り返し読むだけ、見た目だけのノート、感情的な頑張り、完璧主義を減らします。</p><p>大切なのは出力、想起、演習、思考です。</p></article>`,
   },
 };
 const fallbackNipponColors = [
@@ -499,12 +491,10 @@ function applyLanguage() {
   els.newsMoreLink.textContent = dict.more;
   els.resetAllBtn.textContent = dict.resetAll;
   setText(".action-panel summary", dict.go);
-  setText(".reflection-panel:not(.action-panel) summary", dict.lost);
   const actionList = document.querySelector(".action-list");
   if (actionList) {
     actionList.innerHTML = dict.actionItems.map((item) => `<li>${item}</li>`).join("");
   }
-  setHtml(".reflection-list", dict.reflectionHtml);
   translateThemePanel();
   (translatedPresetNames[lang] || translatedPresetNames.zh).forEach((name, index) => {
     if (els.themePresetBtns[index]) els.themePresetBtns[index].textContent = name;
