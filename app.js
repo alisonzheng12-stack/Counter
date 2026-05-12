@@ -27,16 +27,16 @@ const newsSources = {
 };
 let sharedAudio = null;
 const translatedPresetNames = {
-  zh: ["日系", "任天堂風", "自然風", "夏日清霜"],
-  en: ["Japanese", "Nintendo", "Nature", "Summer Frost"],
-  de: ["Japanisch", "Nintendo", "Natur", "Sommerfrost"],
-  ja: ["和風", "任天堂風", "自然風", "夏の霜"],
+  zh: ["日系", "櫻花可愛風", "自然風", "夏日清霜"],
+  en: ["Japanese", "Sakura Cute", "Nature", "Summer Frost"],
+  de: ["Japanisch", "Sakura süß", "Natur", "Sommerfrost"],
+  ja: ["和風", "桜かわいい", "自然風", "夏の霜"],
 };
 const translations = {
   zh: {
     htmlLang: "zh-Hant",
     title: "你能做到",
-    brand: "你能做到 <span>あなたならできる</span>",
+    brand: "你能做到",
     currentTime: "現在時間",
     language: "語言",
     todayGoals: "今日目標",
@@ -64,9 +64,7 @@ const translations = {
     updating: "更新中...",
     updated: "已更新",
     newsFail: "自動載入暫時失敗，可先點「更多」查看。",
-    resetAll: "全部歸零",
     saved: "已儲存",
-    go: "出發",
     themeToggleOpen: "展開色彩設定",
     themeToggleClose: "收合色彩設定",
     colorToggle: "色",
@@ -87,17 +85,11 @@ const translations = {
     timeUp: "時間到！",
     bombMessage: "休息一下，然後繼續前進。",
     ok: "知道了",
-    actionItems: [
-      "「今天不用超神，只要不要停下來。」",
-      "「哪怕只前進1%，也比原地焦慮強。」",
-      "「大腦會騙你很累，但做下去後常常就進狀態了。」",
-      "「行動會消滅焦慮，拖延只會餵大焦慮。」",
-    ],
   },
   en: {
     htmlLang: "en",
     title: "You Can Do It",
-    brand: "You Can Do It <span>あなたならできる</span>",
+    brand: "You Can Do It",
     currentTime: "Current Time",
     language: "Language",
     todayGoals: "Today's Goals",
@@ -125,9 +117,7 @@ const translations = {
     updating: "Updating...",
     updated: "updated",
     newsFail: "Auto loading failed for now. Use More to view news.",
-    resetAll: "Reset All",
     saved: "Saved",
-    go: "Launch",
     themeToggleOpen: "Open color settings",
     themeToggleClose: "Collapse color settings",
     colorToggle: "Color",
@@ -148,17 +138,11 @@ const translations = {
     timeUp: "Time's up!",
     bombMessage: "Take a short break, then keep going.",
     ok: "OK",
-    actionItems: [
-      "\"You do not need to be superhuman today. Just do not stop.\"",
-      "\"Even 1% forward beats anxious stillness.\"",
-      "\"Your brain may say it is tired, but action often brings you into flow.\"",
-      "\"Action dissolves anxiety; delay feeds it.\"",
-    ],
   },
   de: {
     htmlLang: "de",
     title: "Du schaffst das",
-    brand: "Du schaffst das <span>あなたならできる</span>",
+    brand: "Du schaffst das",
     currentTime: "Aktuelle Uhrzeit",
     language: "Sprache",
     todayGoals: "Tagesziele",
@@ -186,9 +170,7 @@ const translations = {
     updating: "Aktualisiere...",
     updated: "aktualisiert",
     newsFail: "Automatisches Laden ist gerade fehlgeschlagen. Nutze Mehr.",
-    resetAll: "Alles resetten",
     saved: "Gespeichert",
-    go: "Loslegen",
     themeToggleOpen: "Farbeinstellungen öffnen",
     themeToggleClose: "Farbeinstellungen einklappen",
     colorToggle: "Farbe",
@@ -209,17 +191,11 @@ const translations = {
     timeUp: "Zeit ist um!",
     bombMessage: "Mach kurz Pause und geh dann weiter.",
     ok: "OK",
-    actionItems: [
-      "Heute musst du nicht überragend sein. Bleib nur in Bewegung.",
-      "Ein Prozent vorwärts ist besser als Stillstand in Sorge.",
-      "Dein Gehirn meldet Müdigkeit; Handeln bringt dich oft in den Zustand.",
-      "Handeln löst Angst, Aufschieben füttert sie.",
-    ],
   },
   ja: {
     htmlLang: "ja",
     title: "あなたならできる",
-    brand: "あなたならできる <span>你能做到</span>",
+    brand: "あなたならできる",
     currentTime: "現在時刻",
     language: "言語",
     todayGoals: "今日の目標",
@@ -247,9 +223,7 @@ const translations = {
     updating: "更新中...",
     updated: "更新済み",
     newsFail: "自動読み込みに失敗しました。「もっと見る」を使ってください。",
-    resetAll: "すべてリセット",
     saved: "保存しました",
-    go: "出発",
     themeToggleOpen: "色設定を開く",
     themeToggleClose: "色設定を閉じる",
     colorToggle: "色",
@@ -270,12 +244,6 @@ const translations = {
     timeUp: "時間です！",
     bombMessage: "少し休んで、また進もう。",
     ok: "OK",
-    actionItems: [
-      "今日は超人にならなくていい。ただ止まらない。",
-      "1%でも前に進めば、不安なまま止まるより強い。",
-      "脳は疲れたと言う。でも動き出すと調子が出ることがある。",
-      "行動は不安を消し、先延ばしは不安を育てる。",
-    ],
   },
 };
 const fallbackNipponColors = [
@@ -307,7 +275,7 @@ const defaultTheme = {
   paper: "#FFFFFB",
   timer: "#FFFFFB",
 };
-const themeSlotNames = ["\u65e5\u7cfb", "\u4efb\u5929\u5802\u98a8", "\u81ea\u7136\u98a8", "\u590f\u65e5\u6e05\u971c"];
+const themeSlotNames = ["\u65e5\u7cfb", "\u6afb\u82b1\u53ef\u611b\u98a8", "\u81ea\u7136\u98a8", "\u590f\u65e5\u6e05\u971c"];
 const defaultThemeMemory = [
   {
     bg: "#FCFAF2",
@@ -318,12 +286,12 @@ const defaultThemeMemory = [
     timer: "#FFFFFB",
   },
   {
-    bg: "#81C7D4",
-    text: "#1C1C1C",
-    line: "#CB1B45",
+    bg: "#FEDFE1",
+    text: "#64363C",
+    line: "#F596AA",
     lineWidth: "3px",
-    paper: "#F9BF45",
-    timer: "#FFFFFB",
+    paper: "#FFFFFB",
+    timer: "#F8C3CD",
   },
   {
     bg: "#86C166",
@@ -377,10 +345,12 @@ const state = {
   totalWrongCount: 0,
   futureActivities: "",
   completedStudyMinutes: 0,
+  focusRewardBlocks: 0,
   countdownMinutes: 25,
   remainingMs: 25 * 60 * 1000,
   startedAt: null,
   active: false,
+  goalsDate: localDateKey(),
   goals: {
     todos: [
       { text: "", done: false },
@@ -390,6 +360,13 @@ const state = {
     ],
   },
 };
+
+function localDateKey(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
 
 const els = {
   choiceCount: document.querySelector("#choiceCount"),
@@ -415,7 +392,6 @@ const els = {
   focusExitBtn: document.querySelector("#focusExitBtn"),
   timerToggleBtn: document.querySelector("#timerToggleBtn"),
   timerResetBtn: document.querySelector("#timerResetBtn"),
-  resetAllBtn: document.querySelector("#resetAllBtn"),
   bombOverlay: document.querySelector("#bombOverlay"),
   bombCloseBtn: document.querySelector("#bombCloseBtn"),
   goalResetBtn: document.querySelector("#goalResetBtn"),
@@ -464,7 +440,6 @@ function applyLanguage() {
   document.documentElement.lang = dict.htmlLang;
   document.title = dict.title;
   els.languageSelect.value = lang;
-  setText(".device-header > div:first-child > p", "Study Counter");
   setHtml(".device-header h1", dict.brand);
   setText(".current-time span", dict.currentTime);
   setText(".language-control span", dict.language);
@@ -481,20 +456,13 @@ function applyLanguage() {
   setText(".focus-toggle span", dict.focusMode);
   els.focusExitBtn.textContent = dict.exit;
   els.timerResetBtn.textContent = dict.reset;
-  setText(".level-card .counter-label", dict.level);
-  setText(".xp-note", dict.xpNote);
+  setText(".level-mini-label", dict.level);
   els.levelResetBtn.textContent = dict.levelReset;
   setText(".future-card .counter-label", dict.future);
   els.futureActivitiesInput.placeholder = dict.futurePlaceholder;
   setText(".news-card .counter-label", dict.news);
   els.newsRefreshBtn.textContent = dict.refresh;
   els.newsMoreLink.textContent = dict.more;
-  els.resetAllBtn.textContent = dict.resetAll;
-  setText(".action-panel summary", dict.go);
-  const actionList = document.querySelector(".action-list");
-  if (actionList) {
-    actionList.innerHTML = dict.actionItems.map((item) => `<li>${item}</li>`).join("");
-  }
   translateThemePanel();
   (translatedPresetNames[lang] || translatedPresetNames.zh).forEach((name, index) => {
     if (els.themePresetBtns[index]) els.themePresetBtns[index].textContent = name;
@@ -528,6 +496,7 @@ function load() {
       0,
       Number.parseInt(saved.completedStudyMinutes, 10) || Math.floor((Number.parseInt(saved.accumulatedMs, 10) || 0) / 60000),
     );
+    state.focusRewardBlocks = Math.max(0, Number.parseInt(saved.focusRewardBlocks, 10) || Math.floor(state.completedStudyMinutes / 25));
     state.countdownMinutes = Math.max(1, Number.parseInt(saved.countdownMinutes, 10) || 25);
     state.remainingMs = Math.max(0, Number.parseInt(saved.remainingMs, 10) || state.countdownMinutes * 60 * 1000);
     state.startedAt = Number.isFinite(saved.startedAt) ? saved.startedAt : null;
@@ -537,6 +506,8 @@ function load() {
       ...(saved.goals && typeof saved.goals === "object" ? saved.goals : {}),
     };
     state.goals.todos = normalizeTodos(state.goals.todos);
+    state.goalsDate = typeof saved.goalsDate === "string" ? saved.goalsDate : localDateKey();
+    resetGoalsIfNewDay(false);
   } catch {
     return;
   }
@@ -807,6 +778,15 @@ function normalizeLevel() {
   }
 }
 
+function applyFocusTimeRewards() {
+  const rewardBlocks = Math.floor(state.completedStudyMinutes / 25);
+  const newBlocks = Math.max(0, rewardBlocks - state.focusRewardBlocks);
+  if (newBlocks <= 0) return;
+  state.xp += newBlocks * 20;
+  state.focusRewardBlocks = rewardBlocks;
+  normalizeLevel();
+}
+
 function render() {
   if (els.choiceCount) els.choiceCount.textContent = state.choiceCount;
   els.levelValue.textContent = state.level;
@@ -919,6 +899,7 @@ function renderTodos() {
 }
 
 function saveTodos() {
+  resetGoalsIfNewDay(false);
   const previousTodos = state.goals.todos;
   const nextTodos = Array.from({ length: 4 }, (_, index) => ({
     text: els.todoTexts[index].value,
@@ -930,6 +911,7 @@ function saveTodos() {
     normalizeLevel();
   }
   state.goals.todos = nextTodos;
+  state.goalsDate = localDateKey();
   save();
   render();
 }
@@ -943,8 +925,20 @@ function resetGoals() {
   state.goals = {
     todos: normalizeTodos([]),
   };
+  state.goalsDate = localDateKey();
   save();
   render();
+}
+
+function resetGoalsIfNewDay(shouldRender = true) {
+  const today = localDateKey();
+  if (state.goalsDate === today) return;
+  state.goals = {
+    todos: normalizeTodos([]),
+  };
+  state.goalsDate = today;
+  save();
+  if (shouldRender) render();
 }
 
 function adjustCounter(key, delta) {
@@ -1017,6 +1011,7 @@ function toggleTimer() {
 
 function resetTimer() {
   state.completedStudyMinutes = 0;
+  state.focusRewardBlocks = 0;
   state.remainingMs = state.countdownMinutes * 60 * 1000;
   state.startedAt = state.active ? Date.now() : null;
   save();
@@ -1037,6 +1032,7 @@ function finishCountdown() {
   state.startedAt = null;
   state.remainingMs = 0;
   state.completedStudyMinutes += state.countdownMinutes;
+  applyFocusTimeRewards();
   save();
   render();
   showBomb();
@@ -1154,20 +1150,6 @@ function playExplosionSound() {
 
 }
 
-function resetAll() {
-  state.choiceCount = 0;
-  state.level = 1;
-  state.xp = 0;
-  state.remainingWrongCount = 0;
-  state.totalWrongCount = 0;
-  state.futureActivities = "";
-  state.completedStudyMinutes = 0;
-  state.remainingMs = state.countdownMinutes * 60 * 1000;
-  state.startedAt = state.active ? Date.now() : null;
-  save();
-  render();
-}
-
 if (els.choiceMinusBtn) els.choiceMinusBtn.addEventListener("click", () => adjustCounter("choiceCount", -1));
 if (els.choicePlusBtn) els.choicePlusBtn.addEventListener("click", () => adjustCounter("choiceCount", 1));
 if (els.choiceResetBtn) els.choiceResetBtn.addEventListener("click", () => resetCounter("choiceCount"));
@@ -1196,7 +1178,6 @@ document.addEventListener("keydown", (event) => {
 });
 els.timerToggleBtn.addEventListener("click", toggleTimer);
 els.timerResetBtn.addEventListener("click", resetTimer);
-els.resetAllBtn.addEventListener("click", resetAll);
 els.bombCloseBtn.addEventListener("click", hideBomb);
 els.goalResetBtn.addEventListener("click", resetGoals);
 els.todoChecks.forEach((input) => input.addEventListener("change", saveTodos));
@@ -1230,6 +1211,7 @@ renderCurrentTime();
 loadNews();
 window.setInterval(() => {
   renderCurrentTime();
+  resetGoalsIfNewDay();
   if (!state.active) return;
   if (currentRemainingMs() <= 0) {
     finishCountdown();

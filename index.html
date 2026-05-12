@@ -4,15 +4,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>&#20320;&#33021;&#20570;&#21040;</title>
-    <link rel="stylesheet" href="styles.css?v=20260512-15" />
+    <link rel="stylesheet" href="styles.css?v=20260512-27" />
   </head>
   <body>
     <main class="device-shell">
       <section class="device-panel" aria-label="study counter device">
         <header class="device-header">
           <div>
-            <p>Study Counter</p>
-            <h1>&#20320;&#33021;&#20570;&#21040; <span>&#12354;&#12394;&#12383;&#12394;&#12425;&#12391;&#12365;&#12427;</span></h1>
+            <div class="title-row">
+              <h1>&#20320;&#33021;&#20570;&#21040;</h1>
+              <section class="level-mini">
+                <span class="level-mini-label">&#31561;&#32026;&#33287;&#32147;&#39511;&#20540;</span>
+                <div class="level-mini-main"><small>Lv</small><span id="levelValue">1</span></div>
+                <div class="xp-panel">
+                  <span>EXP <b id="xpValue">0</b>/<b id="xpNeedValue">100</b></span>
+                  <div class="xp-bar" aria-hidden="true"><i id="xpBar"></i></div>
+                </div>
+                <button id="levelResetBtn" type="button">&#31561;&#32026;&#27512;&#38646;</button>
+              </section>
+            </div>
             <p class="tagline">Boring&rsquo; = simple things that bring value and enjoyment to life.</p>
           </div>
           <div class="current-time" aria-live="polite">
@@ -87,17 +97,6 @@
             </div>
           </article>
 
-          <article class="counter-card level-card">
-            <span class="counter-label">&#31561;&#32026;&#33287;&#32147;&#39511;&#20540;</span>
-            <strong><small>Lv</small><span id="levelValue">1</span></strong>
-            <div class="xp-panel">
-              <span>EXP <b id="xpValue">0</b>/<b id="xpNeedValue">100</b></span>
-              <div class="xp-bar" aria-hidden="true"><i id="xpBar"></i></div>
-            </div>
-            <p class="xp-note">&#27599;&#19968;&#27425;&#21069;&#36914;&#37117;&#26371;&#32047;&#31309;&#25104;&#33258;&#24049;&#30340;&#32147;&#39511;</p>
-            <button id="levelResetBtn" type="button">&#31561;&#32026;&#27512;&#38646;</button>
-          </article>
-
           <article class="counter-card future-card">
             <span class="counter-label">&#26410;&#20358;&#27963;&#21205;</span>
             <label class="future-activity-field">
@@ -125,21 +124,7 @@
           </article>
         </section>
 
-        <footer class="device-footer">
-          <button id="resetAllBtn" type="button">&#20840;&#37096;&#27512;&#38646;</button>
-          <span id="saveStatus" aria-live="polite"></span>
-        </footer>
-
-        <details class="reflection-panel action-panel">
-          <summary>&#20986;&#30332;</summary>
-          <ol class="action-list">
-            <li>&#12300;&#20170;&#22825;&#19981;&#29992;&#36229;&#31070;&#65292;&#21482;&#35201;&#19981;&#35201;&#20572;&#19979;&#20358;&#12290;&#12301;</li>
-            <li>&#12300;&#21738;&#24597;&#21482;&#21069;&#36914;1%&#65292;&#20063;&#27604;&#21407;&#22320;&#28966;&#24942;&#24375;&#12290;&#12301;</li>
-            <li>&#12300;&#22823;&#33126;&#26371;&#39449;&#20320;&#24456;&#32047;&#65292;&#20294;&#20570;&#19979;&#21435;&#24460;&#24120;&#24120;&#23601;&#36914;&#29376;&#24907;&#20102;&#12290;&#12301;</li>
-            <li>&#12300;&#34892;&#21205;&#26371;&#28040;&#28357;&#28966;&#24942;&#65292;&#25302;&#24310;&#21482;&#26371;&#39141;&#22823;&#28966;&#24942;&#12290;&#12301;</li>
-          </ol>
-        </details>
-
+        <span id="saveStatus" class="save-status" aria-live="polite"></span>
       </section>
     </main>
 
@@ -178,7 +163,7 @@
         <span>&#38928;&#35373;&#37197;&#33394;</span>
         <div>
           <button type="button" data-theme-preset="0">&#26085;&#31995;</button>
-          <button type="button" data-theme-preset="1">&#20219;&#22825;&#22530;&#39080;</button>
+          <button type="button" data-theme-preset="1">&#27387;&#33457;&#21487;&#24859;&#39080;</button>
           <button type="button" data-theme-preset="2">&#33258;&#28982;&#39080;</button>
           <button type="button" data-theme-preset="3">&#22799;&#26085;&#28165;&#38684;</button>
         </div>
@@ -207,7 +192,7 @@
       </div>
     </div>
 
-    <script src="nippon-colors.js?v=20260512-15"></script>
-    <script src="app.js?v=20260512-15"></script>
+    <script src="nippon-colors.js?v=20260512-27"></script>
+    <script src="app.js?v=20260512-27"></script>
   </body>
 </html>
