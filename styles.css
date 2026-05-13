@@ -1159,6 +1159,16 @@ button:focus-visible {
     max-height: none;
     overflow: visible;
     padding: 0;
+    left: -30px;
+    bottom: 82px;
+  }
+
+  .theme-control.collapsed .theme-toggle {
+    width: 54px;
+    height: 54px;
+    min-width: 54px;
+    min-height: 54px;
+    box-shadow: 6px 8px 16px rgba(62, 53, 42, 0.18);
   }
 
   .theme-control:not(.collapsed) .theme-toggle {
