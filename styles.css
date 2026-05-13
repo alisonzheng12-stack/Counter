@@ -1262,7 +1262,36 @@ button:focus-visible {
   }
 
   .future-tools {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr;
+  }
+
+  .future-tools button,
+  .future-add button {
+    width: 100%;
+  }
+
+  .future-tools input,
+  .future-add input {
+    height: 38px;
+    font-size: 0.95rem;
+  }
+
+  .future-list {
+    gap: 7px;
+  }
+
+  .future-list li {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px 8px;
+    align-items: start;
+  }
+
+  .future-list time {
+    grid-column: 1 / -1;
+  }
+
+  .future-list span {
+    line-height: 1.35;
   }
 
   .future-list {
@@ -1338,9 +1367,19 @@ button:focus-visible {
 
   .language-control select,
   .countdown-setting div,
+  .future-tools,
+  .future-add,
   .news-actions,
   .news-sources {
     width: 100%;
+  }
+
+  .future-card {
+    gap: 9px;
+  }
+
+  .future-list li {
+    padding: 8px;
   }
 
   .news-head {
