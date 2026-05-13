@@ -57,6 +57,15 @@ const translations = {
     levelReset: "等級歸零",
     future: "未來活動",
     futurePlaceholder: "一行一個未來活動",
+    futureSearchDate: "搜尋日期",
+    futureAll: "全部",
+    futureEventDate: "活動日期",
+    futureEventText: "活動內容",
+    futureEventPlaceholder: "輸入未來活動",
+    futureAdd: "加入",
+    futureEmpty: "尚未加入活動",
+    futureNoMatch: "這天沒有活動",
+    futureDelete: "刪除",
     news: "今日重點新聞",
     refresh: "更新",
     more: "更多",
@@ -76,8 +85,10 @@ const translations = {
     panel: "主底",
     presets: "預設配色",
     customMemory: "自訂記憶",
-    save: "存",
+    save: "保存",
     load: "取",
+    use: "使用",
+    delete: "刪除",
     savedSlot: "已存",
     noRecord: "無記錄",
     confirmOverwrite: "確定要覆蓋自訂 {n} 的配色嗎？",
@@ -110,6 +121,15 @@ const translations = {
     levelReset: "Reset Level",
     future: "Future Events",
     futurePlaceholder: "One future event per line",
+    futureSearchDate: "Search Date",
+    futureAll: "All",
+    futureEventDate: "Event Date",
+    futureEventText: "Event",
+    futureEventPlaceholder: "Enter a future event",
+    futureAdd: "Add",
+    futureEmpty: "No events yet",
+    futureNoMatch: "No events on this date",
+    futureDelete: "Delete",
     news: "Today's Key News",
     refresh: "Refresh",
     more: "More",
@@ -131,6 +151,8 @@ const translations = {
     customMemory: "Custom Memory",
     save: "Save",
     load: "Load",
+    use: "Use",
+    delete: "Delete",
     savedSlot: "Saved",
     noRecord: "Empty",
     confirmOverwrite: "Overwrite custom palette {n}?",
@@ -163,6 +185,15 @@ const translations = {
     levelReset: "Level zurücksetzen",
     future: "Künftige Termine",
     futurePlaceholder: "Ein künftiger Termin pro Zeile",
+    futureSearchDate: "Datum suchen",
+    futureAll: "Alle",
+    futureEventDate: "Datum",
+    futureEventText: "Termin",
+    futureEventPlaceholder: "Termin eingeben",
+    futureAdd: "Hinzuf.",
+    futureEmpty: "Noch keine Termine",
+    futureNoMatch: "Keine Termine an diesem Datum",
+    futureDelete: "Löschen",
     news: "Wichtige Nachrichten heute",
     refresh: "Neu",
     more: "Mehr",
@@ -184,6 +215,8 @@ const translations = {
     customMemory: "Eigene Speicher",
     save: "Speich.",
     load: "Laden",
+    use: "Nutzen",
+    delete: "Lösch.",
     savedSlot: "Gespeichert",
     noRecord: "Leer",
     confirmOverwrite: "Eigene Palette {n} überschreiben?",
@@ -216,6 +249,15 @@ const translations = {
     levelReset: "レベルリセット",
     future: "今後の予定",
     futurePlaceholder: "1行に1つ予定を入力",
+    futureSearchDate: "日付検索",
+    futureAll: "全部",
+    futureEventDate: "予定日",
+    futureEventText: "予定",
+    futureEventPlaceholder: "未来の予定を入力",
+    futureAdd: "追加",
+    futureEmpty: "予定はまだありません",
+    futureNoMatch: "この日の予定はありません",
+    futureDelete: "削除",
     news: "今日の主要ニュース",
     refresh: "更新",
     more: "もっと見る",
@@ -237,6 +279,8 @@ const translations = {
     customMemory: "カスタム記憶",
     save: "保存",
     load: "読込",
+    use: "使用",
+    delete: "削除",
     savedSlot: "保存済",
     noRecord: "なし",
     confirmOverwrite: "カスタム {n} の配色を上書きしますか？",
@@ -344,6 +388,8 @@ const state = {
   remainingWrongCount: 0,
   totalWrongCount: 0,
   futureActivities: "",
+  futureEvents: [],
+  futureSearchDate: "",
   completedStudyMinutes: 0,
   focusRewardBlocks: 0,
   countdownMinutes: 25,
@@ -374,7 +420,12 @@ const els = {
   xpValue: document.querySelector("#xpValue"),
   xpNeedValue: document.querySelector("#xpNeedValue"),
   xpBar: document.querySelector("#xpBar"),
-  futureActivitiesInput: document.querySelector("#futureActivitiesInput"),
+  futureSearchDateInput: document.querySelector("#futureSearchDateInput"),
+  futureClearSearchBtn: document.querySelector("#futureClearSearchBtn"),
+  futureDateInput: document.querySelector("#futureDateInput"),
+  futureTextInput: document.querySelector("#futureTextInput"),
+  futureAddBtn: document.querySelector("#futureAddBtn"),
+  futureList: document.querySelector("#futureList"),
   studyTime: document.querySelector("#studyTime"),
   focusTotalMinutes: document.querySelector("#focusTotalMinutes"),
   focusTotalUnit: document.querySelector("#focusTotalUnit"),
@@ -404,8 +455,10 @@ const els = {
   paperColorInput: document.querySelector("#paperColorInput"),
   timerColorInput: document.querySelector("#timerColorInput"),
   themePresetBtns: document.querySelectorAll("[data-theme-preset]"),
+  themeNameInputs: document.querySelectorAll("[data-theme-name]"),
   themeSaveBtns: document.querySelectorAll("[data-theme-save]"),
   themeLoadBtns: document.querySelectorAll("[data-theme-load]"),
+  themeDeleteBtns: document.querySelectorAll("[data-theme-delete]"),
   themeControl: document.querySelector(".theme-control"),
   themeToggleBtn: document.querySelector("#themeToggleBtn"),
   newsList: document.querySelector("#newsList"),
@@ -459,7 +512,12 @@ function applyLanguage() {
   setText(".level-mini-label", dict.level);
   els.levelResetBtn.textContent = dict.levelReset;
   setText(".future-card .counter-label", dict.future);
-  els.futureActivitiesInput.placeholder = dict.futurePlaceholder;
+  setText(".future-search-field span", dict.futureSearchDate);
+  setText(".future-add label:nth-of-type(1) span", dict.futureEventDate);
+  setText(".future-add label:nth-of-type(2) span", dict.futureEventText);
+  els.futureTextInput.placeholder = dict.futureEventPlaceholder;
+  els.futureClearSearchBtn.textContent = dict.futureAll;
+  els.futureAddBtn.textContent = dict.futureAdd;
   setText(".news-card .counter-label", dict.news);
   els.newsRefreshBtn.textContent = dict.refresh;
   els.newsMoreLink.textContent = dict.more;
@@ -469,6 +527,7 @@ function applyLanguage() {
   });
   translateBomb();
   render();
+  renderFutureEvents();
   renderThemeMemoryButtons();
 }
 
@@ -492,6 +551,10 @@ function load() {
     state.remainingWrongCount = Math.max(0, Number.parseInt(saved.remainingWrongCount, 10) || oldCorrectionCount);
     state.remainingWrongCount = Math.min(state.remainingWrongCount, state.totalWrongCount);
     state.futureActivities = typeof saved.futureActivities === "string" ? saved.futureActivities : "";
+    state.futureEvents = normalizeFutureEvents(saved.futureEvents, state.futureActivities);
+    sortFutureEventsInState();
+    state.futureSearchDate = /^\d{4}-\d{2}-\d{2}$/.test(String(saved.futureSearchDate || "")) ? saved.futureSearchDate : "";
+    pruneExpiredFutureEvents(false, false);
     state.completedStudyMinutes = Math.max(
       0,
       Number.parseInt(saved.completedStudyMinutes, 10) || Math.floor((Number.parseInt(saved.accumulatedMs, 10) || 0) / 60000),
@@ -519,6 +582,28 @@ function normalizeTodos(todos) {
     text: String(list[index]?.text ?? ""),
     done: Boolean(list[index]?.done),
   }));
+}
+
+function normalizeFutureEvents(events, legacyText = "") {
+  const normalized = Array.isArray(events)
+    ? events
+        .map((event) => ({
+          id: String(event?.id || `${Date.now()}-${Math.random().toString(16).slice(2)}`),
+          date: /^\d{4}-\d{2}-\d{2}$/.test(String(event?.date || "")) ? String(event.date) : localDateKey(),
+          text: String(event?.text || "").trim(),
+        }))
+        .filter((event) => event.text)
+    : [];
+  if (normalized.length || !legacyText) return normalized;
+  return String(legacyText)
+    .split(/\r?\n/)
+    .map((text) => text.trim())
+    .filter(Boolean)
+    .map((text, index) => ({
+      id: `legacy-${Date.now()}-${index}`,
+      date: localDateKey(),
+      text,
+    }));
 }
 
 function currentRemainingMs() {
@@ -676,20 +761,46 @@ function saveThemeMemory(slots) {
   localStorage.setItem(themeMemoryStorageKey, JSON.stringify(slots.slice(0, 3)));
 }
 
+function themeSlotTheme(slot) {
+  return slot?.theme ? slot.theme : slot;
+}
+
+function themeSlotName(slot, index) {
+  return slot?.name ? String(slot.name) : `${t("customMemory")} ${index + 1}`;
+}
+
+function makeThemeSlot(theme, name, index) {
+  return {
+    name: String(name || "").trim() || `${t("customMemory")} ${index + 1}`,
+    theme,
+  };
+}
+
 function seedBundledThemeMemory() {
   if (localStorage.getItem(themeMemoryBundleVersionKey) === "1") return;
-  saveThemeMemory(bundledCustomThemeMemory);
+  saveThemeMemory(bundledCustomThemeMemory.map((theme, index) => makeThemeSlot(theme, `${t("customMemory")} ${index + 1}`, index)));
   localStorage.setItem(themeMemoryBundleVersionKey, "1");
 }
 
 function renderThemeMemoryButtons() {
   const slots = loadThemeMemory();
-  els.themeSaveBtns.forEach((button, index) => {
-    button.textContent = slots[index] ? `\u2713 ${t("savedSlot")} ${index + 1}` : `${t("save")} ${index + 1}`;
-    button.classList.toggle("filled", Boolean(slots[index]));
+  els.themeNameInputs.forEach((input, index) => {
+    const slot = slots[index];
+    input.placeholder = `${t("customMemory")} ${index + 1}`;
+    if (document.activeElement !== input) {
+      input.value = slot ? themeSlotName(slot, index) : "";
+    }
+    input.closest(".theme-slot")?.classList.toggle("saved", Boolean(slot));
+  });
+  els.themeSaveBtns.forEach((button) => {
+    button.textContent = t("save");
   });
   els.themeLoadBtns.forEach((button, index) => {
-    button.textContent = `${t("load")} ${index + 1}`;
+    button.textContent = t("use");
+    button.disabled = !slots[index];
+  });
+  els.themeDeleteBtns.forEach((button, index) => {
+    button.textContent = t("delete");
     button.disabled = !slots[index];
   });
 }
@@ -709,10 +820,11 @@ function saveThemeSlot(index) {
   if (slots[index] && !window.confirm(t("confirmOverwrite").replace("{n}", index + 1))) {
     return;
   }
-  slots[index] = currentThemeFromInputs();
+  const name = els.themeNameInputs[index]?.value || themeSlotName(slots[index], index);
+  slots[index] = makeThemeSlot(currentThemeFromInputs(), name, index);
   saveThemeMemory(slots);
   renderThemeMemoryButtons();
-  flashThemeButton(els.themeSaveBtns[index], `${t("savedSlot")} ${index + 1}`);
+  flashThemeButton(els.themeSaveBtns[index], t("saved"));
   showSaved();
 }
 
@@ -722,11 +834,21 @@ function loadThemeSlot(index) {
     flashThemeButton(els.themeLoadBtns[index], t("noRecord"));
     return;
   }
-  const theme = sanitizeTheme(slots[index]);
+  const theme = sanitizeTheme(themeSlotTheme(slots[index]));
   localStorage.setItem(themeStorageKey, JSON.stringify(theme));
   populateThemeControls(theme);
   applyTheme(theme);
-  flashThemeButton(els.themeLoadBtns[index], `${t("loaded")} ${index + 1}`);
+  flashThemeButton(els.themeLoadBtns[index], `${t("loaded")} ${themeSlotName(slots[index], index)}`);
+  showSaved();
+}
+
+function deleteThemeSlot(index) {
+  const slots = loadThemeMemory();
+  if (!slots[index]) return;
+  slots[index] = null;
+  saveThemeMemory(slots);
+  if (els.themeNameInputs[index]) els.themeNameInputs[index].value = "";
+  renderThemeMemoryButtons();
   showSaved();
 }
 
@@ -793,8 +915,11 @@ function render() {
   els.xpValue.textContent = state.xp;
   els.xpNeedValue.textContent = xpNeed();
   els.xpBar.style.width = `${Math.min(100, (state.xp / xpNeed()) * 100)}%`;
-  if (document.activeElement !== els.futureActivitiesInput) {
-    els.futureActivitiesInput.value = state.futureActivities;
+  if (document.activeElement !== els.futureSearchDateInput) {
+    els.futureSearchDateInput.value = state.futureSearchDate;
+  }
+  if (document.activeElement !== els.futureDateInput && !els.futureDateInput.value) {
+    els.futureDateInput.value = localDateKey();
   }
   els.studyTime.textContent = formatTime(currentRemainingMs());
   els.focusTotalMinutes.textContent = state.completedStudyMinutes + currentSessionFocusMinutes();
@@ -803,6 +928,7 @@ function render() {
   }
   els.timerToggleBtn.textContent = state.active ? t("pause") : t("start");
   renderTodos();
+  renderFutureEvents();
 }
 
 function renderNewsItems(items) {
@@ -916,9 +1042,96 @@ function saveTodos() {
   render();
 }
 
-function saveFutureActivities() {
-  state.futureActivities = els.futureActivitiesInput.value;
+function sortedFutureEvents() {
+  return [...state.futureEvents].sort((a, b) => a.date.localeCompare(b.date) || a.text.localeCompare(b.text));
+}
+
+function sortFutureEventsInState() {
+  state.futureEvents = sortedFutureEvents();
+}
+
+function pruneExpiredFutureEvents(shouldSave = true, shouldRender = true) {
+  const today = localDateKey();
+  const beforeCount = state.futureEvents.length;
+  state.futureEvents = state.futureEvents.filter((event) => event.date >= today);
+  let changed = state.futureEvents.length !== beforeCount;
+  if (state.futureSearchDate && state.futureSearchDate < today) {
+    state.futureSearchDate = "";
+    changed = true;
+  }
+  if (!changed) return false;
+  sortFutureEventsInState();
+  if (shouldSave) save();
+  if (shouldRender) renderFutureEvents();
+  return true;
+}
+
+function renderFutureEvents() {
+  if (!els.futureList) return;
+  if (document.activeElement !== els.futureSearchDateInput) {
+    els.futureSearchDateInput.value = state.futureSearchDate;
+  }
+  const filtered = sortedFutureEvents().filter((event) => !state.futureSearchDate || event.date === state.futureSearchDate);
+  els.futureList.innerHTML = "";
+  if (!filtered.length) {
+    const li = document.createElement("li");
+    li.className = "future-empty";
+    li.textContent = state.futureEvents.length ? t("futureNoMatch") : t("futureEmpty");
+    els.futureList.append(li);
+    return;
+  }
+  filtered.forEach((event) => {
+    const li = document.createElement("li");
+    const time = document.createElement("time");
+    const text = document.createElement("span");
+    const button = document.createElement("button");
+    time.dateTime = event.date;
+    time.textContent = event.date;
+    text.textContent = event.text;
+    button.type = "button";
+    button.textContent = "×";
+    button.setAttribute("aria-label", `${t("futureDelete")} ${event.text}`);
+    button.addEventListener("click", () => deleteFutureEvent(event.id));
+    li.append(time, text, button);
+    els.futureList.append(li);
+  });
+}
+
+function addFutureEvent() {
+  const text = els.futureTextInput.value.trim();
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(els.futureDateInput.value) ? els.futureDateInput.value : localDateKey();
+  if (!text) return;
+  state.futureEvents.push({
+    id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    date,
+    text,
+  });
+  sortFutureEventsInState();
+  els.futureTextInput.value = "";
+  state.futureSearchDate = date;
+  els.futureSearchDateInput.value = date;
   save();
+  render();
+}
+
+function deleteFutureEvent(id) {
+  state.futureEvents = state.futureEvents.filter((event) => event.id !== id);
+  sortFutureEventsInState();
+  save();
+  render();
+}
+
+function updateFutureSearchDate() {
+  state.futureSearchDate = els.futureSearchDateInput.value;
+  save();
+  renderFutureEvents();
+}
+
+function clearFutureSearchDate() {
+  state.futureSearchDate = "";
+  els.futureSearchDateInput.value = "";
+  save();
+  renderFutureEvents();
 }
 
 function resetGoals() {
@@ -1157,7 +1370,16 @@ els.levelResetBtn.addEventListener("click", resetLevel);
 els.quickActionBtns.forEach((button) => {
   button.addEventListener("click", () => adjustCounter(button.dataset.counter, Number.parseInt(button.dataset.amount, 10) || 0));
 });
-els.futureActivitiesInput.addEventListener("input", saveFutureActivities);
+els.futureSearchDateInput.addEventListener("change", updateFutureSearchDate);
+els.futureClearSearchBtn.addEventListener("click", clearFutureSearchDate);
+els.futureDateInput.addEventListener("change", () => save());
+els.futureAddBtn.addEventListener("click", addFutureEvent);
+els.futureTextInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    addFutureEvent();
+  }
+});
 els.newsRefreshBtn.addEventListener("click", loadNews);
 els.newsSourceBtns.forEach((button) => {
   button.addEventListener("click", () => selectNewsSource(button.dataset.newsSource));
@@ -1191,11 +1413,22 @@ els.timerColorInput.addEventListener("change", saveTheme);
 els.themePresetBtns.forEach((button) => {
   button.addEventListener("click", () => applyThemePreset(Number.parseInt(button.dataset.themePreset, 10) || 0));
 });
+els.themeNameInputs.forEach((input) => {
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      saveThemeSlot(Number.parseInt(input.dataset.themeName, 10) || 0);
+    }
+  });
+});
 els.themeSaveBtns.forEach((button) => {
   button.addEventListener("click", () => saveThemeSlot(Number.parseInt(button.dataset.themeSave, 10) || 0));
 });
 els.themeLoadBtns.forEach((button) => {
   button.addEventListener("click", () => loadThemeSlot(Number.parseInt(button.dataset.themeLoad, 10) || 0));
+});
+els.themeDeleteBtns.forEach((button) => {
+  button.addEventListener("click", () => deleteThemeSlot(Number.parseInt(button.dataset.themeDelete, 10) || 0));
 });
 els.themeToggleBtn.addEventListener("click", () => setThemeCollapsed(!els.themeControl.classList.contains("collapsed")));
 els.languageSelect.addEventListener("change", () => changeLanguage(els.languageSelect.value));
@@ -1212,6 +1445,7 @@ loadNews();
 window.setInterval(() => {
   renderCurrentTime();
   resetGoalsIfNewDay();
+  pruneExpiredFutureEvents();
   if (!state.active) return;
   if (currentRemainingMs() <= 0) {
     finishCountdown();

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>&#20320;&#33021;&#20570;&#21040;</title>
-    <link rel="stylesheet" href="styles.css?v=20260513-02" />
+    <link rel="stylesheet" href="styles.css?v=20260513-14" />
   </head>
   <body>
     <main class="device-shell">
@@ -99,9 +99,25 @@
 
           <article class="counter-card future-card">
             <span class="counter-label">&#26410;&#20358;&#27963;&#21205;</span>
-            <label class="future-activity-field">
-              <textarea id="futureActivitiesInput" rows="6" placeholder="&#19968;&#34892;&#19968;&#20491;&#26410;&#20358;&#27963;&#21205;"></textarea>
-            </label>
+            <div class="future-tools">
+              <label class="future-search-field">
+                <span>&#25628;&#23563;&#26085;&#26399;</span>
+                <input id="futureSearchDateInput" type="date" />
+              </label>
+              <button id="futureClearSearchBtn" type="button">&#20840;&#37096;</button>
+            </div>
+            <div class="future-add">
+              <label>
+                <span>&#27963;&#21205;&#26085;&#26399;</span>
+                <input id="futureDateInput" type="date" />
+              </label>
+              <label>
+                <span>&#27963;&#21205;&#20839;&#23481;</span>
+                <input id="futureTextInput" type="text" placeholder="&#36664;&#20837;&#26410;&#20358;&#27963;&#21205;" />
+              </label>
+              <button id="futureAddBtn" type="button">&#21152;&#20837;</button>
+            </div>
+            <ol id="futureList" class="future-list"></ol>
           </article>
 
           <article class="counter-card news-card">
@@ -168,17 +184,23 @@
           <button type="button" data-theme-preset="3">&#22799;&#26085;&#28165;&#38684;</button>
         </div>
         <span>&#33258;&#35330;&#35352;&#25014;</span>
-        <div>
-          <button type="button" data-theme-save="0">&#23384; 1</button>
-          <button type="button" data-theme-load="0">&#21462; 1</button>
+        <div class="theme-slot">
+          <input type="text" data-theme-name="0" placeholder="&#33258;&#35330; 1" />
+          <button type="button" data-theme-save="0">&#20445;&#23384;</button>
+          <button type="button" data-theme-load="0">&#20351;&#29992;</button>
+          <button type="button" data-theme-delete="0">&#21034;&#38500;</button>
         </div>
-        <div>
-          <button type="button" data-theme-save="1">&#23384; 2</button>
-          <button type="button" data-theme-load="1">&#21462; 2</button>
+        <div class="theme-slot">
+          <input type="text" data-theme-name="1" placeholder="&#33258;&#35330; 2" />
+          <button type="button" data-theme-save="1">&#20445;&#23384;</button>
+          <button type="button" data-theme-load="1">&#20351;&#29992;</button>
+          <button type="button" data-theme-delete="1">&#21034;&#38500;</button>
         </div>
-        <div>
-          <button type="button" data-theme-save="2">&#23384; 3</button>
-          <button type="button" data-theme-load="2">&#21462; 3</button>
+        <div class="theme-slot">
+          <input type="text" data-theme-name="2" placeholder="&#33258;&#35330; 3" />
+          <button type="button" data-theme-save="2">&#20445;&#23384;</button>
+          <button type="button" data-theme-load="2">&#20351;&#29992;</button>
+          <button type="button" data-theme-delete="2">&#21034;&#38500;</button>
         </div>
       </div>
     </aside>
@@ -192,7 +214,7 @@
       </div>
     </div>
 
-    <script src="nippon-colors.js?v=20260513-02"></script>
-    <script src="app.js?v=20260513-02"></script>
+    <script src="nippon-colors.js?v=20260513-14"></script>
+    <script src="app.js?v=20260513-14"></script>
   </body>
 </html>

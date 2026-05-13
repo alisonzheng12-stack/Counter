@@ -660,36 +660,113 @@ body.focus-mode .focus-exit:focus-visible {
 }
 
 .future-card {
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto auto minmax(0, 1fr);
 }
 
-.future-activity-field {
+.future-tools,
+.future-add {
   display: grid;
   gap: 6px;
-  min-height: 0;
   color: var(--ink);
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 800;
 }
 
-.future-activity-field textarea {
+.future-tools {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+}
+
+.future-add {
+  grid-template-columns: minmax(118px, 0.8fr) minmax(0, 1fr) auto;
+  align-items: end;
+}
+
+.future-tools label,
+.future-add label {
+  display: grid;
+  gap: 4px;
+  min-height: 0;
+  color: var(--ink);
+  min-width: 0;
+}
+
+.future-tools input,
+.future-add input {
   width: 100%;
-  min-height: 116px;
-  resize: vertical;
-  padding: 9px 10px;
+  height: 34px;
+  min-width: 0;
+  padding: 0 8px;
   border: var(--line-width) solid var(--line);
-  border-radius: 8px;
+  border-radius: 6px;
   background: var(--paper);
   color: var(--ink);
   font: inherit;
-  font-size: clamp(1rem, 2.2vw, 1.18rem);
+  font-size: 0.82rem;
   font-weight: 700;
-  line-height: 1.55;
 }
 
-.future-activity-field textarea:focus {
+.future-tools input:focus,
+.future-add input:focus {
   border-color: var(--accent);
   outline: none;
+}
+
+.future-tools button,
+.future-add button {
+  min-height: 34px;
+  padding: 4px 10px;
+}
+
+.future-list {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  min-height: 0;
+  max-height: 112px;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  list-style: none;
+}
+
+.future-list li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  border: var(--line-width) solid var(--line);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--paper) 88%, var(--line));
+  color: var(--ink);
+}
+
+.future-list time {
+  font-size: 0.76rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.future-list span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.future-list button {
+  min-width: 28px;
+  min-height: 28px;
+  padding: 0;
+}
+
+.future-empty {
+  grid-template-columns: 1fr;
+  color: var(--ink);
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-align: center;
 }
 
 .news-card {
@@ -881,36 +958,45 @@ button:focus-visible {
 }
 
 .theme-control.collapsed .theme-toggle {
-  width: 58px;
-  height: 58px;
-  min-width: 58px;
-  min-height: 58px;
-  overflow: hidden;
-  border: 4px solid #1c1c1c;
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  min-height: 56px;
+  overflow: visible;
+  border: 2px solid #cb1b45;
+  border-radius: 16px;
   background:
-    radial-gradient(circle at center, #fffffb 0 9px, #1c1c1c 10px 14px, transparent 15px),
-    linear-gradient(#e83030 0 46%, #1c1c1c 47% 53%, #fffffb 54% 100%);
+    linear-gradient(135deg, rgba(203, 27, 69, 0.12), transparent 42%),
+    radial-gradient(circle at 68% 22%, rgba(255, 255, 251, 0.75) 0 7px, transparent 8px),
+    #fcfaf2;
   color: transparent;
+  font-family: "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", "Microsoft JhengHei", serif;
   font-size: 0;
-  box-shadow: 0 10px 20px rgba(62, 53, 42, 0.22);
+  font-weight: 900;
+  line-height: 1;
+  box-shadow:
+    inset 0 0 0 4px rgba(203, 27, 69, 0.08),
+    0 10px 20px rgba(62, 53, 42, 0.16);
 }
 
 .theme-control.collapsed .theme-toggle::after {
-  content: "";
+  content: "彩";
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 12px;
-  height: 12px;
-  border: 2px solid #1c1c1c;
-  border-radius: 50%;
-  background: #fffffb;
-  transform: translate(-50%, -50%);
+  inset: 7px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(203, 27, 69, 0.72);
+  border-radius: 11px;
+  background: rgba(255, 255, 251, 0.38);
+  color: #cb1b45;
+  font-size: 1.18rem;
+  letter-spacing: 0;
+  transform: none;
 }
 
 .theme-control.collapsed .theme-toggle:hover,
 .theme-control.collapsed .theme-toggle:focus-visible {
-  transform: translateY(-1px) rotate(-8deg);
+  transform: translateY(-1px) rotate(-2deg);
 }
 
 .theme-control:not(.collapsed) .theme-toggle {
@@ -966,6 +1052,45 @@ button:focus-visible {
 
 .theme-memory div:first-of-type {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.theme-memory .theme-slot {
+  grid-template-columns: minmax(0, 1fr) repeat(3, minmax(44px, auto));
+  align-items: center;
+  gap: 6px;
+  padding: 7px;
+  border: var(--line-width) solid color-mix(in srgb, var(--line) 72%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--paper) 82%, var(--bg));
+}
+
+.theme-slot input {
+  width: 100%;
+  min-width: 0;
+  height: 32px;
+  padding: 0 8px;
+  border: var(--line-width) solid var(--line);
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.theme-slot input:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.theme-slot.saved {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--paper));
+}
+
+.theme-slot.saved input {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, var(--paper));
 }
 
 .theme-memory button {
@@ -1132,8 +1257,16 @@ button:focus-visible {
     padding: 6px 8px;
   }
 
-  .future-activity-field textarea {
-    min-height: 92px;
+  .future-add {
+    grid-template-columns: 1fr;
+  }
+
+  .future-tools {
+    grid-template-columns: 1fr auto;
+  }
+
+  .future-list {
+    max-height: none;
   }
 
   .todo-grid {
