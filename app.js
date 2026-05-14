@@ -3,6 +3,7 @@ const themeStorageKey = "minimal-study-counter-theme-v1";
 const themeCollapsedStorageKey = "minimal-study-counter-theme-collapsed";
 const themeMemoryStorageKey = "minimal-study-counter-theme-memory-v1";
 const themeMemoryBundleVersionKey = "minimal-study-counter-theme-memory-bundle-20260511-2";
+const themeSlot01SnapshotKey = "minimal-study-counter-theme-slot-01-snapshot-20260514-3";
 const newsSourceStorageKey = "minimal-study-counter-news-source-v1";
 const languageStorageKey = "minimal-study-counter-language-v1";
 const newsSources = {
@@ -40,6 +41,7 @@ const translations = {
     currentTime: "現在時間",
     language: "語言",
     todayGoals: "今日目標",
+    goalResetHint: "每日00:00重置",
     clear: "清空",
     todoPlaceholder: "輸入今日要完成的事",
     countdown: "倒數時間",
@@ -104,6 +106,7 @@ const translations = {
     currentTime: "Current Time",
     language: "Language",
     todayGoals: "Today's Goals",
+    goalResetHint: "Resets daily at 00:00",
     clear: "Clear",
     todoPlaceholder: "Enter something to complete today",
     countdown: "Countdown",
@@ -168,6 +171,7 @@ const translations = {
     currentTime: "Aktuelle Uhrzeit",
     language: "Sprache",
     todayGoals: "Tagesziele",
+    goalResetHint: "Täglich um 00:00 zurückgesetzt",
     clear: "Leeren",
     todoPlaceholder: "Aufgabe für heute eingeben",
     countdown: "Countdown",
@@ -232,6 +236,7 @@ const translations = {
     currentTime: "現在時刻",
     language: "言語",
     todayGoals: "今日の目標",
+    goalResetHint: "毎日00:00にリセット",
     clear: "クリア",
     todoPlaceholder: "今日やることを入力",
     countdown: "カウントダウン",
@@ -319,6 +324,14 @@ const defaultTheme = {
   paper: "#FFFFFB",
   timer: "#FFFFFB",
 };
+const slot01Theme = {
+  bg: "#FCFAF2",
+  text: "#E03C8A",
+  line: "#CAAD5F",
+  lineWidth: "2px",
+  paper: "#FFFFFB",
+  timer: "#FFFFFB",
+};
 const themeSlotNames = ["\u65e5\u7cfb", "\u6afb\u82b1\u53ef\u611b\u98a8", "\u81ea\u7136\u98a8", "\u590f\u65e5\u6e05\u971c"];
 const defaultThemeMemory = [
   {
@@ -355,14 +368,7 @@ const defaultThemeMemory = [
   },
 ];
 const bundledCustomThemeMemory = [
-  {
-    bg: "#FCFAF2",
-    text: "#D7C4BB",
-    line: "#B4A582",
-    lineWidth: "3px",
-    paper: "#4D5139",
-    timer: "#6C6024",
-  },
+  slot01Theme,
   {
     bg: "#91989F",
     text: "#F75C2F",
@@ -496,7 +502,8 @@ function applyLanguage() {
   setHtml(".device-header h1", dict.brand);
   setText(".current-time span", dict.currentTime);
   setText(".language-control span", dict.language);
-  setText(".goal-head span", dict.todayGoals);
+  setText(".goal-title span", dict.todayGoals);
+  setText(".goal-title small", dict.goalResetHint);
   els.goalResetBtn.textContent = dict.clear;
   els.todoTexts.forEach((input) => {
     input.placeholder = dict.todoPlaceholder;
@@ -769,9 +776,13 @@ function themeSlotName(slot, index) {
   return slot?.name ? String(slot.name) : `${t("customMemory")} ${index + 1}`;
 }
 
+function defaultThemeSlotName(index) {
+  return `${t("customMemory")} ${index + 1}`;
+}
+
 function makeThemeSlot(theme, name, index) {
   return {
-    name: String(name || "").trim() || `${t("customMemory")} ${index + 1}`,
+    name: String(name || "").trim() || defaultThemeSlotName(index),
     theme,
   };
 }
@@ -782,11 +793,19 @@ function seedBundledThemeMemory() {
   localStorage.setItem(themeMemoryBundleVersionKey, "1");
 }
 
+function saveSlot01Preset() {
+  if (localStorage.getItem(themeSlot01SnapshotKey) === "1") return;
+  const slots = loadThemeMemory();
+  slots[0] = makeThemeSlot(slot01Theme, defaultThemeSlotName(0), 0);
+  saveThemeMemory(slots);
+  localStorage.setItem(themeSlot01SnapshotKey, "1");
+}
+
 function renderThemeMemoryButtons() {
   const slots = loadThemeMemory();
   els.themeNameInputs.forEach((input, index) => {
     const slot = slots[index];
-    input.placeholder = `${t("customMemory")} ${index + 1}`;
+    input.placeholder = defaultThemeSlotName(index);
     if (document.activeElement !== input) {
       input.value = slot ? themeSlotName(slot, index) : "";
     }
@@ -1414,6 +1433,21 @@ els.themePresetBtns.forEach((button) => {
   button.addEventListener("click", () => applyThemePreset(Number.parseInt(button.dataset.themePreset, 10) || 0));
 });
 els.themeNameInputs.forEach((input) => {
+  input.addEventListener("focus", () => {
+    const index = Number.parseInt(input.dataset.themeName, 10) || 0;
+    const slots = loadThemeMemory();
+    const slotName = slots[index] ? themeSlotName(slots[index], index) : "";
+    const defaultName = defaultThemeSlotName(index);
+    input.dataset.previousValue = input.value;
+    if (!slotName || slotName === defaultName) {
+      input.value = "";
+    }
+  });
+  input.addEventListener("blur", () => {
+    if (!input.value.trim()) {
+      input.value = input.dataset.previousValue || "";
+    }
+  });
   input.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
       event.preventDefault();
@@ -1438,6 +1472,7 @@ const theme = loadTheme();
 populateThemeControls(theme);
 applyTheme(theme);
 seedBundledThemeMemory();
+saveSlot01Preset();
 setThemeCollapsed(localStorage.getItem(themeCollapsedStorageKey) === "1");
 applyLanguage();
 renderCurrentTime();
