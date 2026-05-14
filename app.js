@@ -822,15 +822,15 @@ function renderThemeMemoryButtons() {
     button.textContent = t("delete");
     button.disabled = !slots[index];
   });
+  markActiveThemeControl();
 }
 
 function applyThemePreset(index) {
   const theme = sanitizeTheme(defaultThemeMemory[index]);
-  const presetName = (translatedPresetNames[currentLanguage()] || translatedPresetNames.zh)[index] || themeSlotNames[index];
   localStorage.setItem(themeStorageKey, JSON.stringify(theme));
   populateThemeControls(theme);
   applyTheme(theme);
-  flashThemeButton(els.themePresetBtns[index], `${t("loaded")} ${presetName}`);
+  markActiveThemeControl(els.themePresetBtns[index]);
   showSaved();
 }
 
@@ -857,7 +857,7 @@ function loadThemeSlot(index) {
   localStorage.setItem(themeStorageKey, JSON.stringify(theme));
   populateThemeControls(theme);
   applyTheme(theme);
-  flashThemeButton(els.themeLoadBtns[index], `${t("loaded")} ${themeSlotName(slots[index], index)}`);
+  markActiveThemeControl(els.themeLoadBtns[index].closest(".theme-slot"));
   showSaved();
 }
 
@@ -878,6 +878,15 @@ function flashThemeButton(button, text) {
   button.flashTimer = window.setTimeout(() => {
     renderThemeMemoryButtons();
   }, 950);
+}
+
+function markActiveThemeControl(target = null) {
+  document.querySelectorAll(".theme-memory .active-theme").forEach((element) => {
+    element.classList.remove("active-theme");
+  });
+  if (target) {
+    target.classList.add("active-theme");
+  }
 }
 
 function showSaved() {
