@@ -987,6 +987,18 @@ function renderNewsFallback(message) {
   els.newsStatus.textContent = message;
 }
 
+async function loadCachedNews(sourceKey) {
+  const response = await fetch(`news.json?v=${Date.now()}`, { cache: "no-store" });
+  if (!response.ok) throw new Error("news cache request failed");
+  const payload = await response.json();
+  const source = payload?.sources?.[sourceKey];
+  const items = Array.isArray(source?.items) ? source.items.filter((item) => item.title && item.link) : [];
+  if (!items.length) throw new Error("empty news cache");
+  renderNewsItems(items);
+  const updatedAt = payload.updatedAt ? formatCurrentTime(new Date(payload.updatedAt)) : formatCurrentTime();
+  els.newsStatus.textContent = `${source.label || currentNewsSource().label} ${t("updated")} ${updatedAt}`;
+}
+
 function currentNewsSourceKey() {
   const saved = localStorage.getItem(newsSourceStorageKey);
   return newsSources[saved] ? saved : "tw";
@@ -1008,9 +1020,16 @@ function renderNewsSourceControls() {
 
 async function loadNews() {
   if (!els.newsList) return;
+  const sourceKey = currentNewsSourceKey();
   const source = currentNewsSource();
   renderNewsSourceControls();
   els.newsStatus.textContent = t("updating");
+  try {
+    await loadCachedNews(sourceKey);
+    return;
+  } catch {
+    // Fall back to live RSS through a public CORS proxy when the GitHub cache is not available yet.
+  }
   try {
     const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(source.feedUrl)}`;
     const response = await fetch(proxyUrl, { cache: "no-store" });
