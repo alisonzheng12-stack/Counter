@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>&#20320;&#33021;&#20570;&#21040;</title>
-    <link rel="stylesheet" href="styles.css?v=20260514-13" />
+    <link rel="stylesheet" href="styles.css?v=20260515-5" />
   </head>
   <body>
     <main class="device-shell">
@@ -65,6 +65,32 @@
               <input class="todo-check" type="checkbox" data-todo-check="3" />
               <input class="todo-text" type="text" data-todo-text="3" placeholder="&#36664;&#20837;&#20170;&#26085;&#35201;&#23436;&#25104;&#30340;&#20107;" />
             </label>
+          </div>
+          <div class="extra-goals" data-expanded="false">
+            <div class="extra-goals-content" id="extraGoalsContent">
+              <div class="todo-grid">
+              <label class="todo-item">
+                <input class="todo-check" type="checkbox" data-todo-check="4" />
+                <input class="todo-text" type="text" data-todo-text="4" placeholder="&#36664;&#20837;&#20170;&#26085;&#35201;&#23436;&#25104;&#30340;&#20107;" />
+              </label>
+              <label class="todo-item">
+                <input class="todo-check" type="checkbox" data-todo-check="5" />
+                <input class="todo-text" type="text" data-todo-text="5" placeholder="&#36664;&#20837;&#20170;&#26085;&#35201;&#23436;&#25104;&#30340;&#20107;" />
+              </label>
+              <label class="todo-item">
+                <input class="todo-check" type="checkbox" data-todo-check="6" />
+                <input class="todo-text" type="text" data-todo-text="6" placeholder="&#36664;&#20837;&#20170;&#26085;&#35201;&#23436;&#25104;&#30340;&#20107;" />
+              </label>
+              <label class="todo-item">
+                <input class="todo-check" type="checkbox" data-todo-check="7" />
+                <input class="todo-text" type="text" data-todo-text="7" placeholder="&#36664;&#20837;&#20170;&#26085;&#35201;&#23436;&#25104;&#30340;&#20107;" />
+              </label>
+              </div>
+            </div>
+            <button class="extra-goals-toggle" id="extraGoalsToggleBtn" type="button" aria-expanded="false" aria-controls="extraGoalsContent">
+              <span>&#26032;&#22686;&#26356;&#22810;&#30446;&#27161;</span>
+              <span class="extra-goals-icon" aria-hidden="true">&#8964;</span>
+            </button>
           </div>
         </section>
 
@@ -180,10 +206,10 @@
       </label>
       <div class="theme-memory" aria-label="theme memory slots">
         <span>&#38928;&#35373;&#37197;&#33394;</span>
-        <div>
+        <div class="theme-preset-grid">
           <button type="button" data-theme-preset="0">&#26085;&#31995;</button>
           <button type="button" data-theme-preset="1">&#27387;&#33457;&#21487;&#24859;&#39080;</button>
-          <button type="button" data-theme-preset="2">&#33258;&#28982;&#39080;</button>
+          <button type="button" data-theme-preset="2">&#32654;&#22283;&#24489;&#21476;&#39080;&#26684;</button>
           <button type="button" data-theme-preset="3">&#22799;&#26085;&#28165;&#38684;</button>
         </div>
         <span>&#33258;&#35330;&#35352;&#25014;</span>
@@ -217,7 +243,7 @@
       </div>
     </div>
 
-    <script src="nippon-colors.js?v=20260514-13"></script>
-    <script src="app.js?v=20260514-13"></script>
+    <script src="nippon-colors.js?v=20260515-5"></script>
+    <script src="app.js?v=20260515-5"></script>
   </body>
 </html>

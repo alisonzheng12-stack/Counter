@@ -28,10 +28,10 @@ const newsSources = {
 };
 let sharedAudio = null;
 const translatedPresetNames = {
-  zh: ["日系", "櫻花可愛風", "自然風", "夏日清霜"],
-  en: ["Japanese", "Sakura Cute", "Nature", "Summer Frost"],
-  de: ["Japanisch", "Sakura süß", "Natur", "Sommerfrost"],
-  ja: ["和風", "桜かわいい", "自然風", "夏の霜"],
+  zh: ["日系", "櫻花可愛風", "美國復古風格", "夏日清霜"],
+  en: ["Japanese", "Sakura Cute", "American Retro", "Summer Frost"],
+  de: ["Japanisch", "Sakura süß", "Amerikanisch Retro", "Sommerfrost"],
+  ja: ["和風", "桜かわいい", "アメリカンレトロ", "夏の霜"],
 };
 const translations = {
   zh: {
@@ -44,6 +44,8 @@ const translations = {
     goalResetHint: "每日00:00重置",
     clear: "清空",
     todoPlaceholder: "輸入今日要完成的事",
+    moreGoals: "新增更多目標",
+    hideMoreGoals: "收起更多目標",
     countdown: "倒數時間",
     setMinutes: "設定分鐘",
     set: "設置",
@@ -109,6 +111,8 @@ const translations = {
     goalResetHint: "Resets daily at 00:00",
     clear: "Clear",
     todoPlaceholder: "Enter something to complete today",
+    moreGoals: "Add More Goals",
+    hideMoreGoals: "Hide More Goals",
     countdown: "Countdown",
     setMinutes: "Set minutes",
     set: "Set",
@@ -174,6 +178,8 @@ const translations = {
     goalResetHint: "Täglich um 00:00 zurückgesetzt",
     clear: "Leeren",
     todoPlaceholder: "Aufgabe für heute eingeben",
+    moreGoals: "Mehr Ziele hinzufügen",
+    hideMoreGoals: "Mehr Ziele einklappen",
     countdown: "Countdown",
     setMinutes: "Minuten einstellen",
     set: "Setzen",
@@ -239,6 +245,8 @@ const translations = {
     goalResetHint: "毎日00:00にリセット",
     clear: "クリア",
     todoPlaceholder: "今日やることを入力",
+    moreGoals: "目標をさらに追加",
+    hideMoreGoals: "追加目標を閉じる",
     countdown: "カウントダウン",
     setMinutes: "分を設定",
     set: "設定",
@@ -332,13 +340,13 @@ const slot01Theme = {
   paper: "#FFFFFB",
   timer: "#FFFFFB",
 };
-const themeSlotNames = ["\u65e5\u7cfb", "\u6afb\u82b1\u53ef\u611b\u98a8", "\u81ea\u7136\u98a8", "\u590f\u65e5\u6e05\u971c"];
+const themeSlotNames = ["\u65e5\u7cfb", "\u6afb\u82b1\u53ef\u611b\u98a8", "\u7f8e\u570b\u5fa9\u53e4\u98a8\u683c", "\u590f\u65e5\u6e05\u971c"];
 const defaultThemeMemory = [
   {
     bg: "#FCFAF2",
     text: "#1C1C1C",
     line: "#B4A582",
-    lineWidth: "1px",
+    lineWidth: "2px",
     paper: "#FFFFFB",
     timer: "#FFFFFB",
   },
@@ -346,17 +354,17 @@ const defaultThemeMemory = [
     bg: "#FEDFE1",
     text: "#64363C",
     line: "#F596AA",
-    lineWidth: "3px",
+    lineWidth: "2px",
     paper: "#FFFFFB",
     timer: "#F8C3CD",
   },
   {
-    bg: "#86C166",
-    text: "#1C1C1C",
-    line: "#1B813E",
+    bg: "#F9BF45",
+    text: "#08192D",
+    line: "#F75C2F",
     lineWidth: "2px",
-    paper: "#FCFAF2",
-    timer: "#B4A582",
+    paper: "#FFFFFB",
+    timer: "#FCFAF2",
   },
   {
     bg: "#A5DEE4",
@@ -412,6 +420,7 @@ const state = {
     ],
   },
 };
+const todoCount = 8;
 
 function localDateKey(date = new Date()) {
   const year = date.getFullYear();
@@ -452,6 +461,8 @@ const els = {
   bombOverlay: document.querySelector("#bombOverlay"),
   bombCloseBtn: document.querySelector("#bombCloseBtn"),
   goalResetBtn: document.querySelector("#goalResetBtn"),
+  extraGoals: document.querySelector(".extra-goals"),
+  extraGoalsToggleBtn: document.querySelector("#extraGoalsToggleBtn"),
   todoChecks: document.querySelectorAll("[data-todo-check]"),
   todoTexts: document.querySelectorAll("[data-todo-text]"),
   bgColorInput: document.querySelector("#bgColorInput"),
@@ -508,6 +519,7 @@ function applyLanguage() {
   els.todoTexts.forEach((input) => {
     input.placeholder = dict.todoPlaceholder;
   });
+  updateExtraGoalsToggle();
   setText(".time-card .counter-label", dict.countdown);
   setText(".countdown-setting > span", dict.setMinutes);
   els.countdownSetBtn.textContent = dict.set;
@@ -585,7 +597,7 @@ function load() {
 
 function normalizeTodos(todos) {
   const list = Array.isArray(todos) ? todos : [];
-  return Array.from({ length: 4 }, (_, index) => ({
+  return Array.from({ length: todoCount }, (_, index) => ({
     text: String(list[index]?.text ?? ""),
     done: Boolean(list[index]?.done),
   }));
@@ -753,6 +765,20 @@ function translateBomb() {
   setText(".bomb-card strong", t("timeUp"));
   setText(".bomb-card span", t("bombMessage"));
   els.bombCloseBtn.textContent = t("ok");
+}
+
+function updateExtraGoalsToggle() {
+  const expanded = els.extraGoals?.dataset.expanded === "true";
+  const label = expanded ? t("hideMoreGoals") : t("moreGoals");
+  const labelEl = els.extraGoalsToggleBtn?.querySelector("span:first-child");
+  if (labelEl) labelEl.textContent = label;
+  els.extraGoalsToggleBtn?.setAttribute("aria-expanded", expanded ? "true" : "false");
+}
+
+function toggleExtraGoals() {
+  const expanded = els.extraGoals.dataset.expanded === "true";
+  els.extraGoals.dataset.expanded = expanded ? "false" : "true";
+  updateExtraGoalsToggle();
 }
 
 function loadThemeMemory() {
@@ -1074,7 +1100,7 @@ function renderTodos() {
 function saveTodos() {
   resetGoalsIfNewDay(false);
   const previousTodos = state.goals.todos;
-  const nextTodos = Array.from({ length: 4 }, (_, index) => ({
+  const nextTodos = Array.from({ length: todoCount }, (_, index) => ({
     text: els.todoTexts[index].value,
     done: els.todoChecks[index].checked,
   }));
@@ -1449,6 +1475,7 @@ els.timerToggleBtn.addEventListener("click", toggleTimer);
 els.timerResetBtn.addEventListener("click", resetTimer);
 els.bombCloseBtn.addEventListener("click", hideBomb);
 els.goalResetBtn.addEventListener("click", resetGoals);
+els.extraGoalsToggleBtn.addEventListener("click", toggleExtraGoals);
 els.todoChecks.forEach((input) => input.addEventListener("change", saveTodos));
 els.todoTexts.forEach((input) => input.addEventListener("input", saveTodos));
 els.bgColorInput.addEventListener("change", saveTheme);
