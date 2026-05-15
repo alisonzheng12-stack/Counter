@@ -419,8 +419,22 @@ const state = {
       { text: "", done: false },
     ],
   },
+  unlockedWorlds: [],
 };
 const todoCount = 8;
+const inventorySlotCount = 32;
+const worldKeys = [
+  { id: 1, level: 10, name: "Asgard", initial: "A" },
+  { id: 2, level: 20, name: "Vanaheim", initial: "V" },
+  { id: 3, level: 30, name: "Midgard", initial: "M" },
+  { id: 4, level: 40, name: "Jotunheim", initial: "J" },
+  { id: 5, level: 50, name: "Alfheim", initial: "A" },
+  { id: 6, level: 60, name: "Nidavellir", initial: "N" },
+  { id: 7, level: 70, name: "Muspelheim", initial: "M" },
+  { id: 8, level: 80, name: "Niflheim", initial: "N" },
+  { id: 9, level: 90, name: "Helheim", initial: "H" },
+];
+const maxWorldKeyCount = worldKeys.length;
 
 function localDateKey(date = new Date()) {
   const year = date.getFullYear();
@@ -483,6 +497,12 @@ const els = {
   newsRefreshBtn: document.querySelector("#newsRefreshBtn"),
   newsMoreLink: document.querySelector("#newsMoreLink"),
   newsSourceBtns: document.querySelectorAll("[data-news-source]"),
+  rightDock: document.querySelector(".right-dock"),
+  rightDockToggleBtn: document.querySelector("#rightDockToggleBtn"),
+  inventoryPanel: document.querySelector(".inventory-panel"),
+  inventoryToggleBtn: document.querySelector("#inventoryToggleBtn"),
+  inventoryGrid: document.querySelector("#inventoryGrid"),
+  worldSwatches: document.querySelectorAll("[data-world]"),
 };
 
 function currentLanguage() {
@@ -588,6 +608,7 @@ function load() {
       ...(saved.goals && typeof saved.goals === "object" ? saved.goals : {}),
     };
     state.goals.todos = normalizeTodos(state.goals.todos);
+    state.unlockedWorlds = normalizeWorldList(saved.unlockedWorlds);
     state.goalsDate = typeof saved.goalsDate === "string" ? saved.goalsDate : localDateKey();
     resetGoalsIfNewDay(false);
   } catch {
@@ -781,6 +802,56 @@ function toggleExtraGoals() {
   updateExtraGoalsToggle();
 }
 
+function toggleInventory() {
+  const collapsed = els.inventoryPanel.dataset.collapsed === "true";
+  els.inventoryPanel.dataset.collapsed = collapsed ? "false" : "true";
+  els.inventoryToggleBtn.setAttribute("aria-expanded", collapsed ? "true" : "false");
+}
+
+function toggleRightDock() {
+  const collapsed = els.rightDock.dataset.collapsed === "true";
+  els.rightDock.dataset.collapsed = collapsed ? "false" : "true";
+  els.rightDockToggleBtn.setAttribute("aria-expanded", collapsed ? "true" : "false");
+}
+
+function renderWorldKeys() {
+  const availableKeys = availableWorldKeyCount();
+  els.worldSwatches.forEach((swatch) => {
+    const worldId = Number.parseInt(swatch.dataset.world, 10);
+    const unlocked = state.unlockedWorlds.includes(worldId);
+    const baseTitle = swatch.dataset.tooltip?.replace(/\n/g, "｜") || swatch.dataset.worldName || "";
+    swatch.classList.toggle("world-unlocked", unlocked);
+    swatch.classList.toggle("world-earned", availableKeys > 0 && !unlocked);
+    swatch.classList.toggle("world-locked", !unlocked);
+    swatch.title = unlocked ? `${baseTitle}｜已解鎖` : `${baseTitle}｜雙擊使用鑰匙解鎖`;
+  });
+
+  els.inventoryGrid.innerHTML = "";
+  const keyCount = availableWorldKeyCount();
+  Array.from({ length: inventorySlotCount }, (_, index) => {
+    const slot = document.createElement("li");
+    if (index < keyCount) {
+      const key = document.createElement("button");
+      key.type = "button";
+      key.className = "world-key";
+      key.title = "通用鑰匙：雙擊右側任一未解鎖世界使用";
+      key.setAttribute("aria-label", key.title);
+      key.innerHTML = `<span aria-hidden="true">⚿</span><b>${index + 1}</b>`;
+      slot.classList.add("filled");
+      slot.append(key);
+    }
+    els.inventoryGrid.append(slot);
+  });
+}
+
+function unlockWorldKey(worldId) {
+  const id = Number.parseInt(worldId, 10);
+  if (availableWorldKeyCount() <= 0 || state.unlockedWorlds.includes(id)) return;
+  state.unlockedWorlds = normalizeWorldList([...state.unlockedWorlds, id]);
+  save();
+  render();
+}
+
 function loadThemeMemory() {
   try {
     const saved = JSON.parse(localStorage.getItem(themeMemoryStorageKey));
@@ -954,6 +1025,19 @@ function normalizeLevel() {
   }
 }
 
+function normalizeWorldList(list) {
+  const ids = Array.isArray(list) ? list : [];
+  return [...new Set(ids.map((id) => Number.parseInt(id, 10)).filter((id) => id >= 1 && id <= 9))].sort((a, b) => a - b);
+}
+
+function earnedWorldKeyCount() {
+  return Math.min(maxWorldKeyCount, Math.floor(state.level / 10));
+}
+
+function availableWorldKeyCount() {
+  return Math.max(0, earnedWorldKeyCount() - state.unlockedWorlds.length);
+}
+
 function applyFocusTimeRewards() {
   const rewardBlocks = Math.floor(state.completedStudyMinutes / 25);
   const newBlocks = Math.max(0, rewardBlocks - state.focusRewardBlocks);
@@ -983,6 +1067,7 @@ function render() {
   els.timerToggleBtn.textContent = state.active ? t("pause") : t("start");
   renderTodos();
   renderFutureEvents();
+  renderWorldKeys();
 }
 
 function renderNewsItems(items) {
@@ -1476,6 +1561,16 @@ els.timerResetBtn.addEventListener("click", resetTimer);
 els.bombCloseBtn.addEventListener("click", hideBomb);
 els.goalResetBtn.addEventListener("click", resetGoals);
 els.extraGoalsToggleBtn.addEventListener("click", toggleExtraGoals);
+els.rightDockToggleBtn.addEventListener("click", toggleRightDock);
+els.inventoryToggleBtn.addEventListener("click", toggleInventory);
+els.inventoryGrid.addEventListener("dblclick", (event) => {
+  const key = event.target.closest(".world-key");
+  if (!key) return;
+  showSaved();
+});
+els.worldSwatches.forEach((swatch) => {
+  swatch.addEventListener("dblclick", () => unlockWorldKey(swatch.dataset.world));
+});
 els.todoChecks.forEach((input) => input.addEventListener("change", saveTodos));
 els.todoTexts.forEach((input) => input.addEventListener("input", saveTodos));
 els.bgColorInput.addEventListener("change", saveTheme);
