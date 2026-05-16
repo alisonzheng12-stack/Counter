@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>&#24050;&#23436;&#25104;</title>
+    <link rel="stylesheet" href="styles.css?v=20260516-25" />
+    <style>
+      body {
+        min-height: 100vh;
+        padding: 18px;
+      }
+
+      .history-shell {
+        width: min(760px, 100%);
+        margin: 0 auto;
+        padding: 16px;
+        border: var(--line-width) solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: 0 18px 60px color-mix(in srgb, var(--line) 14%, transparent);
+      }
+
+      .history-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding-bottom: 12px;
+        border-bottom: var(--line-width) solid var(--line);
+      }
+
+      .history-head h1 {
+        margin: 0;
+        font-size: clamp(1.45rem, 4vw, 2.1rem);
+        font-weight: 900;
+      }
+
+      .history-head a,
+      .restore-btn {
+        display: inline-grid;
+        min-height: 34px;
+        place-items: center;
+        padding: 0 13px;
+        border: var(--line-width) solid var(--line);
+        border-radius: 8px;
+        background: var(--fill);
+        color: var(--ink);
+        font: inherit;
+        font-weight: 900;
+        text-decoration: none;
+      }
+
+      .history-list {
+        display: grid;
+        gap: 12px;
+        margin-top: 14px;
+      }
+
+      .history-day {
+        display: grid;
+        gap: 8px;
+        padding: 12px;
+        border: var(--line-width) solid var(--line);
+        border-radius: 8px;
+        background: var(--paper);
+      }
+
+      .history-day h2 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 900;
+      }
+
+      .history-day ol {
+        display: grid;
+        gap: 7px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .history-item {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px;
+        align-items: center;
+        padding: 8px 9px;
+        border: var(--line-width) solid color-mix(in srgb, var(--line) 58%, transparent);
+        border-radius: 8px;
+        background: color-mix(in srgb, var(--panel) 58%, transparent);
+      }
+
+      .history-item span {
+        min-width: 0;
+        line-height: 1.5;
+        font-weight: 800;
+        overflow-wrap: anywhere;
+      }
+
+      .restore-btn {
+        min-height: 30px;
+        padding: 0 11px;
+        cursor: pointer;
+      }
+
+      .empty-history {
+        margin: 18px 0 0;
+        color: var(--ink);
+        font-weight: 800;
+        text-align: center;
+      }
+
+      @media (max-width: 560px) {
+        body {
+          padding: 10px;
+        }
+
+        .history-shell {
+          padding: 12px;
+        }
+
+        .history-item {
+          grid-template-columns: 1fr;
+        }
+
+        .restore-btn {
+          justify-self: end;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="history-shell">
+      <header class="history-head">
+        <h1>&#24050;&#23436;&#25104;</h1>
+        <a href="index.html">&#36820;&#22238;</a>
+      </header>
+      <section id="historyList" class="history-list" aria-label="completed goals"></section>
+      <p id="emptyHistory" class="empty-history" hidden>&#23578;&#26410;&#26377;&#23436;&#25104;&#32000;&#37636;</p>
+    </main>
+    <script>
+      const storageKey = "minimal-study-counter-v1";
+      const themeStorageKey = "minimal-study-counter-theme-v1";
+      const todoCount = 8;
+
+      function localDateKey() {
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      }
+
+      function applyTheme() {
+        try {
+          const theme = JSON.parse(localStorage.getItem(themeStorageKey) || "{}");
+          Object.entries(theme).forEach(([key, value]) => {
+            if (typeof value === "string") document.documentElement.style.setProperty(`--${key}`, value);
+          });
+        } catch {}
+      }
+
+      function loadState() {
+        try {
+          return JSON.parse(localStorage.getItem(storageKey) || "{}") || {};
+        } catch {
+          return {};
+        }
+      }
+
+      function saveState(state) {
+        localStorage.setItem(storageKey, JSON.stringify(state));
+      }
+
+      function normalizeTodos(todos) {
+        const list = Array.isArray(todos) ? todos : [];
+        const active = list
+          .map((todo) => ({
+            text: String(todo?.text || "").trim(),
+            done: Boolean(todo?.done),
+          }))
+          .filter((todo) => todo.text);
+        return Array.from({ length: todoCount }, (_, index) => active[index] || { text: "", done: false });
+      }
+
+      function completedGoalsFrom(state) {
+        return Array.isArray(state.completedGoals)
+          ? state.completedGoals
+              .map((goal) => ({
+                id: String(goal?.id || `${Date.now()}-${Math.random().toString(16).slice(2)}`),
+                text: String(goal?.text || "").trim(),
+                date: /^\d{4}-\d{2}-\d{2}$/.test(String(goal?.date || "")) ? String(goal.date) : localDateKey(),
+                completedAt: String(goal?.completedAt || new Date().toISOString()),
+              }))
+              .filter((goal) => goal.text)
+          : [];
+      }
+
+      function groupByDate(items) {
+        return items.reduce((groups, item) => {
+          const date = item.date || "未分類";
+          if (!groups[date]) groups[date] = [];
+          groups[date].push(item);
+          return groups;
+        }, {});
+      }
+
+      function restoreGoal(goalId) {
+        const state = loadState();
+        const completedGoals = completedGoalsFrom(state);
+        const goal = completedGoals.find((item) => item.id === goalId);
+        if (!goal) return;
+
+        const todos = normalizeTodos(state.goals?.todos);
+        const activeTodos = todos.filter((todo) => todo.text);
+        if (activeTodos.length >= todoCount) {
+          window.alert("今日目標已滿，請先空出一格再回復。");
+          return;
+        }
+
+        state.goals = {
+          ...(state.goals && typeof state.goals === "object" ? state.goals : {}),
+          todos: normalizeTodos([{ text: goal.text, done: false }, ...activeTodos]),
+        };
+        state.goalsDate = localDateKey();
+        state.completedGoals = completedGoals.filter((item) => item.id !== goalId);
+        saveState(state);
+        render();
+      }
+
+      function render() {
+        const list = document.querySelector("#historyList");
+        const empty = document.querySelector("#emptyHistory");
+        const state = loadState();
+        const cleanGoals = completedGoalsFrom(state).sort((a, b) =>
+          String(b.completedAt || b.date || "").localeCompare(String(a.completedAt || a.date || "")),
+        );
+
+        empty.hidden = cleanGoals.length > 0;
+        list.innerHTML = "";
+
+        Object.entries(groupByDate(cleanGoals)).forEach(([date, goals]) => {
+          const section = document.createElement("article");
+          section.className = "history-day";
+          const title = document.createElement("h2");
+          title.textContent = date;
+          const ol = document.createElement("ol");
+          goals.forEach((goal) => {
+            const li = document.createElement("li");
+            li.className = "history-item";
+            const text = document.createElement("span");
+            text.textContent = goal.text;
+            const button = document.createElement("button");
+            button.className = "restore-btn";
+            button.type = "button";
+            button.textContent = "回復";
+            button.addEventListener("click", () => restoreGoal(goal.id));
+            li.append(text, button);
+            ol.append(li);
+          });
+          section.append(title, ol);
+          list.append(section);
+        });
+      }
+
+      applyTheme();
+      render();
+    </script>
+  </body>
+</html>

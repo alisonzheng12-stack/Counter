@@ -451,6 +451,13 @@ button {
   white-space: nowrap;
 }
 
+.goal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
 .goal-head button {
   min-height: 30px;
   padding: 0 12px;
@@ -1719,6 +1726,14 @@ button:focus-visible {
   .device-header .tagline {
     font-size: 0.9rem;
     line-height: 1.45;
+  }
+
+  .goal-head {
+    align-items: flex-start;
+  }
+
+  .goal-actions {
+    flex-shrink: 0;
   }
 
   .level-mini {

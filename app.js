@@ -47,6 +47,7 @@ const translations = {
     language: "語言",
     todayGoals: "今日目標",
     goalResetHint: "每日00:00重置",
+    completedGoals: "已完成",
     clear: "清空",
     todoPlaceholder: "輸入今日要完成的事",
     moreGoals: "新增更多目標",
@@ -105,12 +106,12 @@ const translations = {
     timeUp: "時間到！",
     bombMessage: "休息一下，然後繼續前進。",
     ok: "知道了",
-    sync: "Google 同步",
-    syncTitle: "Google Drive 自動備份",
+    sync: "同步",
+    syncTitle: "自動備份",
     syncPassword: "備份密碼",
     syncPasswordPlaceholder: "輸入你自己設定的同步密碼",
     syncSave: "立即備份",
-    syncLoad: "從 Google 還原",
+    syncLoad: "還原",
   },
   en: {
     htmlLang: "en",
@@ -120,6 +121,7 @@ const translations = {
     language: "Language",
     todayGoals: "Today's Goals",
     goalResetHint: "Resets daily at 00:00",
+    completedGoals: "Done",
     clear: "Clear",
     todoPlaceholder: "Enter something to complete today",
     moreGoals: "Add More Goals",
@@ -178,12 +180,12 @@ const translations = {
     timeUp: "Time's up!",
     bombMessage: "Take a short break, then keep going.",
     ok: "OK",
-    sync: "Google Sync",
-    syncTitle: "Google Drive Auto Backup",
+    sync: "Sync",
+    syncTitle: "Auto Backup",
     syncPassword: "Backup Password",
     syncPasswordPlaceholder: "Enter your sync password",
     syncSave: "Back Up Now",
-    syncLoad: "Restore from Google",
+    syncLoad: "Restore",
   },
   de: {
     htmlLang: "de",
@@ -193,6 +195,7 @@ const translations = {
     language: "Sprache",
     todayGoals: "Tagesziele",
     goalResetHint: "Täglich um 00:00 zurückgesetzt",
+    completedGoals: "Erledigt",
     clear: "Leeren",
     todoPlaceholder: "Aufgabe für heute eingeben",
     moreGoals: "Mehr Ziele hinzufügen",
@@ -251,12 +254,12 @@ const translations = {
     timeUp: "Zeit ist um!",
     bombMessage: "Mach kurz Pause und geh dann weiter.",
     ok: "OK",
-    sync: "Google Sync",
-    syncTitle: "Google Drive Auto-Backup",
+    sync: "Sync",
+    syncTitle: "Auto-Backup",
     syncPassword: "Backup-Passwort",
     syncPasswordPlaceholder: "Gib dein Sync-Passwort ein",
     syncSave: "Jetzt sichern",
-    syncLoad: "Aus Google wiederherstellen",
+    syncLoad: "Wiederherstellen",
   },
   ja: {
     htmlLang: "ja",
@@ -266,6 +269,7 @@ const translations = {
     language: "言語",
     todayGoals: "今日の目標",
     goalResetHint: "毎日00:00にリセット",
+    completedGoals: "完了",
     clear: "クリア",
     todoPlaceholder: "今日やることを入力",
     moreGoals: "目標をさらに追加",
@@ -324,12 +328,12 @@ const translations = {
     timeUp: "時間です！",
     bombMessage: "少し休んで、また進もう。",
     ok: "OK",
-    sync: "Google 同期",
-    syncTitle: "Google Drive 自動バックアップ",
+    sync: "同期",
+    syncTitle: "自動バックアップ",
     syncPassword: "バックアップパスワード",
     syncPasswordPlaceholder: "自分で設定した同期パスワードを入力",
     syncSave: "今すぐ保存",
-    syncLoad: "Google から復元",
+    syncLoad: "復元",
   },
 };
 const fallbackNipponColors = [
@@ -448,6 +452,7 @@ const state = {
       { text: "", done: false },
     ],
   },
+  completedGoals: [],
   unlockedWorlds: [],
 };
 const todoCount = 8;
@@ -503,6 +508,7 @@ const els = {
   timerResetBtn: document.querySelector("#timerResetBtn"),
   bombOverlay: document.querySelector("#bombOverlay"),
   bombCloseBtn: document.querySelector("#bombCloseBtn"),
+  completedGoalsBtn: document.querySelector("#completedGoalsBtn"),
   goalResetBtn: document.querySelector("#goalResetBtn"),
   extraGoals: document.querySelector(".extra-goals"),
   extraGoalsToggleBtn: document.querySelector("#extraGoalsToggleBtn"),
@@ -572,6 +578,7 @@ function applyLanguage() {
   setText(".language-control span", dict.language);
   setText(".goal-title span", dict.todayGoals);
   setText(".goal-title small", dict.goalResetHint);
+  els.completedGoalsBtn.textContent = dict.completedGoals;
   els.goalResetBtn.textContent = dict.clear;
   els.todoTexts.forEach((input) => {
     input.placeholder = dict.todoPlaceholder;
@@ -651,6 +658,7 @@ function load() {
       ...(saved.goals && typeof saved.goals === "object" ? saved.goals : {}),
     };
     state.goals.todos = normalizeTodos(state.goals.todos);
+    state.completedGoals = normalizeCompletedGoals(saved.completedGoals);
     state.unlockedWorlds = normalizeWorldList(saved.unlockedWorlds);
     state.goalsDate = typeof saved.goalsDate === "string" ? saved.goalsDate : localDateKey();
     resetGoalsIfNewDay(false);
@@ -665,6 +673,18 @@ function normalizeTodos(todos) {
     text: String(list[index]?.text ?? ""),
     done: Boolean(list[index]?.done),
   }));
+}
+
+function normalizeCompletedGoals(goals) {
+  if (!Array.isArray(goals)) return [];
+  return goals
+    .map((goal) => ({
+      id: String(goal?.id || `${Date.now()}-${Math.random().toString(16).slice(2)}`),
+      text: String(goal?.text || "").trim(),
+      date: /^\d{4}-\d{2}-\d{2}$/.test(String(goal?.date || "")) ? String(goal.date) : localDateKey(),
+      completedAt: String(goal?.completedAt || new Date().toISOString()),
+    }))
+    .filter((goal) => goal.text);
 }
 
 function normalizeFutureEvents(events, legacyText = "") {
@@ -1121,7 +1141,7 @@ function backupToGoogle(options = {}) {
     deviceId: "main",
     data: syncPayload(),
   });
-  setSyncStatus(options.automatic ? "已自動備份到 Google。" : "已送出備份到 Google。");
+  setSyncStatus(options.automatic ? "已自動備份。" : "已送出備份。");
 }
 
 function loadScript(url) {
@@ -1145,7 +1165,7 @@ async function restoreFromGoogle() {
   window[callbackName] = (response) => {
     try {
       if (!response?.ok || !response.data) {
-        setSyncStatus("Google 尚無可還原資料。");
+        setSyncStatus("雲端尚無可還原資料。");
         return;
       }
       const data = response.data;
@@ -1155,7 +1175,7 @@ async function restoreFromGoogle() {
       if (data.themeCollapsed) localStorage.setItem(themeCollapsedStorageKey, data.themeCollapsed);
       if (data.newsSource) localStorage.setItem(newsSourceStorageKey, data.newsSource);
       if (data.language) localStorage.setItem(languageStorageKey, data.language);
-      setSyncStatus("已從 Google 還原，重新整理中。");
+      setSyncStatus("已從雲端還原，重新整理中。");
       window.setTimeout(() => window.location.reload(), 600);
     } finally {
       delete window[callbackName];
@@ -1165,7 +1185,7 @@ async function restoreFromGoogle() {
   syncUrl.searchParams.set("token", token);
   syncUrl.searchParams.set("deviceId", "main");
   syncUrl.searchParams.set("callback", callbackName);
-  setSyncStatus("正在從 Google 讀取...");
+  setSyncStatus("正在從雲端讀取...");
   try {
     await loadScript(syncUrl.toString());
   } catch {
@@ -1364,17 +1384,30 @@ function renderTodos() {
 
 function saveTodos() {
   resetGoalsIfNewDay(false);
-  const previousTodos = state.goals.todos;
-  const nextTodos = Array.from({ length: todoCount }, (_, index) => ({
-    text: els.todoTexts[index].value,
+  const completedNow = [];
+  const activeTodos = [];
+  Array.from({ length: todoCount }, (_, index) => ({
+    text: els.todoTexts[index].value.trim(),
     done: els.todoChecks[index].checked,
-  }));
-  const newlyCompleted = nextTodos.filter((todo, index) => todo.done && !previousTodos[index]?.done).length;
+  })).forEach((todo) => {
+    if (todo.done && todo.text) {
+      completedNow.push({
+        id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        text: todo.text,
+        date: localDateKey(),
+        completedAt: new Date().toISOString(),
+      });
+      return;
+    }
+    if (todo.text) activeTodos.push({ text: todo.text, done: false });
+  });
+  const newlyCompleted = completedNow.length;
   if (newlyCompleted > 0) {
     state.xp += newlyCompleted * 20;
     normalizeLevel();
+    state.completedGoals = normalizeCompletedGoals([...completedNow, ...state.completedGoals]);
   }
-  state.goals.todos = nextTodos;
+  state.goals.todos = normalizeTodos(activeTodos);
   state.goalsDate = localDateKey();
   save();
   render();
@@ -1490,6 +1523,10 @@ function resetGoalsIfNewDay(shouldRender = true) {
   state.goalsDate = today;
   save();
   if (shouldRender) render();
+}
+
+function openCompletedGoalsPage() {
+  window.location.href = "completed.html";
 }
 
 function adjustCounter(key, delta) {
@@ -1754,6 +1791,7 @@ document.addEventListener("keydown", (event) => {
 els.timerToggleBtn.addEventListener("click", toggleTimer);
 els.timerResetBtn.addEventListener("click", resetTimer);
 els.bombCloseBtn.addEventListener("click", hideBomb);
+els.completedGoalsBtn.addEventListener("click", openCompletedGoalsPage);
 els.goalResetBtn.addEventListener("click", resetGoals);
 els.extraGoalsToggleBtn.addEventListener("click", toggleExtraGoals);
 els.rightDockToggleBtn.addEventListener("click", toggleRightDock);
