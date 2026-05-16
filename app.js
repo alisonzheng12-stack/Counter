@@ -6,6 +6,9 @@ const themeMemoryBundleVersionKey = "minimal-study-counter-theme-memory-bundle-2
 const themeSlot01SnapshotKey = "minimal-study-counter-theme-slot-01-snapshot-20260514-3";
 const newsSourceStorageKey = "minimal-study-counter-news-source-v1";
 const languageStorageKey = "minimal-study-counter-language-v1";
+const syncUrlStorageKey = "minimal-study-counter-sync-url-v1";
+const syncTokenStorageKey = "minimal-study-counter-sync-token-v1";
+const defaultSyncUrl = "https://script.google.com/macros/s/AKfycbxFvPv6gazMnjheujk_gsx5ZtijmhJ5vz9N656YyUvT0517EXmSsteBTJ_gftCgtDsU/exec";
 const newsSources = {
   tw: {
     label: "TW",
@@ -497,6 +500,11 @@ const els = {
   newsRefreshBtn: document.querySelector("#newsRefreshBtn"),
   newsMoreLink: document.querySelector("#newsMoreLink"),
   newsSourceBtns: document.querySelectorAll("[data-news-source]"),
+  syncUrlInput: document.querySelector("#syncUrlInput"),
+  syncTokenInput: document.querySelector("#syncTokenInput"),
+  syncSaveBtn: document.querySelector("#syncSaveBtn"),
+  syncLoadBtn: document.querySelector("#syncLoadBtn"),
+  syncStatus: document.querySelector("#syncStatus"),
   rightDock: document.querySelector(".right-dock"),
   rightDockToggleBtn: document.querySelector("#rightDockToggleBtn"),
   inventoryPanel: document.querySelector(".inventory-panel"),
@@ -992,6 +1000,120 @@ function showSaved() {
   showSaved.timer = window.setTimeout(() => {
     els.saveStatus.textContent = "";
   }, 900);
+}
+
+function syncPayload() {
+  return {
+    storage: JSON.parse(localStorage.getItem(storageKey) || "{}"),
+    theme: JSON.parse(localStorage.getItem(themeStorageKey) || "{}"),
+    themeMemory: JSON.parse(localStorage.getItem(themeMemoryStorageKey) || "[]"),
+    themeCollapsed: localStorage.getItem(themeCollapsedStorageKey) || "0",
+    newsSource: localStorage.getItem(newsSourceStorageKey) || "tw",
+    language: localStorage.getItem(languageStorageKey) || "zh",
+    savedAt: new Date().toISOString(),
+  };
+}
+
+function syncSettings() {
+  const url = els.syncUrlInput.value.trim() || defaultSyncUrl;
+  const token = els.syncTokenInput.value.trim();
+  localStorage.setItem(syncUrlStorageKey, url);
+  if (token) localStorage.setItem(syncTokenStorageKey, token);
+  return { url, token };
+}
+
+function setSyncStatus(message) {
+  els.syncStatus.textContent = message;
+}
+
+function postToGoogle(url, payload) {
+  const iframeName = `syncFrame${Date.now()}`;
+  const iframe = document.createElement("iframe");
+  iframe.name = iframeName;
+  iframe.hidden = true;
+  document.body.append(iframe);
+
+  const form = document.createElement("form");
+  form.method = "POST";
+  form.action = url;
+  form.target = iframeName;
+  form.hidden = true;
+
+  const input = document.createElement("input");
+  input.name = "payload";
+  input.value = JSON.stringify(payload);
+  form.append(input);
+  document.body.append(form);
+  form.submit();
+
+  window.setTimeout(() => {
+    form.remove();
+    iframe.remove();
+  }, 5000);
+}
+
+function backupToGoogle() {
+  const { url, token } = syncSettings();
+  if (!url || !token) {
+    setSyncStatus("請先填後台網址與同步密碼。");
+    return;
+  }
+  postToGoogle(url, {
+    token,
+    deviceId: "main",
+    data: syncPayload(),
+  });
+  setSyncStatus("已送出備份到 Google。");
+}
+
+function loadScript(url) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = url;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.body.append(script);
+    window.setTimeout(() => script.remove(), 5000);
+  });
+}
+
+async function restoreFromGoogle() {
+  const { url, token } = syncSettings();
+  if (!url || !token) {
+    setSyncStatus("請先填後台網址與同步密碼。");
+    return;
+  }
+  const callbackName = `receiveCounterBackup${Date.now()}`;
+  window[callbackName] = (response) => {
+    try {
+      if (!response?.ok || !response.data) {
+        setSyncStatus("Google 尚無可還原資料。");
+        return;
+      }
+      const data = response.data;
+      if (data.storage) localStorage.setItem(storageKey, JSON.stringify(data.storage));
+      if (data.theme) localStorage.setItem(themeStorageKey, JSON.stringify(data.theme));
+      if (data.themeMemory) localStorage.setItem(themeMemoryStorageKey, JSON.stringify(data.themeMemory));
+      if (data.themeCollapsed) localStorage.setItem(themeCollapsedStorageKey, data.themeCollapsed);
+      if (data.newsSource) localStorage.setItem(newsSourceStorageKey, data.newsSource);
+      if (data.language) localStorage.setItem(languageStorageKey, data.language);
+      setSyncStatus("已從 Google 還原，重新整理中。");
+      window.setTimeout(() => window.location.reload(), 600);
+    } finally {
+      delete window[callbackName];
+    }
+  };
+  const syncUrl = new URL(url);
+  syncUrl.searchParams.set("token", token);
+  syncUrl.searchParams.set("deviceId", "main");
+  syncUrl.searchParams.set("callback", callbackName);
+  setSyncStatus("正在從 Google 讀取...");
+  try {
+    await loadScript(syncUrl.toString());
+  } catch {
+    delete window[callbackName];
+    setSyncStatus("讀取失敗，請確認部署網址與密碼。");
+  }
 }
 
 function formatTime(ms) {
@@ -1532,6 +1654,10 @@ els.futureSearchDateInput.addEventListener("change", updateFutureSearchDate);
 els.futureClearSearchBtn.addEventListener("click", clearFutureSearchDate);
 els.futureDateInput.addEventListener("change", () => save());
 els.futureAddBtn.addEventListener("click", addFutureEvent);
+els.syncUrlInput.addEventListener("change", () => localStorage.setItem(syncUrlStorageKey, els.syncUrlInput.value.trim()));
+els.syncTokenInput.addEventListener("change", () => localStorage.setItem(syncTokenStorageKey, els.syncTokenInput.value.trim()));
+els.syncSaveBtn.addEventListener("click", backupToGoogle);
+els.syncLoadBtn.addEventListener("click", restoreFromGoogle);
 els.futureTextInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
     event.preventDefault();
@@ -1618,6 +1744,8 @@ els.themeToggleBtn.addEventListener("click", () => setThemeCollapsed(!els.themeC
 els.languageSelect.addEventListener("change", () => changeLanguage(els.languageSelect.value));
 
 load();
+els.syncUrlInput.value = localStorage.getItem(syncUrlStorageKey) || defaultSyncUrl;
+els.syncTokenInput.value = localStorage.getItem(syncTokenStorageKey) || "";
 const theme = loadTheme();
 populateThemeControls(theme);
 applyTheme(theme);
