@@ -759,6 +759,7 @@ body.focus-mode .device-header,
 body.focus-mode .goal-panel,
 body.focus-mode .reflection-panel,
 body.focus-mode .sync-panel,
+body.focus-mode .inspiration-dock,
 body.focus-mode .theme-control {
   display: none;
 }
@@ -1422,6 +1423,139 @@ button:focus-visible {
   box-shadow: none;
 }
 
+.inspiration-dock {
+  position: fixed;
+  left: 86px;
+  bottom: 18px;
+  z-index: 18;
+  transition: left 180ms ease, bottom 180ms ease;
+}
+
+body:has(.theme-control:not(.collapsed)) .inspiration-dock {
+  left: 282px;
+}
+
+.inspiration-toggle {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  min-height: 56px;
+  padding: 0;
+  border: 2px solid #cb1b45;
+  border-radius: 16px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 251, 0.46)),
+    var(--panel);
+  color: #cb1b45;
+  font-size: 1.16rem;
+  font-weight: 900;
+  box-shadow: 0 10px 24px rgba(62, 53, 42, 0.16);
+}
+
+.inspiration-toggle::after {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border: 1px solid rgba(203, 27, 69, 0.72);
+  border-radius: 11px;
+  background: rgba(255, 255, 251, 0.28);
+  pointer-events: none;
+}
+
+.inspiration-panel {
+  position: absolute;
+  left: 0;
+  bottom: 68px;
+  display: none;
+  width: min(330px, calc(100vw - 28px));
+  gap: 9px;
+  padding: 12px;
+  border: var(--line-width) solid var(--line);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--paper) 96%, white 4%);
+  box-shadow: 0 18px 42px color-mix(in srgb, var(--line) 22%, transparent);
+}
+
+.inspiration-dock[data-open="true"] .inspiration-panel {
+  display: grid;
+}
+
+.inspiration-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
+.inspiration-head button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.inspiration-panel textarea {
+  width: 100%;
+  min-height: 94px;
+  resize: vertical;
+  padding: 9px 10px;
+  border: var(--line-width) solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.inspiration-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.inspiration-list {
+  display: grid;
+  gap: 7px;
+  max-height: 190px;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  list-style: none;
+}
+
+.inspiration-list li {
+  display: grid;
+  gap: 3px;
+  padding: 8px;
+  border: var(--line-width) solid color-mix(in srgb, var(--line) 58%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--panel) 58%, transparent);
+}
+
+.inspiration-list time {
+  color: var(--ink);
+  font-size: 0.72rem;
+  font-weight: 800;
+  opacity: 0.68;
+}
+
+.inspiration-list span {
+  color: var(--ink);
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
 .theme-control label {
   display: grid;
   grid-template-columns: 44px minmax(0, 1fr);
@@ -1907,6 +2041,31 @@ button:focus-visible {
     min-width: 54px;
     min-height: 54px;
     box-shadow: 6px 8px 16px rgba(62, 53, 42, 0.18);
+  }
+
+  .inspiration-dock {
+    left: 34px;
+    bottom: 82px;
+  }
+
+  body:has(.theme-control:not(.collapsed)) .inspiration-dock {
+    left: 10px;
+    bottom: 10px;
+    transform: translateY(calc(-100% - 10px));
+  }
+
+  .inspiration-toggle {
+    width: 54px;
+    height: 54px;
+    min-width: 54px;
+    min-height: 54px;
+    box-shadow: 6px 8px 16px rgba(62, 53, 42, 0.18);
+  }
+
+  .inspiration-panel {
+    left: 0;
+    bottom: 64px;
+    width: min(320px, calc(100vw - 44px));
   }
 
   .theme-control:not(.collapsed) .theme-toggle {

@@ -453,6 +453,7 @@ const state = {
     ],
   },
   completedGoals: [],
+  inspirations: [],
   unlockedWorlds: [],
 };
 const todoCount = 8;
@@ -527,6 +528,13 @@ const els = {
   themeDeleteBtns: document.querySelectorAll("[data-theme-delete]"),
   themeControl: document.querySelector(".theme-control"),
   themeToggleBtn: document.querySelector("#themeToggleBtn"),
+  inspirationDock: document.querySelector(".inspiration-dock"),
+  inspirationToggleBtn: document.querySelector("#inspirationToggleBtn"),
+  inspirationCloseBtn: document.querySelector("#inspirationCloseBtn"),
+  inspirationInput: document.querySelector("#inspirationInput"),
+  inspirationSaveBtn: document.querySelector("#inspirationSaveBtn"),
+  inspirationClearBtn: document.querySelector("#inspirationClearBtn"),
+  inspirationList: document.querySelector("#inspirationList"),
   newsList: document.querySelector("#newsList"),
   newsStatus: document.querySelector("#newsStatus"),
   newsRefreshBtn: document.querySelector("#newsRefreshBtn"),
@@ -659,6 +667,7 @@ function load() {
     };
     state.goals.todos = normalizeTodos(state.goals.todos);
     state.completedGoals = normalizeCompletedGoals(saved.completedGoals);
+    state.inspirations = normalizeInspirations(saved.inspirations);
     state.unlockedWorlds = normalizeWorldList(saved.unlockedWorlds);
     state.goalsDate = typeof saved.goalsDate === "string" ? saved.goalsDate : localDateKey();
     resetGoalsIfNewDay(false);
@@ -685,6 +694,18 @@ function normalizeCompletedGoals(goals) {
       completedAt: String(goal?.completedAt || new Date().toISOString()),
     }))
     .filter((goal) => goal.text);
+}
+
+function normalizeInspirations(items) {
+  if (!Array.isArray(items)) return [];
+  return items
+    .map((item) => ({
+      id: String(item?.id || `${Date.now()}-${Math.random().toString(16).slice(2)}`),
+      text: String(item?.text || "").trim(),
+      createdAt: String(item?.createdAt || new Date().toISOString()),
+    }))
+    .filter((item) => item.text)
+    .slice(0, 80);
 }
 
 function normalizeFutureEvents(events, legacyText = "") {
@@ -864,6 +885,15 @@ function toggleExtraGoals() {
   const expanded = els.extraGoals.dataset.expanded === "true";
   els.extraGoals.dataset.expanded = expanded ? "false" : "true";
   updateExtraGoalsToggle();
+}
+
+function setInspirationOpen(isOpen) {
+  els.inspirationDock.dataset.open = isOpen ? "true" : "false";
+  els.inspirationToggleBtn.setAttribute("aria-expanded", String(isOpen));
+  if (isOpen) {
+    renderInspirations();
+    window.setTimeout(() => els.inspirationInput.focus(), 0);
+  }
 }
 
 function toggleInventory() {
@@ -1268,6 +1298,7 @@ function render() {
   renderTodos();
   renderFutureEvents();
   renderWorldKeys();
+  renderInspirations();
 }
 
 function renderNewsItems(items) {
@@ -1380,6 +1411,41 @@ function renderTodos() {
       input.value = state.goals.todos[index]?.text ?? "";
     }
   });
+}
+
+function renderInspirations() {
+  els.inspirationList.innerHTML = "";
+  normalizeInspirations(state.inspirations).slice(0, 10).forEach((item) => {
+    const li = document.createElement("li");
+    const time = document.createElement("time");
+    const date = new Date(item.createdAt);
+    time.textContent = Number.isNaN(date.getTime()) ? "" : date.toLocaleString();
+    const text = document.createElement("span");
+    text.textContent = item.text;
+    li.append(time, text);
+    els.inspirationList.append(li);
+  });
+}
+
+function saveInspiration() {
+  const text = els.inspirationInput.value.trim();
+  if (!text) return;
+  state.inspirations = normalizeInspirations([
+    {
+      id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      text,
+      createdAt: new Date().toISOString(),
+    },
+    ...state.inspirations,
+  ]);
+  els.inspirationInput.value = "";
+  save();
+  renderInspirations();
+}
+
+function clearInspirationDraft() {
+  els.inspirationInput.value = "";
+  els.inspirationInput.focus();
 }
 
 function saveTodos() {
@@ -1784,6 +1850,9 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && els.syncPanel.dataset.open === "true") {
     setSyncPanelOpen(false);
   }
+  if (event.key === "Escape" && els.inspirationDock.dataset.open === "true") {
+    setInspirationOpen(false);
+  }
   if (event.key === "Escape" && document.body.classList.contains("focus-mode")) {
     setFocusMode(false);
   }
@@ -1848,6 +1917,16 @@ els.themeDeleteBtns.forEach((button) => {
   button.addEventListener("click", () => deleteThemeSlot(Number.parseInt(button.dataset.themeDelete, 10) || 0));
 });
 els.themeToggleBtn.addEventListener("click", () => setThemeCollapsed(!els.themeControl.classList.contains("collapsed")));
+els.inspirationToggleBtn.addEventListener("click", () => setInspirationOpen(els.inspirationDock.dataset.open !== "true"));
+els.inspirationCloseBtn.addEventListener("click", () => setInspirationOpen(false));
+els.inspirationSaveBtn.addEventListener("click", saveInspiration);
+els.inspirationClearBtn.addEventListener("click", clearInspirationDraft);
+els.inspirationInput.addEventListener("keydown", (event) => {
+  if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+    event.preventDefault();
+    saveInspiration();
+  }
+});
 els.languageSelect.addEventListener("change", () => changeLanguage(els.languageSelect.value));
 
 load();
