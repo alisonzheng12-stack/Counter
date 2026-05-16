@@ -284,6 +284,7 @@ button {
 
 .device-panel {
   width: min(1040px, 100%);
+  min-height: min(720px, calc(100dvh - 24px));
   max-height: calc(100dvh - 24px);
   padding: clamp(14px, 2vw, 24px);
   border: var(--line-width) solid var(--line);
@@ -294,9 +295,10 @@ button {
 
 .device-header {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, auto) minmax(124px, auto) minmax(76px, auto);
   gap: 12px;
   align-items: start;
+  min-height: 116px;
   padding-bottom: 12px;
   border-bottom: var(--line-width) solid var(--line);
 }
@@ -447,13 +449,13 @@ button {
 }
 
 html[lang="de"] .device-header {
-  grid-template-columns: minmax(0, 1fr) minmax(136px, auto) minmax(108px, auto) minmax(72px, auto);
+  grid-template-columns: minmax(0, 1fr) minmax(150px, auto) minmax(124px, auto) minmax(76px, auto);
   gap: 10px;
 }
 
 html[lang="de"] .level-mini {
-  width: min(300px, 100%);
-  grid-template-columns: auto minmax(72px, 1fr) minmax(82px, auto);
+  width: min(330px, 100%);
+  grid-template-columns: auto minmax(86px, 1fr) auto;
 }
 
 html[lang="de"] .level-mini #levelResetBtn,
@@ -498,6 +500,7 @@ html[lang="de"] .sync-panel {
   display: grid;
   gap: 8px;
   margin-top: 12px;
+  min-height: 146px;
   padding: 10px;
   border: var(--line-width) solid var(--line);
   border-radius: 8px;
@@ -650,6 +653,7 @@ html[lang="de"] .sync-panel {
   display: grid;
   grid-template-columns: repeat(3, minmax(210px, 1fr));
   gap: 10px;
+  min-height: 350px;
   margin-top: 12px;
 }
 
@@ -1923,6 +1927,7 @@ body:has(.theme-control:not(.collapsed)) .inspiration-dock {
 
   .device-panel {
     width: 100%;
+    min-height: 0;
     max-height: none;
     padding: 12px;
   }
@@ -1930,6 +1935,7 @@ body:has(.theme-control:not(.collapsed)) .inspiration-dock {
   .device-header {
     grid-template-columns: 1fr;
     gap: 10px;
+    min-height: 0;
   }
 
   html[lang="de"] .device-header {
@@ -1995,6 +2001,7 @@ body:has(.theme-control:not(.collapsed)) .inspiration-dock {
   .counter-grid {
     grid-template-columns: 1fr;
     gap: 8px;
+    min-height: 0;
   }
 
   .counter-card {
