@@ -47,11 +47,39 @@ button {
   display: grid;
   justify-items: end;
   gap: 10px;
+  width: 310px;
   transform: translateY(-50%);
+  transition: transform 180ms ease;
 }
 
 .right-dock-toggle {
-  display: none;
+  display: grid;
+  justify-self: start;
+  place-items: center;
+  width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-radius: 999px 0 0 999px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 1rem;
+  font-weight: 900;
+  box-shadow: 0 10px 22px rgba(62, 53, 42, 0.16);
+}
+
+.right-dock[data-collapsed="true"] {
+  transform: translateY(-50%) translateX(calc(100% - 44px));
+}
+
+.right-dock[data-collapsed="true"] .color-swatch-grid,
+.right-dock[data-collapsed="true"] .inventory-panel {
+  pointer-events: none;
+  opacity: 0;
+}
+
+.right-dock[data-collapsed="false"] .color-swatch-grid,
+.right-dock[data-collapsed="false"] .inventory-panel {
+  opacity: 1;
 }
 
 .color-swatch-grid {
@@ -64,6 +92,7 @@ button {
   background: color-mix(in srgb, var(--panel-bg) 88%, transparent);
   box-shadow: 0 10px 26px rgba(62, 53, 42, 0.09);
   pointer-events: auto;
+  transition: opacity 160ms ease;
 }
 
 .color-swatch-grid span {
@@ -1597,6 +1626,10 @@ button:focus-visible {
     right: 10px;
     transform: translateY(-50%) scale(0.86);
     transform-origin: right center;
+  }
+
+  .right-dock[data-collapsed="true"] {
+    transform: translateY(-50%) translateX(calc(100% - 44px)) scale(0.86);
   }
 
   .counter-grid {
