@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Completed</title>
-    <link rel="stylesheet" href="styles.css?v=20260516-32" />
+    <link rel="stylesheet" href="styles.css?v=20260516-33" />
     <style>
       body {
         min-height: 100vh;
@@ -17,7 +17,7 @@
         padding: 16px;
         border: var(--line-width) solid var(--line);
         border-radius: 8px;
-        background: var(--panel);
+        background: var(--panel-bg);
         box-shadow: 0 18px 60px color-mix(in srgb, var(--line) 14%, transparent);
       }
 
@@ -44,7 +44,7 @@
         padding: 0 13px;
         border: var(--line-width) solid var(--line);
         border-radius: 8px;
-        background: var(--fill);
+        background: var(--paper-soft);
         color: var(--ink);
         font: inherit;
         font-weight: 900;
@@ -90,7 +90,7 @@
         padding: 8px 9px;
         border: var(--line-width) solid color-mix(in srgb, var(--line) 58%, transparent);
         border-radius: 8px;
-        background: color-mix(in srgb, var(--panel) 58%, transparent);
+        background: color-mix(in srgb, var(--panel-bg) 58%, transparent);
       }
 
       .history-item span {
@@ -214,9 +214,16 @@
       function applyTheme() {
         try {
           const theme = JSON.parse(localStorage.getItem(themeStorageKey) || "{}");
-          Object.entries(theme).forEach(([key, value]) => {
-            if (typeof value === "string") document.documentElement.style.setProperty(`--${key}`, value);
-          });
+          const root = document.documentElement;
+          if (typeof theme.bg === "string") root.style.setProperty("--bg", theme.bg);
+          if (typeof theme.text === "string") root.style.setProperty("--ink", theme.text);
+          if (typeof theme.line === "string") root.style.setProperty("--line", theme.line);
+          if (typeof theme.lineWidth === "string") root.style.setProperty("--line-width", theme.lineWidth);
+          if (typeof theme.paper === "string") {
+            root.style.setProperty("--paper", theme.paper);
+            root.style.setProperty("--paper-soft", theme.paper);
+          }
+          if (typeof theme.timer === "string") root.style.setProperty("--panel-bg", theme.timer);
         } catch {}
       }
 
