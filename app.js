@@ -112,6 +112,19 @@ const translations = {
     syncPasswordPlaceholder: "輸入你自己設定的同步密碼",
     syncSave: "立即備份",
     syncLoad: "還原",
+    syncNeedPassword: "請先填同步密碼。",
+    syncAutoSaved: "已自動備份。",
+    syncSaved: "已送出備份。",
+    syncNoData: "雲端尚無可還原資料。",
+    syncRestored: "已從雲端還原，重新整理中。",
+    syncReading: "正在從雲端讀取...",
+    syncReadFail: "讀取失敗，請確認密碼。",
+    inventory: "背包",
+    inspiration: "靈感",
+    inspirationTitle: "靈感寫入",
+    inspirationPlaceholder: "先把腦中的構想丟進來。",
+    inspirationSave: "保存",
+    inspirationClear: "清空",
   },
   en: {
     htmlLang: "en",
@@ -186,6 +199,19 @@ const translations = {
     syncPasswordPlaceholder: "Enter your sync password",
     syncSave: "Back Up Now",
     syncLoad: "Restore",
+    syncNeedPassword: "Enter your sync password first.",
+    syncAutoSaved: "Auto backup saved.",
+    syncSaved: "Backup sent.",
+    syncNoData: "No backup data found.",
+    syncRestored: "Restored. Reloading.",
+    syncReading: "Reading backup...",
+    syncReadFail: "Restore failed. Check your password.",
+    inventory: "Bag",
+    inspiration: "Idea",
+    inspirationTitle: "Idea Capture",
+    inspirationPlaceholder: "Drop the idea from your head here.",
+    inspirationSave: "Save",
+    inspirationClear: "Clear",
   },
   de: {
     htmlLang: "de",
@@ -260,6 +286,19 @@ const translations = {
     syncPasswordPlaceholder: "Gib dein Sync-Passwort ein",
     syncSave: "Jetzt sichern",
     syncLoad: "Wiederherstellen",
+    syncNeedPassword: "Bitte zuerst das Passwort eingeben.",
+    syncAutoSaved: "Automatisch gesichert.",
+    syncSaved: "Sicherung gesendet.",
+    syncNoData: "Keine Sicherung gefunden.",
+    syncRestored: "Wiederhergestellt. Seite lädt neu.",
+    syncReading: "Sicherung wird gelesen...",
+    syncReadFail: "Fehler beim Laden. Passwort prüfen.",
+    inventory: "Tasche",
+    inspiration: "Idee",
+    inspirationTitle: "Idee notieren",
+    inspirationPlaceholder: "Gedanken hier schnell festhalten.",
+    inspirationSave: "Speich.",
+    inspirationClear: "Leeren",
   },
   ja: {
     htmlLang: "ja",
@@ -334,7 +373,66 @@ const translations = {
     syncPasswordPlaceholder: "自分で設定した同期パスワードを入力",
     syncSave: "今すぐ保存",
     syncLoad: "復元",
+    syncNeedPassword: "同期パスワードを入力してください。",
+    syncAutoSaved: "自動保存しました。",
+    syncSaved: "保存しました。",
+    syncNoData: "復元できるデータがありません。",
+    syncRestored: "復元しました。再読み込みします。",
+    syncReading: "読み込み中...",
+    syncReadFail: "読み込み失敗。パスワードを確認してください。",
+    inventory: "バッグ",
+    inspiration: "ひらめき",
+    inspirationTitle: "ひらめきメモ",
+    inspirationPlaceholder: "頭に浮かんだことをここに置く。",
+    inspirationSave: "保存",
+    inspirationClear: "クリア",
   },
+};
+const worldTooltipTranslations = {
+  zh: [
+    ["阿斯嘉（神界）", "核心：榮耀感", "玩法：解鎖稱號、展示成就、收藏勳章、史詩任務"],
+    ["華納海姆（生命界）", "核心：成長", "玩法：學習植物、技能樹、習慣養成、長期累積"],
+    ["米德加（人界）", "核心：現實生活", "玩法：每日任務、飲食、睡眠、運動、金錢管理"],
+    ["約頓海姆（巨人國）", "核心：突破壓力", "玩法：Boss戰、模擬考、限時戰、高難題、衝刺模式"],
+    ["亞爾夫海姆（光精靈）", "核心：靈感", "玩法：插畫、音樂、世界觀、創作圖鑑、靈感卡片"],
+    ["黑暗界（鍛造界）", "核心：知識加工", "玩法：經驗鍛造、卡片合成、技能進化、筆記精煉"],
+    ["火界（穆斯貝爾海姆）", "核心：短期爆發", "玩法：EXP倍率、限時活動、連擊、狂熱模式"],
+    ["冰界（尼福爾海姆）", "核心：安靜專注", "玩法：深度專注、白噪音、呼吸、心流"],
+    ["海爾海姆（亡界）", "核心：失敗循環", "玩法：死亡回放、重生、復活、黑化進化"],
+  ],
+  en: [
+    ["Asgard", "Core: Glory", "Play: titles, achievements, medals, epic quests"],
+    ["Vanaheim", "Core: Growth", "Play: plants, skill trees, habits, long-term progress"],
+    ["Midgard", "Core: Real Life", "Play: daily tasks, food, sleep, exercise, money"],
+    ["Jotunheim", "Core: Pressure Breakthrough", "Play: boss fights, timed trials, hard challenges"],
+    ["Alfheim", "Core: Inspiration", "Play: art, music, worldbuilding, idea cards"],
+    ["Nidavellir", "Core: Knowledge Crafting", "Play: refining notes, synthesis, skill evolution"],
+    ["Muspelheim", "Core: Short Burst", "Play: EXP boosts, timed events, combos, fever mode"],
+    ["Niflheim", "Core: Quiet Focus", "Play: deep focus, white noise, breathing, flow"],
+    ["Helheim", "Core: Failure Loop", "Play: replay, rebirth, revival, dark evolution"],
+  ],
+  de: [
+    ["Asgard", "Kern: Ruhm", "Spiel: Titel, Erfolge, Medaillen, epische Aufgaben"],
+    ["Vanaheim", "Kern: Wachstum", "Spiel: Pflanzen, Skillbaum, Gewohnheiten, Langzeitaufbau"],
+    ["Midgard", "Kern: Alltag", "Spiel: Tagesaufgaben, Essen, Schlaf, Sport, Geld"],
+    ["Jotunheim", "Kern: Druck durchbrechen", "Spiel: Bosskampf, Zeitprüfung, schwere Aufgaben"],
+    ["Alfheim", "Kern: Inspiration", "Spiel: Kunst, Musik, Weltenbau, Ideen-Karten"],
+    ["Nidavellir", "Kern: Wissen schmieden", "Spiel: Notizen veredeln, Synthese, Skills"],
+    ["Muspelheim", "Kern: kurzer Sprint", "Spiel: EXP-Boost, Events, Kombos, Fiebermodus"],
+    ["Niflheim", "Kern: ruhiger Fokus", "Spiel: Tiefenfokus, Rauschen, Atmung, Flow"],
+    ["Helheim", "Kern: Scheitern nutzen", "Spiel: Rückblick, Neubeginn, Wiederkehr, Entwicklung"],
+  ],
+  ja: [
+    ["アースガルズ", "核心：栄光", "遊び：称号、実績、勲章、叙事クエスト"],
+    ["ヴァナヘイム", "核心：成長", "遊び：植物、スキルツリー、習慣、長期蓄積"],
+    ["ミズガルズ", "核心：現実生活", "遊び：日課、食事、睡眠、運動、お金"],
+    ["ヨトゥンヘイム", "核心：圧力突破", "遊び：ボス戦、模試、制限時間、高難度"],
+    ["アルフヘイム", "核心：ひらめき", "遊び：絵、音楽、世界観、図鑑、カード"],
+    ["ニザヴェッリル", "核心：知識加工", "遊び：経験鍛造、合成、技能進化、ノート精錬"],
+    ["ムスペルヘイム", "核心：短期爆発", "遊び：EXP倍率、限定イベント、連撃、熱狂"],
+    ["ニヴルヘイム", "核心：静かな集中", "遊び：深い集中、白色雑音、呼吸、フロー"],
+    ["ヘルヘイム", "核心：失敗循環", "遊び：回想、再生、復活、暗黒進化"],
+  ],
 };
 const fallbackNipponColors = [
   { name: "GOFUN", romanized: "GOFUN", value: "#FCFAF2" },
@@ -618,11 +716,18 @@ function applyLanguage() {
   els.syncTokenInput.placeholder = dict.syncPasswordPlaceholder;
   els.syncSaveBtn.textContent = dict.syncSave;
   els.syncLoadBtn.textContent = dict.syncLoad;
+  els.inventoryToggleBtn.querySelector("span:first-child").textContent = dict.inventory;
+  els.inspirationToggleBtn.textContent = dict.inspiration;
+  setText(".inspiration-head span", dict.inspirationTitle);
+  els.inspirationInput.placeholder = dict.inspirationPlaceholder;
+  els.inspirationSaveBtn.textContent = dict.inspirationSave;
+  els.inspirationClearBtn.textContent = dict.inspirationClear;
   translateThemePanel();
   (translatedPresetNames[lang] || translatedPresetNames.zh).forEach((name, index) => {
     if (els.themePresetBtns[index]) els.themePresetBtns[index].textContent = name;
   });
   translateBomb();
+  translateWorldTooltips();
   render();
   renderFutureEvents();
   renderThemeMemoryButtons();
@@ -871,6 +976,18 @@ function translateBomb() {
   setText(".bomb-card strong", t("timeUp"));
   setText(".bomb-card span", t("bombMessage"));
   els.bombCloseBtn.textContent = t("ok");
+}
+
+function translateWorldTooltips() {
+  const worlds = worldTooltipTranslations[currentLanguage()] || worldTooltipTranslations.zh;
+  els.worldSwatches.forEach((swatch, index) => {
+    const lines = worlds[index] || worldTooltipTranslations.zh[index];
+    if (!lines) return;
+    const tooltip = lines.join("\n");
+    swatch.dataset.tooltip = tooltip;
+    swatch.title = lines[0];
+    swatch.setAttribute("aria-label", tooltip);
+  });
 }
 
 function updateExtraGoalsToggle() {
@@ -1163,7 +1280,7 @@ function postToGoogle(url, payload) {
 function backupToGoogle(options = {}) {
   const { url, token } = syncSettings();
   if (!url || !token) {
-    if (!options.automatic) setSyncStatus("請先填後台網址與同步密碼。");
+    if (!options.automatic) setSyncStatus(t("syncNeedPassword"));
     return;
   }
   postToGoogle(url, {
@@ -1171,7 +1288,7 @@ function backupToGoogle(options = {}) {
     deviceId: "main",
     data: syncPayload(),
   });
-  setSyncStatus(options.automatic ? "已自動備份。" : "已送出備份。");
+  setSyncStatus(options.automatic ? t("syncAutoSaved") : t("syncSaved"));
 }
 
 function loadScript(url) {
@@ -1188,14 +1305,14 @@ function loadScript(url) {
 async function restoreFromGoogle() {
   const { url, token } = syncSettings();
   if (!url || !token) {
-    setSyncStatus("請先填後台網址與同步密碼。");
+    setSyncStatus(t("syncNeedPassword"));
     return;
   }
   const callbackName = `receiveCounterBackup${Date.now()}`;
   window[callbackName] = (response) => {
     try {
       if (!response?.ok || !response.data) {
-        setSyncStatus("雲端尚無可還原資料。");
+        setSyncStatus(t("syncNoData"));
         return;
       }
       const data = response.data;
@@ -1205,7 +1322,7 @@ async function restoreFromGoogle() {
       if (data.themeCollapsed) localStorage.setItem(themeCollapsedStorageKey, data.themeCollapsed);
       if (data.newsSource) localStorage.setItem(newsSourceStorageKey, data.newsSource);
       if (data.language) localStorage.setItem(languageStorageKey, data.language);
-      setSyncStatus("已從雲端還原，重新整理中。");
+      setSyncStatus(t("syncRestored"));
       window.setTimeout(() => window.location.reload(), 600);
     } finally {
       delete window[callbackName];
@@ -1215,12 +1332,12 @@ async function restoreFromGoogle() {
   syncUrl.searchParams.set("token", token);
   syncUrl.searchParams.set("deviceId", "main");
   syncUrl.searchParams.set("callback", callbackName);
-  setSyncStatus("正在從雲端讀取...");
+  setSyncStatus(t("syncReading"));
   try {
     await loadScript(syncUrl.toString());
   } catch {
     delete window[callbackName];
-    setSyncStatus("讀取失敗，請確認部署網址與密碼。");
+    setSyncStatus(t("syncReadFail"));
   }
 }
 

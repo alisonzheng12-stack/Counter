@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>&#24050;&#23436;&#25104;</title>
-    <link rel="stylesheet" href="styles.css?v=20260516-30" />
+    <title>Completed</title>
+    <link rel="stylesheet" href="styles.css?v=20260516-32" />
     <style>
       body {
         min-height: 100vh;
@@ -48,6 +48,8 @@
         color: var(--ink);
         font: inherit;
         font-weight: 900;
+        line-height: 1.15;
+        overflow-wrap: anywhere;
         text-decoration: none;
       }
 
@@ -111,6 +113,15 @@
         text-align: center;
       }
 
+      html[lang="de"] .history-head {
+        align-items: flex-start;
+      }
+
+      html[lang="de"] .history-head a,
+      html[lang="de"] .restore-btn {
+        font-size: 0.78rem;
+      }
+
       @media (max-width: 560px) {
         body {
           padding: 10px;
@@ -133,16 +144,64 @@
   <body>
     <main class="history-shell">
       <header class="history-head">
-        <h1>&#24050;&#23436;&#25104;</h1>
-        <a href="index.html">&#36820;&#22238;</a>
+        <h1 id="pageTitle"></h1>
+        <a id="backLink" href="index.html"></a>
       </header>
       <section id="historyList" class="history-list" aria-label="completed goals"></section>
-      <p id="emptyHistory" class="empty-history" hidden>&#23578;&#26410;&#26377;&#23436;&#25104;&#32000;&#37636;</p>
+      <p id="emptyHistory" class="empty-history" hidden></p>
     </main>
     <script>
       const storageKey = "minimal-study-counter-v1";
       const themeStorageKey = "minimal-study-counter-theme-v1";
+      const languageStorageKey = "minimal-study-counter-language-v1";
       const todoCount = 8;
+      const translations = {
+        zh: {
+          htmlLang: "zh-Hant",
+          title: "\u5df2\u5b8c\u6210",
+          back: "\u8fd4\u56de",
+          empty: "\u5c1a\u672a\u6709\u5b8c\u6210\u7d00\u9304",
+          restore: "\u56de\u5fa9",
+          uncategorized: "\u672a\u5206\u985e",
+          fullAlert: "\u4eca\u65e5\u76ee\u6a19\u5df2\u6eff\uff0c\u8acb\u5148\u7a7a\u51fa\u4e00\u683c\u518d\u56de\u5fa9\u3002",
+        },
+        en: {
+          htmlLang: "en",
+          title: "Completed",
+          back: "Back",
+          empty: "No completed records yet",
+          restore: "Restore",
+          uncategorized: "Uncategorized",
+          fullAlert: "Today's goals are full. Please free one slot before restoring.",
+        },
+        de: {
+          htmlLang: "de",
+          title: "Fertig",
+          back: "Zur\u00fcck",
+          empty: "Noch keine erledigten Eintr\u00e4ge",
+          restore: "Zur\u00fcck",
+          uncategorized: "Ohne Datum",
+          fullAlert: "Die Tagesziele sind voll. Bitte erst einen Platz freimachen.",
+        },
+        ja: {
+          htmlLang: "ja",
+          title: "\u5b8c\u4e86",
+          back: "\u623b\u308b",
+          empty: "\u307e\u3060\u5b8c\u4e86\u8a18\u9332\u306f\u3042\u308a\u307e\u305b\u3093",
+          restore: "\u623b\u3059",
+          uncategorized: "\u672a\u5206\u985e",
+          fullAlert: "\u4eca\u65e5\u306e\u76ee\u6a19\u304c\u6e80\u676f\u3067\u3059\u30021\u3064\u7a7a\u3051\u3066\u304b\u3089\u623b\u3057\u3066\u304f\u3060\u3055\u3044\u3002",
+        },
+      };
+
+      function currentLanguage() {
+        const saved = localStorage.getItem(languageStorageKey);
+        return translations[saved] ? saved : "zh";
+      }
+
+      function dict() {
+        return translations[currentLanguage()];
+      }
 
       function localDateKey() {
         const date = new Date();
@@ -159,6 +218,15 @@
             if (typeof value === "string") document.documentElement.style.setProperty(`--${key}`, value);
           });
         } catch {}
+      }
+
+      function applyLanguage() {
+        const text = dict();
+        document.documentElement.lang = text.htmlLang;
+        document.title = text.title;
+        document.querySelector("#pageTitle").textContent = text.title;
+        document.querySelector("#backLink").textContent = text.back;
+        document.querySelector("#emptyHistory").textContent = text.empty;
       }
 
       function loadState() {
@@ -199,7 +267,7 @@
 
       function groupByDate(items) {
         return items.reduce((groups, item) => {
-          const date = item.date || "未分類";
+          const date = item.date || dict().uncategorized;
           if (!groups[date]) groups[date] = [];
           groups[date].push(item);
           return groups;
@@ -215,7 +283,7 @@
         const todos = normalizeTodos(state.goals?.todos);
         const activeTodos = todos.filter((todo) => todo.text);
         if (activeTodos.length >= todoCount) {
-          window.alert("今日目標已滿，請先空出一格再回復。");
+          window.alert(dict().fullAlert);
           return;
         }
 
@@ -230,6 +298,7 @@
       }
 
       function render() {
+        applyLanguage();
         const list = document.querySelector("#historyList");
         const empty = document.querySelector("#emptyHistory");
         const state = loadState();
@@ -254,7 +323,7 @@
             const button = document.createElement("button");
             button.className = "restore-btn";
             button.type = "button";
-            button.textContent = "回復";
+            button.textContent = dict().restore;
             button.addEventListener("click", () => restoreGoal(goal.id));
             li.append(text, button);
             ol.append(li);

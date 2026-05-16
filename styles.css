@@ -459,6 +459,7 @@ html[lang="de"] .level-mini {
 html[lang="de"] .level-mini #levelResetBtn,
 html[lang="de"] .goal-head button,
 html[lang="de"] .sync-toggle-btn,
+html[lang="de"] .inspiration-toggle,
 html[lang="de"] .future-tools button,
 html[lang="de"] .future-add button,
 html[lang="de"] .extra-goals-toggle {
@@ -486,6 +487,11 @@ html[lang="de"] .goal-actions {
 
 html[lang="de"] .future-add {
   grid-template-columns: minmax(106px, 0.76fr) minmax(0, 1fr) minmax(64px, auto);
+}
+
+html[lang="de"] .inspiration-panel,
+html[lang="de"] .sync-panel {
+  width: min(360px, calc(100vw - 28px));
 }
 
 .goal-panel {
@@ -1493,8 +1499,10 @@ body:has(.theme-control:not(.collapsed)) .inspiration-dock {
     linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 251, 0.46)),
     var(--panel);
   color: #cb1b45;
-  font-size: 1.16rem;
+  font-size: 0.96rem;
   font-weight: 900;
+  line-height: 1.05;
+  overflow-wrap: anywhere;
   box-shadow: 0 10px 24px rgba(62, 53, 42, 0.16);
 }
 
