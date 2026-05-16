@@ -9,6 +9,7 @@ const languageStorageKey = "minimal-study-counter-language-v1";
 const syncUrlStorageKey = "minimal-study-counter-sync-url-v1";
 const syncTokenStorageKey = "minimal-study-counter-sync-token-v1";
 const defaultSyncUrl = "https://script.google.com/macros/s/AKfycbxFvPv6gazMnjheujk_gsx5ZtijmhJ5vz9N656YyUvT0517EXmSsteBTJ_gftCgtDsU/exec";
+const autoSyncDelayMs = 6000;
 const newsSources = {
   tw: {
     label: "TW",
@@ -30,6 +31,7 @@ const newsSources = {
   },
 };
 let sharedAudio = null;
+let autoBackupTimer = null;
 const translatedPresetNames = {
   zh: ["日系", "櫻花可愛風", "美國復古風格", "夏日清霜"],
   en: ["Japanese", "Sakura Cute", "American Retro", "Summer Frost"],
@@ -103,6 +105,12 @@ const translations = {
     timeUp: "時間到！",
     bombMessage: "休息一下，然後繼續前進。",
     ok: "知道了",
+    sync: "Google 同步",
+    syncTitle: "Google Drive 自動備份",
+    syncPassword: "備份密碼",
+    syncPasswordPlaceholder: "輸入你自己設定的同步密碼",
+    syncSave: "立即備份",
+    syncLoad: "從 Google 還原",
   },
   en: {
     htmlLang: "en",
@@ -170,6 +178,12 @@ const translations = {
     timeUp: "Time's up!",
     bombMessage: "Take a short break, then keep going.",
     ok: "OK",
+    sync: "Google Sync",
+    syncTitle: "Google Drive Auto Backup",
+    syncPassword: "Backup Password",
+    syncPasswordPlaceholder: "Enter your sync password",
+    syncSave: "Back Up Now",
+    syncLoad: "Restore from Google",
   },
   de: {
     htmlLang: "de",
@@ -237,6 +251,12 @@ const translations = {
     timeUp: "Zeit ist um!",
     bombMessage: "Mach kurz Pause und geh dann weiter.",
     ok: "OK",
+    sync: "Google Sync",
+    syncTitle: "Google Drive Auto-Backup",
+    syncPassword: "Backup-Passwort",
+    syncPasswordPlaceholder: "Gib dein Sync-Passwort ein",
+    syncSave: "Jetzt sichern",
+    syncLoad: "Aus Google wiederherstellen",
   },
   ja: {
     htmlLang: "ja",
@@ -304,6 +324,12 @@ const translations = {
     timeUp: "時間です！",
     bombMessage: "少し休んで、また進もう。",
     ok: "OK",
+    sync: "Google 同期",
+    syncTitle: "Google Drive 自動バックアップ",
+    syncPassword: "バックアップパスワード",
+    syncPasswordPlaceholder: "自分で設定した同期パスワードを入力",
+    syncSave: "今すぐ保存",
+    syncLoad: "Google から復元",
   },
 };
 const fallbackNipponColors = [
@@ -500,6 +526,9 @@ const els = {
   newsRefreshBtn: document.querySelector("#newsRefreshBtn"),
   newsMoreLink: document.querySelector("#newsMoreLink"),
   newsSourceBtns: document.querySelectorAll("[data-news-source]"),
+  syncPanel: document.querySelector("#syncPanel"),
+  syncToggleBtn: document.querySelector("#syncToggleBtn"),
+  syncCloseBtn: document.querySelector("#syncCloseBtn"),
   syncUrlInput: document.querySelector("#syncUrlInput"),
   syncTokenInput: document.querySelector("#syncTokenInput"),
   syncSaveBtn: document.querySelector("#syncSaveBtn"),
@@ -568,6 +597,12 @@ function applyLanguage() {
   setText(".news-card .counter-label", dict.news);
   els.newsRefreshBtn.textContent = dict.refresh;
   els.newsMoreLink.textContent = dict.more;
+  els.syncToggleBtn.textContent = dict.sync;
+  setText(".sync-head span", dict.syncTitle);
+  setText(".sync-password-field span", dict.syncPassword);
+  els.syncTokenInput.placeholder = dict.syncPasswordPlaceholder;
+  els.syncSaveBtn.textContent = dict.syncSave;
+  els.syncLoadBtn.textContent = dict.syncLoad;
   translateThemePanel();
   (translatedPresetNames[lang] || translatedPresetNames.zh).forEach((name, index) => {
     if (els.themePresetBtns[index]) els.themePresetBtns[index].textContent = name;
@@ -669,6 +704,7 @@ function currentSessionFocusMinutes() {
 function save() {
   localStorage.setItem(storageKey, JSON.stringify({ ...state, remainingMs: currentRemainingMs() }));
   showSaved();
+  scheduleAutoBackup();
 }
 
 function loadTheme() {
@@ -1026,6 +1062,28 @@ function setSyncStatus(message) {
   els.syncStatus.textContent = message;
 }
 
+function setSyncPanelOpen(isOpen) {
+  els.syncPanel.dataset.open = isOpen ? "true" : "false";
+  els.syncToggleBtn.setAttribute("aria-expanded", String(isOpen));
+  if (isOpen) {
+    window.setTimeout(() => els.syncTokenInput.focus(), 0);
+  }
+}
+
+function hasSyncCredentials() {
+  const url = els.syncUrlInput?.value.trim() || localStorage.getItem(syncUrlStorageKey) || defaultSyncUrl;
+  const token = els.syncTokenInput?.value.trim() || localStorage.getItem(syncTokenStorageKey) || "";
+  return Boolean(url && token);
+}
+
+function scheduleAutoBackup() {
+  if (!hasSyncCredentials()) return;
+  window.clearTimeout(autoBackupTimer);
+  autoBackupTimer = window.setTimeout(() => {
+    backupToGoogle({ automatic: true });
+  }, autoSyncDelayMs);
+}
+
 function postToGoogle(url, payload) {
   const iframeName = `syncFrame${Date.now()}`;
   const iframe = document.createElement("iframe");
@@ -1052,10 +1110,10 @@ function postToGoogle(url, payload) {
   }, 5000);
 }
 
-function backupToGoogle() {
+function backupToGoogle(options = {}) {
   const { url, token } = syncSettings();
   if (!url || !token) {
-    setSyncStatus("請先填後台網址與同步密碼。");
+    if (!options.automatic) setSyncStatus("請先填後台網址與同步密碼。");
     return;
   }
   postToGoogle(url, {
@@ -1063,7 +1121,7 @@ function backupToGoogle() {
     deviceId: "main",
     data: syncPayload(),
   });
-  setSyncStatus("已送出備份到 Google。");
+  setSyncStatus(options.automatic ? "已自動備份到 Google。" : "已送出備份到 Google。");
 }
 
 function loadScript(url) {
@@ -1654,8 +1712,16 @@ els.futureSearchDateInput.addEventListener("change", updateFutureSearchDate);
 els.futureClearSearchBtn.addEventListener("click", clearFutureSearchDate);
 els.futureDateInput.addEventListener("change", () => save());
 els.futureAddBtn.addEventListener("click", addFutureEvent);
-els.syncUrlInput.addEventListener("change", () => localStorage.setItem(syncUrlStorageKey, els.syncUrlInput.value.trim()));
-els.syncTokenInput.addEventListener("change", () => localStorage.setItem(syncTokenStorageKey, els.syncTokenInput.value.trim()));
+els.syncToggleBtn.addEventListener("click", () => setSyncPanelOpen(els.syncPanel.dataset.open !== "true"));
+els.syncCloseBtn.addEventListener("click", () => setSyncPanelOpen(false));
+els.syncUrlInput.addEventListener("change", () => {
+  localStorage.setItem(syncUrlStorageKey, els.syncUrlInput.value.trim());
+  scheduleAutoBackup();
+});
+els.syncTokenInput.addEventListener("change", () => {
+  localStorage.setItem(syncTokenStorageKey, els.syncTokenInput.value.trim());
+  scheduleAutoBackup();
+});
 els.syncSaveBtn.addEventListener("click", backupToGoogle);
 els.syncLoadBtn.addEventListener("click", restoreFromGoogle);
 els.futureTextInput.addEventListener("keydown", (event) => {
@@ -1678,6 +1744,9 @@ els.countdownMinutesInput.addEventListener("keydown", (event) => {
 els.focusModeInput.addEventListener("change", () => setFocusMode(els.focusModeInput.checked));
 els.focusExitBtn.addEventListener("click", () => setFocusMode(false));
 document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && els.syncPanel.dataset.open === "true") {
+    setSyncPanelOpen(false);
+  }
   if (event.key === "Escape" && document.body.classList.contains("focus-mode")) {
     setFocusMode(false);
   }
@@ -1755,6 +1824,9 @@ setThemeCollapsed(localStorage.getItem(themeCollapsedStorageKey) === "1");
 applyLanguage();
 renderCurrentTime();
 loadNews();
+window.addEventListener("pagehide", () => {
+  if (hasSyncCredentials()) backupToGoogle({ automatic: true });
+});
 window.setInterval(() => {
   renderCurrentTime();
   resetGoalsIfNewDay();
