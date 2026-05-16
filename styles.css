@@ -37,6 +37,7 @@ button {
   font: inherit;
   overflow-wrap: anywhere;
   white-space: normal;
+  line-height: 1.15;
 }
 
 .right-dock {
@@ -443,6 +444,48 @@ button {
   font-weight: 900;
   white-space: nowrap;
   box-shadow: 0 2px 0 color-mix(in srgb, var(--line) 42%, transparent);
+}
+
+html[lang="de"] .device-header {
+  grid-template-columns: minmax(0, 1fr) minmax(136px, auto) minmax(108px, auto) minmax(72px, auto);
+  gap: 10px;
+}
+
+html[lang="de"] .level-mini {
+  width: min(300px, 100%);
+  grid-template-columns: auto minmax(72px, 1fr) minmax(82px, auto);
+}
+
+html[lang="de"] .level-mini #levelResetBtn,
+html[lang="de"] .goal-head button,
+html[lang="de"] .sync-toggle-btn,
+html[lang="de"] .future-tools button,
+html[lang="de"] .future-add button,
+html[lang="de"] .extra-goals-toggle {
+  font-size: 0.72rem;
+  line-height: 1.15;
+}
+
+html[lang="de"] .goal-head {
+  align-items: flex-start;
+}
+
+html[lang="de"] .goal-title {
+  flex-wrap: wrap;
+  row-gap: 2px;
+}
+
+html[lang="de"] .goal-title small {
+  white-space: normal;
+}
+
+html[lang="de"] .goal-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+html[lang="de"] .future-add {
+  grid-template-columns: minmax(106px, 0.76fr) minmax(0, 1fr) minmax(64px, auto);
 }
 
 .goal-panel {
@@ -1881,6 +1924,10 @@ body:has(.theme-control:not(.collapsed)) .inspiration-dock {
     gap: 10px;
   }
 
+  html[lang="de"] .device-header {
+    grid-template-columns: 1fr;
+  }
+
   .title-row {
     display: grid;
     gap: 10px;
@@ -1903,10 +1950,26 @@ body:has(.theme-control:not(.collapsed)) .inspiration-dock {
     flex-shrink: 0;
   }
 
+  html[lang="de"] .goal-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  html[lang="de"] .goal-actions {
+    max-width: 132px;
+    gap: 6px;
+  }
+
   .level-mini {
     width: 100%;
     grid-template-columns: auto minmax(0, 1fr) auto;
     padding: 8px;
+  }
+
+  html[lang="de"] .level-mini {
+    width: 100%;
+    grid-template-columns: auto minmax(0, 1fr) auto;
   }
 
   .current-time,
@@ -2098,6 +2161,26 @@ body:has(.theme-control:not(.collapsed)) .inspiration-dock {
 
   .level-mini {
     grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  html[lang="de"] .goal-head {
+    grid-template-columns: 1fr;
+  }
+
+  html[lang="de"] .goal-actions {
+    width: 100%;
+    max-width: none;
+    justify-content: stretch;
+  }
+
+  html[lang="de"] .goal-actions button {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  html[lang="de"] .sync-toggle-btn,
+  html[lang="de"] .extra-goals-toggle {
+    width: 100%;
   }
 
   .level-mini #levelResetBtn {
