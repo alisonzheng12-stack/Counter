@@ -2044,14 +2044,19 @@ body:has(.theme-control:not(.collapsed)) .inspiration-dock {
   }
 
   .inspiration-dock {
-    left: 34px;
-    bottom: 82px;
+    left: -30px;
+    bottom: 146px;
+    transform: none;
   }
 
   body:has(.theme-control:not(.collapsed)) .inspiration-dock {
+    left: -30px;
+    bottom: 82px;
+    transform: none;
+  }
+
+  .inspiration-dock[data-open="true"] {
     left: 10px;
-    bottom: 10px;
-    transform: translateY(calc(-100% - 10px));
   }
 
   .inspiration-toggle {
