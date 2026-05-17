@@ -37,6 +37,15 @@ const newsSources = {
 let sharedAudio = null;
 let autoBackupTimer = null;
 let localMusicTracks = [];
+const rewardDropTable = [
+  { label: "🌿 休息5分鐘", weight: 35, coins: 0 },
+  { label: "🎵 聽歌1~2首", weight: 25, coins: 0 },
+  { label: "🤖 GPT提問10分鐘", weight: 20, coins: 0 },
+  { label: "🧠 科技探索10分鐘", weight: 10, coins: 0 },
+  { label: "+10N幣", weight: 9, coins: 10 },
+  { label: "+50N幣", weight: 0.9, coins: 50 },
+  { label: "Tomica小車", weight: 0.1, coins: 0 },
+];
 const translatedPresetNames = {
   zh: ["日系", "櫻花可愛風", "靜謐感氛圍", "夏日清霜"],
   en: ["Japanese", "Sakura Cute", "Quiet Mood", "Summer Frost"],
@@ -51,11 +60,24 @@ const translations = {
     currentTime: "現在時間",
     language: "語言",
     todayGoals: "今日目標",
+    currentGoal: "現在目標",
+    currentGoalEmpty: "先輸入一個目標",
+    rewardIncome: "娛樂收入",
+    rewardEmpty: "尚未掉落",
     goalResetHint: "每日00:00重置",
     completedGoals: "已完成",
     clear: "清空",
     layoutTitle: "面板顯示",
     layoutToggle: "面",
+    toolLabels: {
+      theme: "色彩",
+      inspiration: "靈感",
+      layout: "面板",
+      music: "音樂",
+      worlds: "九界",
+      routine: "目標",
+      sync: "同步",
+    },
     layoutFeatures: {
       music: "音樂",
       level: "等級經驗",
@@ -78,7 +100,7 @@ const translations = {
     musicLoadFail: "音樂清單載入失敗。",
     musicSelected: "已選擇 {n} 首。重新開啟網頁後需再選一次。",
     dailyTodoApply: "填入必做",
-    dailyTodoSave: "管理必做",
+    dailyTodoSave: "管理目標",
     dailyTodoSaved: "每日必做已保存。",
     dailyTodoEmpty: "先設定每日必做。",
     todoPlaceholder: "輸入今日要完成的事",
@@ -106,6 +128,7 @@ const translations = {
     futureSearchDate: "搜尋日期",
     futureAll: "全部",
     futureEventDate: "活動日期",
+    dateHint: "年/月/日",
     futureEventText: "活動內容",
     futureEventPlaceholder: "輸入未來活動",
     futureAdd: "加入",
@@ -169,11 +192,24 @@ const translations = {
     currentTime: "Current Time",
     language: "Language",
     todayGoals: "Today's Goals",
+    currentGoal: "Current Goal",
+    currentGoalEmpty: "Add a goal first",
+    rewardIncome: "Fun Income",
+    rewardEmpty: "No drop yet",
     goalResetHint: "Resets daily at 00:00",
     completedGoals: "Done",
     clear: "Clear",
     layoutTitle: "Panel Display",
     layoutToggle: "Panel",
+    toolLabels: {
+      theme: "Color",
+      inspiration: "Idea",
+      layout: "Panel",
+      music: "Music",
+      worlds: "World",
+      routine: "Goal",
+      sync: "Sync",
+    },
     layoutFeatures: {
       music: "Music",
       level: "Level",
@@ -196,7 +232,7 @@ const translations = {
     musicLoadFail: "Music list failed to load.",
     musicSelected: "{n} selected. Please choose again after reopening the page.",
     dailyTodoApply: "Fill Routine",
-    dailyTodoSave: "Manage",
+    dailyTodoSave: "Manage Goals",
     dailyTodoSaved: "Daily routine saved.",
     dailyTodoEmpty: "Set your daily routine first.",
     todoPlaceholder: "Enter something to complete today",
@@ -224,6 +260,7 @@ const translations = {
     futureSearchDate: "Search Date",
     futureAll: "All",
     futureEventDate: "Event Date",
+    dateHint: "YYYY/MM/DD",
     futureEventText: "Event",
     futureEventPlaceholder: "Enter a future event",
     futureAdd: "Add",
@@ -287,11 +324,24 @@ const translations = {
     currentTime: "Aktuelle Uhrzeit",
     language: "Sprache",
     todayGoals: "Tagesziele",
+    currentGoal: "Aktuelles Ziel",
+    currentGoalEmpty: "Erst ein Ziel eingeben",
+    rewardIncome: "Freizeit-Ertrag",
+    rewardEmpty: "Noch kein Fund",
     goalResetHint: "Reset um 00:00",
     completedGoals: "Fertig",
     clear: "Leeren",
     layoutTitle: "Anzeige",
     layoutToggle: "Panel",
+    toolLabels: {
+      theme: "Farb",
+      inspiration: "Idee",
+      layout: "Panel",
+      music: "Mus",
+      worlds: "Welt",
+      routine: "Ziel",
+      sync: "Sync",
+    },
     layoutFeatures: {
       music: "Musik",
       level: "Level",
@@ -314,7 +364,7 @@ const translations = {
     musicLoadFail: "Musikliste konnte nicht geladen werden.",
     musicSelected: "{n} ausgewählt. Nach dem erneuten Öffnen bitte wieder auswählen.",
     dailyTodoApply: "Routine",
-    dailyTodoSave: "Verwalten",
+    dailyTodoSave: "Ziele verwalten",
     dailyTodoSaved: "Tägliche Routine gespeichert.",
     dailyTodoEmpty: "Bitte zuerst die Routine festlegen.",
     todoPlaceholder: "Aufgabe für heute eingeben",
@@ -342,6 +392,7 @@ const translations = {
     futureSearchDate: "Suche",
     futureAll: "Alle",
     futureEventDate: "Datum",
+    dateHint: "JJJJ/MM/TT",
     futureEventText: "Text",
     futureEventPlaceholder: "Termin eingeben",
     futureAdd: "Hinzuf.",
@@ -405,11 +456,24 @@ const translations = {
     currentTime: "現在時刻",
     language: "言語",
     todayGoals: "今日の目標",
+    currentGoal: "現在の目標",
+    currentGoalEmpty: "先に目標を入力",
+    rewardIncome: "娯楽収入",
+    rewardEmpty: "まだドロップなし",
     goalResetHint: "毎日00:00にリセット",
     completedGoals: "完了",
     clear: "クリア",
     layoutTitle: "表示パネル",
     layoutToggle: "面",
+    toolLabels: {
+      theme: "色彩",
+      inspiration: "発想",
+      layout: "面板",
+      music: "音楽",
+      worlds: "九界",
+      routine: "目標",
+      sync: "同期",
+    },
     layoutFeatures: {
       music: "音楽",
       level: "レベル",
@@ -432,7 +496,7 @@ const translations = {
     musicLoadFail: "音楽リストを読み込めませんでした。",
     musicSelected: "{n}曲を選択しました。再度開いたらもう一度選択してください。",
     dailyTodoApply: "必須を入力",
-    dailyTodoSave: "管理",
+    dailyTodoSave: "目標管理",
     dailyTodoSaved: "毎日の必須タスクを保存しました。",
     dailyTodoEmpty: "先に毎日の必須タスクを設定してください。",
     todoPlaceholder: "今日やることを入力",
@@ -460,6 +524,7 @@ const translations = {
     futureSearchDate: "日付検索",
     futureAll: "全部",
     futureEventDate: "予定日",
+    dateHint: "年/月/日",
     futureEventText: "予定",
     futureEventPlaceholder: "未来の予定を入力",
     futureAdd: "追加",
@@ -659,6 +724,11 @@ const state = {
   choiceCount: 0,
   level: 1,
   xp: 0,
+  rewardExpUnits: 0,
+  nCoins: 0,
+  lastNCoinGain: 0,
+  lastNCoinGrowth: 0,
+  rewardHistory: [],
   remainingWrongCount: 0,
   totalWrongCount: 0,
   futureActivities: "",
@@ -670,6 +740,7 @@ const state = {
   remainingMs: 25 * 60 * 1000,
   startedAt: null,
   active: false,
+  currentGoalText: "",
   goalsDate: localDateKey(),
   goals: {
     todos: [
@@ -718,6 +789,10 @@ const els = {
   xpValue: document.querySelector("#xpValue"),
   xpNeedValue: document.querySelector("#xpNeedValue"),
   xpBar: document.querySelector("#xpBar"),
+  rewardLabel: document.querySelector("#rewardLabel"),
+  nCoinValue: document.querySelector("#nCoinValue"),
+  rewardGrowth: document.querySelector("#rewardGrowth"),
+  rewardLatest: document.querySelector("#rewardLatest"),
   futureSearchDateInput: document.querySelector("#futureSearchDateInput"),
   futureClearSearchBtn: document.querySelector("#futureClearSearchBtn"),
   futureDateInput: document.querySelector("#futureDateInput"),
@@ -745,6 +820,7 @@ const els = {
   bombCloseBtn: document.querySelector("#bombCloseBtn"),
   dailyTodoApplyBtn: document.querySelector("#dailyTodoApplyBtn"),
   dailyTodoSaveBtn: document.querySelector("#dailyTodoSaveBtn"),
+  currentGoalSelect: document.querySelector("#currentGoalSelect"),
   completedGoalsBtn: document.querySelector("#completedGoalsBtn"),
   goalResetBtn: document.querySelector("#goalResetBtn"),
   extraGoals: document.querySelector(".extra-goals"),
@@ -787,6 +863,7 @@ const els = {
   inspirationInput: document.querySelector("#inspirationInput"),
   inspirationSaveBtn: document.querySelector("#inspirationSaveBtn"),
   inspirationClearBtn: document.querySelector("#inspirationClearBtn"),
+  inspirationCount: document.querySelector("#inspirationCount"),
   inspirationList: document.querySelector("#inspirationList"),
   newsList: document.querySelector("#newsList"),
   newsStatus: document.querySelector("#newsStatus"),
@@ -839,12 +916,20 @@ function applyLanguage() {
   setText(".language-control span", dict.language);
   setText(".layout-head span", dict.layoutTitle);
   els.layoutToggleBtn.textContent = dict.layoutToggle;
+  els.toolButtons.forEach((button) => {
+    const key = button.dataset.tool;
+    const label = dict.toolLabels?.[key] || button.textContent;
+    button.textContent = label;
+    button.title = label;
+  });
   renderLayoutOptions();
   translateMusicPanel();
   setText(".goal-title span", dict.todayGoals);
   setText(".goal-title small", dict.goalResetHint);
   els.dailyTodoApplyBtn.textContent = dict.dailyTodoApply;
-  els.dailyTodoSaveBtn.textContent = dict.dailyTodoSave;
+  els.dailyTodoSaveBtn.textContent = dict.toolLabels?.routine || dict.dailyTodoSave;
+  els.dailyTodoSaveBtn.title = dict.dailyTodoSave;
+  setText(".current-goal-picker span", dict.currentGoal);
   els.completedGoalsBtn.textContent = dict.completedGoals;
   els.goalResetBtn.textContent = dict.clear;
   els.todoTexts.forEach((input) => {
@@ -881,16 +966,24 @@ function applyLanguage() {
   setText(".level-mini-label", dict.level);
   els.levelResetBtn.textContent = dict.levelReset;
   setText(".future-card .counter-label", dict.future);
-  setText(".future-search-field span", dict.futureSearchDate);
-  setText(".future-add label:nth-of-type(1) span", dict.futureEventDate);
+  setText(".future-search-field span", `${dict.futureSearchDate} ${dict.dateHint}`);
+  setText(".future-add label:nth-of-type(1) span", `${dict.futureEventDate} ${dict.dateHint}`);
   setText(".future-add label:nth-of-type(2) span", dict.futureEventText);
+  document.querySelectorAll(".date-field").forEach((field) => {
+    field.dataset.dateHint = dict.dateHint;
+  });
+  [els.futureSearchDateInput, els.futureDateInput].forEach((input) => {
+    input.lang = dict.htmlLang;
+    input.title = dict.dateHint;
+    input.setAttribute("aria-label", dict.dateHint);
+  });
   els.futureTextInput.placeholder = dict.futureEventPlaceholder;
   els.futureClearSearchBtn.textContent = dict.futureAll;
   els.futureAddBtn.textContent = dict.futureAdd;
   setText(".news-card .counter-label", dict.news);
   els.newsRefreshBtn.textContent = dict.refresh;
   els.newsMoreLink.textContent = dict.more;
-  els.syncToggleBtn.textContent = dict.sync;
+  els.syncToggleBtn.textContent = dict.toolLabels?.sync || dict.sync;
   setText(".sync-head span", dict.syncTitle);
   setText(".sync-password-field span", dict.syncPassword);
   els.syncTokenInput.placeholder = dict.syncPasswordPlaceholder;
@@ -927,6 +1020,11 @@ function load() {
     state.choiceCount = Math.max(0, Number.parseInt(saved.choiceCount, 10) || 0);
     state.level = Math.max(1, Number.parseInt(saved.level, 10) || 1);
     state.xp = Math.max(0, Number.parseInt(saved.xp, 10) || Number.parseInt(saved.essayCount, 10) || 0);
+    state.rewardExpUnits = Math.max(0, Number.parseInt(saved.rewardExpUnits, 10) || 0);
+    state.nCoins = Math.max(0, Number.parseInt(saved.nCoins, 10) || 0);
+    state.lastNCoinGain = Math.max(0, Number.parseInt(saved.lastNCoinGain, 10) || 0);
+    state.lastNCoinGrowth = Math.max(0, Number(saved.lastNCoinGrowth) || 0);
+    state.rewardHistory = normalizeRewardHistory(saved.rewardHistory);
     normalizeLevel();
     const oldCorrectionCount = Math.max(0, Number.parseInt(saved.correctionCount, 10) || 0);
     state.totalWrongCount = Math.max(0, Number.parseInt(saved.totalWrongCount, 10) || oldCorrectionCount);
@@ -946,6 +1044,7 @@ function load() {
     state.remainingMs = Math.max(0, Number.parseInt(saved.remainingMs, 10) || state.countdownMinutes * 60 * 1000);
     state.startedAt = Number.isFinite(saved.startedAt) ? saved.startedAt : null;
     state.active = Boolean(saved.active && state.startedAt);
+    state.currentGoalText = typeof saved.currentGoalText === "string" ? saved.currentGoalText : "";
     state.goals = {
       ...state.goals,
       ...(saved.goals && typeof saved.goals === "object" ? saved.goals : {}),
@@ -1024,6 +1123,18 @@ function normalizeInspirations(items) {
     }))
     .filter((item) => item.text)
     .slice(0, 500);
+}
+
+function normalizeRewardHistory(items) {
+  if (!Array.isArray(items)) return [];
+  return items
+    .map((item) => ({
+      label: String(item?.label || "").trim(),
+      coins: Math.max(0, Number.parseInt(item?.coins, 10) || 0),
+      createdAt: String(item?.createdAt || new Date().toISOString()),
+    }))
+    .filter((item) => item.label)
+    .slice(0, 80);
 }
 
 function normalizeFutureEvents(events, legacyText = "") {
@@ -1208,6 +1319,7 @@ function applyLayoutVisibility() {
   if (!visibility.sync) setSyncPanelOpen(false);
   if (!visibility.inspiration) setInspirationOpen(false);
   if (!visibility.theme) setThemeCollapsed(true);
+  if (!visibility.worlds && !visibility.inventory) setRightDockOpen(false);
   if (!visibility.music) {
     setMusicOpen(false);
     pauseMusic();
@@ -1225,6 +1337,8 @@ function closeAllTools(except = "") {
   if (except !== "inspiration") setInspirationOpen(false);
   if (except !== "layout") setLayoutPanelOpen(false);
   if (except !== "music") setMusicOpen(false);
+  if (except !== "worlds") setRightDockOpen(false);
+  if (except !== "sync") setSyncPanelOpen(false);
 }
 
 function toggleTool(tool) {
@@ -1232,7 +1346,8 @@ function toggleTool(tool) {
   const isInspirationOpen = els.inspirationDock.dataset.open === "true";
   const isLayoutOpen = !els.layoutControl.classList.contains("collapsed");
   const isMusicOpen = els.musicDock.dataset.open === "true";
-  const openMap = { theme: isThemeOpen, inspiration: isInspirationOpen, layout: isLayoutOpen, music: isMusicOpen };
+  const isWorldsOpen = els.rightDock.dataset.collapsed !== "true";
+  const openMap = { theme: isThemeOpen, inspiration: isInspirationOpen, layout: isLayoutOpen, music: isMusicOpen, worlds: isWorldsOpen };
   if (openMap[tool]) {
     closeAllTools();
     return;
@@ -1242,6 +1357,7 @@ function toggleTool(tool) {
   if (tool === "inspiration") setInspirationOpen(true);
   if (tool === "layout") setLayoutPanelOpen(true);
   if (tool === "music") setMusicOpen(true);
+  if (tool === "worlds") setRightDockOpen(true);
 }
 
 function updateToolSidebar() {
@@ -1251,6 +1367,7 @@ function updateToolSidebar() {
     inspiration: els.inspirationDock.dataset.open === "true",
     layout: !els.layoutControl.classList.contains("collapsed"),
     music: els.musicDock.dataset.open === "true",
+    worlds: els.rightDock.dataset.collapsed !== "true",
   };
   els.toolButtons.forEach((button) => {
     button.classList.toggle("active", Boolean(active[button.dataset.tool]));
@@ -1475,10 +1592,14 @@ function toggleInventory() {
   els.inventoryToggleBtn.setAttribute("aria-expanded", collapsed ? "true" : "false");
 }
 
+function setRightDockOpen(isOpen) {
+  els.rightDock.dataset.collapsed = isOpen ? "false" : "true";
+  els.rightDockToggleBtn.setAttribute("aria-expanded", String(isOpen));
+  updateToolSidebar();
+}
+
 function toggleRightDock() {
-  const collapsed = els.rightDock.dataset.collapsed === "true";
-  els.rightDock.dataset.collapsed = collapsed ? "false" : "true";
-  els.rightDockToggleBtn.setAttribute("aria-expanded", collapsed ? "true" : "false");
+  setRightDockOpen(els.rightDock.dataset.collapsed === "true");
 }
 
 function renderWorldKeys() {
@@ -1693,6 +1814,7 @@ function setSyncPanelOpen(isOpen) {
   if (isOpen) {
     window.setTimeout(() => els.syncTokenInput.focus(), 0);
   }
+  els.syncToggleBtn.classList.toggle("active", isOpen);
 }
 
 function hasSyncCredentials() {
@@ -1821,6 +1943,31 @@ function formatCurrentTime(date = new Date()) {
   });
 }
 
+function dateLocale() {
+  return {
+    zh: "zh-TW",
+    en: "en-US",
+    de: "de-DE",
+    ja: "ja-JP",
+  }[currentLanguage()] || "zh-TW";
+}
+
+function formatDateByLanguage(dateKey) {
+  const [year, month, day] = String(dateKey || "").split("-").map((part) => Number.parseInt(part, 10));
+  if (!year || !month || !day) return dateKey || "";
+  return new Date(year, month - 1, day).toLocaleDateString(dateLocale(), {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+}
+
+function updateDateFieldHints() {
+  [els.futureSearchDateInput, els.futureDateInput].forEach((input) => {
+    input.closest(".date-field")?.classList.toggle("has-date", Boolean(input.value));
+  });
+}
+
 function currentTimeInputValue() {
   const now = new Date();
   return `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
@@ -1835,6 +1982,44 @@ function normalizeLevel() {
     state.xp -= xpNeed();
     state.level += 1;
   }
+}
+
+function rollRewardDrop() {
+  const roll = Math.random() * 100;
+  let cursor = 0;
+  return rewardDropTable.find((reward) => {
+    cursor += reward.weight;
+    return roll < cursor;
+  }) || rewardDropTable[0];
+}
+
+function addRewardDrop() {
+  const reward = rollRewardDrop();
+  const coinsBefore = state.nCoins;
+  state.nCoins += reward.coins;
+  state.lastNCoinGain = reward.coins;
+  state.lastNCoinGrowth = reward.coins > 0
+    ? Math.round((reward.coins / Math.max(1, coinsBefore)) * 1000) / 10
+    : 0;
+  state.rewardHistory = normalizeRewardHistory([
+    {
+      label: reward.label,
+      coins: reward.coins,
+      createdAt: new Date().toISOString(),
+    },
+    ...state.rewardHistory,
+  ]);
+}
+
+function addExperience(amount) {
+  const exp = Math.max(0, Number.parseInt(amount, 10) || 0);
+  if (exp <= 0) return;
+  const beforeUnits = state.rewardExpUnits;
+  state.rewardExpUnits += exp;
+  const drops = Math.floor(state.rewardExpUnits / 10) - Math.floor(beforeUnits / 10);
+  for (let index = 0; index < drops; index += 1) addRewardDrop();
+  state.xp += exp;
+  normalizeLevel();
 }
 
 function normalizeWorldList(list) {
@@ -1854,23 +2039,32 @@ function applyFocusTimeRewards() {
   const rewardBlocks = Math.floor(state.completedStudyMinutes / 25);
   const newBlocks = Math.max(0, rewardBlocks - state.focusRewardBlocks);
   if (newBlocks <= 0) return;
-  state.xp += newBlocks * 20;
+  addExperience(newBlocks * 20);
   state.focusRewardBlocks = rewardBlocks;
-  normalizeLevel();
 }
 
 function render() {
+  document.body.classList.toggle("timer-running", state.active);
+  setText(".goal-title span", state.active ? t("currentGoal") : t("todayGoals"));
   if (els.choiceCount) els.choiceCount.textContent = state.choiceCount;
   els.levelValue.textContent = state.level;
   els.xpValue.textContent = state.xp;
   els.xpNeedValue.textContent = xpNeed();
   els.xpBar.style.width = `${Math.min(100, (state.xp / xpNeed()) * 100)}%`;
+  if (els.rewardLabel) els.rewardLabel.textContent = t("rewardIncome");
+  if (els.nCoinValue) els.nCoinValue.textContent = state.nCoins;
+  if (els.rewardGrowth) {
+    const prefix = state.lastNCoinGrowth >= 0 ? "+" : "";
+    els.rewardGrowth.textContent = `${prefix}${state.lastNCoinGrowth}%`;
+  }
+  if (els.rewardLatest) els.rewardLatest.textContent = state.rewardHistory[0]?.label || t("rewardEmpty");
   if (document.activeElement !== els.futureSearchDateInput) {
     els.futureSearchDateInput.value = state.futureSearchDate;
   }
   if (document.activeElement !== els.futureDateInput && !els.futureDateInput.value) {
     els.futureDateInput.value = localDateKey();
   }
+  updateDateFieldHints();
   els.studyTime.textContent = formatTime(currentRemainingMs());
   els.focusTotalMinutes.textContent = state.completedStudyMinutes + currentSessionFocusMinutes();
   if (document.activeElement !== els.countdownMinutesInput) {
@@ -1984,9 +2178,47 @@ function renderCurrentTime() {
   els.currentTime.textContent = formatCurrentTime();
 }
 
+function activeTodoEntries() {
+  return state.goals.todos
+    .map((todo, index) => ({ ...todo, index }))
+    .filter((todo) => todo.text && !todo.done);
+}
+
+function selectedCurrentGoalIndex() {
+  const activeTodos = activeTodoEntries();
+  if (!activeTodos.length) return 0;
+  const byText = activeTodos.find((todo) => todo.text === state.currentGoalText);
+  return (byText || activeTodos[0]).index;
+}
+
+function renderCurrentGoalSelect(currentGoalIndex) {
+  if (!els.currentGoalSelect) return;
+  const activeTodos = activeTodoEntries();
+  els.currentGoalSelect.innerHTML = "";
+  if (!activeTodos.length) {
+    const option = document.createElement("option");
+    option.value = "";
+    option.textContent = t("currentGoalEmpty");
+    els.currentGoalSelect.append(option);
+    els.currentGoalSelect.disabled = true;
+    return;
+  }
+  els.currentGoalSelect.disabled = false;
+  activeTodos.forEach((todo) => {
+    const option = document.createElement("option");
+    option.value = String(todo.index);
+    option.textContent = todo.text;
+    els.currentGoalSelect.append(option);
+  });
+  els.currentGoalSelect.value = String(currentGoalIndex);
+}
+
 function renderTodos() {
+  const currentGoalIndex = selectedCurrentGoalIndex();
+  renderCurrentGoalSelect(currentGoalIndex);
   els.todoChecks.forEach((input, index) => {
     input.checked = Boolean(state.goals.todos[index]?.done);
+    input.closest(".todo-item")?.classList.toggle("current-goal", index === currentGoalIndex);
   });
   els.todoTexts.forEach((input, index) => {
     if (document.activeElement !== input) {
@@ -2026,7 +2258,9 @@ function validateTodoDeadline(input, shouldAlert = true) {
 
 function renderInspirations() {
   els.inspirationList.innerHTML = "";
-  normalizeInspirations(state.inspirations).forEach((item) => {
+  const inspirations = normalizeInspirations(state.inspirations);
+  if (els.inspirationCount) els.inspirationCount.textContent = `${inspirations.length}/500`;
+  inspirations.forEach((item) => {
     const li = document.createElement("li");
     const time = document.createElement("time");
     const date = new Date(item.createdAt);
@@ -2104,6 +2338,9 @@ function applyDailyTodoTemplate() {
     seen.add(todo.text);
   });
   state.goals.todos = normalizeTodos(current);
+  if (!state.goals.todos.some((todo) => todo.text === state.currentGoalText)) {
+    state.currentGoalText = state.goals.todos.find((todo) => todo.text)?.text || "";
+  }
   state.goalsDate = localDateKey();
   save();
   render();
@@ -2131,11 +2368,13 @@ function saveTodos() {
   });
   const completedExp = completedNow.reduce((sum, todo) => sum + todo.exp, 0);
   if (completedExp > 0) {
-    state.xp += completedExp;
-    normalizeLevel();
+    addExperience(completedExp);
     state.completedGoals = normalizeCompletedGoals([...completedNow, ...state.completedGoals]);
   }
   state.goals.todos = normalizeTodos(activeTodos);
+  if (!state.goals.todos.some((todo) => todo.text === state.currentGoalText)) {
+    state.currentGoalText = state.goals.todos.find((todo) => todo.text)?.text || "";
+  }
   state.goalsDate = localDateKey();
   save();
   render();
@@ -2177,6 +2416,7 @@ function renderFutureEvents() {
     li.className = "future-empty";
     li.textContent = state.futureEvents.length ? t("futureNoMatch") : t("futureEmpty");
     els.futureList.append(li);
+    updateDateFieldHints();
     return;
   }
   filtered.forEach((event) => {
@@ -2185,7 +2425,7 @@ function renderFutureEvents() {
     const text = document.createElement("span");
     const button = document.createElement("button");
     time.dateTime = event.date;
-    time.textContent = event.date;
+    time.textContent = formatDateByLanguage(event.date);
     text.textContent = event.text;
     button.type = "button";
     button.textContent = "×";
@@ -2194,6 +2434,7 @@ function renderFutureEvents() {
     li.append(time, text, button);
     els.futureList.append(li);
   });
+  updateDateFieldHints();
 }
 
 function addFutureEvent() {
@@ -2220,6 +2461,7 @@ function deleteFutureEvent(id) {
 
 function updateFutureSearchDate() {
   state.futureSearchDate = els.futureSearchDateInput.value;
+  updateDateFieldHints();
   save();
   renderFutureEvents();
 }
@@ -2227,6 +2469,7 @@ function updateFutureSearchDate() {
 function clearFutureSearchDate() {
   state.futureSearchDate = "";
   els.futureSearchDateInput.value = "";
+  updateDateFieldHints();
   save();
   renderFutureEvents();
 }
@@ -2270,6 +2513,11 @@ function resetCounter(key) {
 function resetLevel() {
   state.level = 1;
   state.xp = 0;
+  state.rewardExpUnits = 0;
+  state.nCoins = 0;
+  state.lastNCoinGain = 0;
+  state.lastNCoinGrowth = 0;
+  state.rewardHistory = [];
   save();
   render();
 }
@@ -2279,8 +2527,7 @@ function adjustRemainingWrong(delta) {
   state.remainingWrongCount = Math.max(0, Math.min(state.totalWrongCount, state.remainingWrongCount + delta));
   const corrected = Math.max(0, previous - state.remainingWrongCount);
   if (corrected > 0) {
-    state.xp += corrected * 10;
-    normalizeLevel();
+    addExperience(corrected * 10);
   }
   save();
   render();
@@ -2475,7 +2722,12 @@ els.futureSearchDateInput.addEventListener("change", updateFutureSearchDate);
 els.futureClearSearchBtn.addEventListener("click", clearFutureSearchDate);
 els.futureDateInput.addEventListener("change", () => save());
 els.futureAddBtn.addEventListener("click", addFutureEvent);
-els.syncToggleBtn.addEventListener("click", () => setSyncPanelOpen(els.syncPanel.dataset.open !== "true"));
+els.syncToggleBtn.addEventListener("click", () => {
+  const shouldOpen = els.syncPanel.dataset.open !== "true";
+  closeAllTools(shouldOpen ? "sync" : "");
+  setSyncPanelOpen(shouldOpen);
+  if (window.matchMedia("(max-width: 760px)").matches) setToolSidebarOpen(false);
+});
 els.syncCloseBtn.addEventListener("click", () => setSyncPanelOpen(false));
 els.syncUrlInput.addEventListener("change", () => {
   localStorage.setItem(syncUrlStorageKey, els.syncUrlInput.value.trim());
@@ -2522,6 +2774,12 @@ els.timerResetBtn.addEventListener("click", resetTimer);
 els.bombCloseBtn.addEventListener("click", hideBomb);
 els.dailyTodoApplyBtn.addEventListener("click", applyDailyTodoTemplate);
 els.dailyTodoSaveBtn.addEventListener("click", saveDailyTodoTemplate);
+els.currentGoalSelect.addEventListener("change", () => {
+  const index = Number.parseInt(els.currentGoalSelect.value, 10);
+  state.currentGoalText = state.goals.todos[index]?.text || "";
+  save();
+  render();
+});
 els.completedGoalsBtn.addEventListener("click", openCompletedGoalsPage);
 els.goalResetBtn.addEventListener("click", resetGoals);
 els.extraGoalsToggleBtn.addEventListener("click", toggleExtraGoals);
