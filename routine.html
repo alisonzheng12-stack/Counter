@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>&#30446;&#27161;&#31649;&#29702;</title>
-    <link rel="stylesheet" href="styles.css?v=20260517-52" />
+    <link rel="stylesheet" href="styles.css?v=20260517-53" />
     <style>
       body {
         min-height: 100vh;
@@ -65,6 +65,25 @@
 
       .routine-toolbar {
         padding: 12px;
+      }
+
+      .routine-actions button,
+      .routine-toolbar button,
+      .routine-row button {
+        border-color: color-mix(in srgb, var(--ink, #2d2a26) 42%, var(--line, #caa94d));
+        background: color-mix(in srgb, var(--line, #caa94d) 68%, var(--paper, #fffffb));
+        color: var(--ink, #2d2a26);
+        box-shadow: 0 8px 18px color-mix(in srgb, var(--line, #caa94d) 18%, transparent);
+      }
+
+      .routine-actions button:hover,
+      .routine-actions button:focus-visible,
+      .routine-toolbar button:hover,
+      .routine-toolbar button:focus-visible,
+      .routine-row button:hover,
+      .routine-row button:focus-visible {
+        border-color: var(--ink, #2d2a26);
+        background: color-mix(in srgb, var(--line, #caa94d) 82%, var(--paper, #fffffb));
       }
 
       .routine-toolbar input,
