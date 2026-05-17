@@ -2981,7 +2981,7 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
 @media (max-width: 760px) {
   .tool-sidebar {
     left: auto;
-    right: 8px;
+    right: 0;
     top: 108px;
     width: auto;
     padding: 6px;
@@ -2999,9 +2999,9 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
   .tool-sidebar-toggle {
     display: grid;
     place-items: center;
-    width: 52px;
+    width: 48px;
     height: 54px;
-    min-width: 52px;
+    min-width: 48px;
     min-height: 54px;
     padding: 0 8px 0 0;
     border-radius: 16px 0 0 16px;
@@ -3017,16 +3017,18 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
   }
 
   .tool-sidebar-items {
-    display: grid;
-    position: static;
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
     grid-template-columns: repeat(2, 58px);
     gap: 8px;
-    padding: 0;
+    padding: 8px;
     transform: none;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
+    border: var(--line-width) solid var(--line);
+    border-radius: 16px 0 0 16px;
+    background: color-mix(in srgb, var(--paper) 96%, transparent);
+    box-shadow: 0 14px 32px color-mix(in srgb, var(--line) 22%, transparent);
   }
 
   .tool-sidebar[data-open="true"] .tool-sidebar-items {
@@ -3034,9 +3036,9 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
   }
 
   .tool-sidebar .tool-sidebar-toggle {
-    width: 52px;
+    width: 48px;
     height: 54px;
-    min-width: 52px;
+    min-width: 48px;
     min-height: 54px;
     border-radius: 16px 0 0 16px;
   }

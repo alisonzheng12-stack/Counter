@@ -78,6 +78,7 @@ const translations = {
       routine: "目標",
       sync: "同步",
     },
+    toolMenu: "工具",
     layoutFeatures: {
       music: "音樂",
       level: "等級經驗",
@@ -210,6 +211,7 @@ const translations = {
       routine: "Goal",
       sync: "Sync",
     },
+    toolMenu: "Tools",
     layoutFeatures: {
       music: "Music",
       level: "Level",
@@ -342,6 +344,7 @@ const translations = {
       routine: "Ziel",
       sync: "Sync",
     },
+    toolMenu: "Tool",
     layoutFeatures: {
       music: "Musik",
       level: "Level",
@@ -474,6 +477,7 @@ const translations = {
       routine: "目標",
       sync: "同期",
     },
+    toolMenu: "道具",
     layoutFeatures: {
       music: "音楽",
       level: "レベル",
@@ -916,6 +920,11 @@ function applyLanguage() {
   setText(".language-control span", dict.language);
   setText(".layout-head span", dict.layoutTitle);
   els.layoutToggleBtn.textContent = dict.layoutToggle;
+  if (els.toolSidebarToggleBtn) {
+    const toolMenuLabel = dict.toolMenu || "工具";
+    els.toolSidebarToggleBtn.textContent = toolMenuLabel;
+    els.toolSidebarToggleBtn.title = toolMenuLabel;
+  }
   els.toolButtons.forEach((button) => {
     const key = button.dataset.tool;
     const label = dict.toolLabels?.[key] || button.textContent;
