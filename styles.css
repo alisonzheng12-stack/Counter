@@ -610,17 +610,29 @@ html[lang="de"] .sync-panel {
 }
 
 .todo-item {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) 78px;
+  grid-template-rows: repeat(2, 28px);
   align-items: center;
-  gap: 10px;
+  gap: 3px 8px;
   min-width: 0;
-  padding: 7px 9px;
+  min-height: 70px;
+  padding: 6px 8px;
   border: var(--line-width) solid var(--line);
   border-radius: 8px;
   background: var(--paper);
+  transition: background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.todo-item.challenge {
+  border-color: color-mix(in srgb, #e03a72 68%, var(--line));
+  background: linear-gradient(135deg, color-mix(in srgb, #e03a72 16%, var(--paper)), var(--paper) 72%);
+  box-shadow: inset 4px 0 0 color-mix(in srgb, #e03a72 78%, var(--line));
 }
 
 .todo-check {
+  grid-column: 1;
+  grid-row: 1 / 3;
   width: 18px;
   height: 18px;
   flex: 0 0 auto;
@@ -628,6 +640,8 @@ html[lang="de"] .sync-panel {
 }
 
 .todo-text {
+  grid-column: 2;
+  grid-row: 1 / 3;
   min-width: 0;
   width: 100%;
   height: 34px;
@@ -642,6 +656,49 @@ html[lang="de"] .sync-panel {
 
 .todo-text:focus {
   outline: none;
+}
+
+.todo-type {
+  grid-column: 3;
+  grid-row: 1 / 3;
+  min-width: 0;
+  height: 30px;
+  padding: 0 4px;
+  border: var(--line-width) solid var(--line);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--paper) 86%, var(--accent));
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 900;
+}
+
+.todo-item.challenge .todo-type {
+  grid-row: 1;
+  border-color: color-mix(in srgb, #e03a72 68%, var(--line));
+  background: color-mix(in srgb, #e03a72 18%, var(--paper));
+}
+
+.todo-deadline {
+  grid-column: 3;
+  grid-row: 2;
+  display: none;
+  min-width: 0;
+  width: 100%;
+  height: 28px;
+  padding: 0 3px;
+  border: var(--line-width) solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 900;
+}
+
+.todo-item.challenge .todo-deadline {
+  display: block;
+  border-color: color-mix(in srgb, #e03a72 55%, var(--line));
 }
 
 .todo-item:has(.todo-check:checked) .todo-text {
@@ -1580,7 +1637,7 @@ body:has(.theme-control:not(.collapsed)) .inspiration-dock {
 .inspiration-list {
   display: grid;
   gap: 7px;
-  max-height: 190px;
+  max-height: min(280px, 42dvh);
   margin: 0;
   padding: 0;
   overflow: auto;
@@ -2089,6 +2146,12 @@ body:has(.theme-control:not(.collapsed)) .inspiration-dock {
   .todo-grid {
     grid-template-columns: 1fr;
     gap: 6px;
+  }
+
+  .todo-item {
+    grid-template-columns: auto minmax(0, 1fr) 74px;
+    min-height: 68px;
+    gap: 3px 7px;
   }
 
   .theme-control {

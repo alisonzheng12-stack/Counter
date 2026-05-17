@@ -50,6 +50,10 @@ const translations = {
     completedGoals: "已完成",
     clear: "清空",
     todoPlaceholder: "輸入今日要完成的事",
+    todoNormal: "普通",
+    todoChallenge: "限時",
+    todoDeadline: "期限",
+    todoPastDeadline: "不能設定已經過去的時間。",
     moreGoals: "新增更多目標",
     hideMoreGoals: "收起更多目標",
     countdown: "倒數時間",
@@ -137,6 +141,10 @@ const translations = {
     completedGoals: "Done",
     clear: "Clear",
     todoPlaceholder: "Enter something to complete today",
+    todoNormal: "Normal",
+    todoChallenge: "Timed",
+    todoDeadline: "Due",
+    todoPastDeadline: "You cannot set a time that has already passed.",
     moreGoals: "Add More Goals",
     hideMoreGoals: "Hide More Goals",
     countdown: "Countdown",
@@ -224,6 +232,10 @@ const translations = {
     completedGoals: "Fertig",
     clear: "Leeren",
     todoPlaceholder: "Aufgabe für heute eingeben",
+    todoNormal: "Normal",
+    todoChallenge: "Zeit",
+    todoDeadline: "Bis",
+    todoPastDeadline: "Vergangene Zeiten sind nicht erlaubt.",
     moreGoals: "Mehr Ziele",
     hideMoreGoals: "Einklappen",
     countdown: "Countdown",
@@ -311,6 +323,10 @@ const translations = {
     completedGoals: "完了",
     clear: "クリア",
     todoPlaceholder: "今日やることを入力",
+    todoNormal: "通常",
+    todoChallenge: "時間",
+    todoDeadline: "期限",
+    todoPastDeadline: "過ぎた時間は設定できません。",
     moreGoals: "目標をさらに追加",
     hideMoreGoals: "追加目標を閉じる",
     countdown: "カウントダウン",
@@ -613,6 +629,8 @@ const els = {
   extraGoalsToggleBtn: document.querySelector("#extraGoalsToggleBtn"),
   todoChecks: document.querySelectorAll("[data-todo-check]"),
   todoTexts: document.querySelectorAll("[data-todo-text]"),
+  todoTypes: document.querySelectorAll("[data-todo-type]"),
+  todoDeadlines: document.querySelectorAll("[data-todo-deadline]"),
   bgColorInput: document.querySelector("#bgColorInput"),
   textColorInput: document.querySelector("#textColorInput"),
   lineColorInput: document.querySelector("#lineColorInput"),
@@ -688,6 +706,25 @@ function applyLanguage() {
   els.goalResetBtn.textContent = dict.clear;
   els.todoTexts.forEach((input) => {
     input.placeholder = dict.todoPlaceholder;
+  });
+  els.todoTypes.forEach((select) => {
+    const value = select.value || "normal";
+    select.innerHTML = "";
+    [
+      ["normal", dict.todoNormal],
+      ["challenge", dict.todoChallenge],
+    ].forEach(([optionValue, label]) => {
+      const option = document.createElement("option");
+      option.value = optionValue;
+      option.textContent = label;
+      select.append(option);
+    });
+    select.value = value === "challenge" ? "challenge" : "normal";
+  });
+  els.todoDeadlines.forEach((input) => {
+    input.title = dict.todoDeadline;
+    input.setAttribute("aria-label", dict.todoDeadline);
+    input.min = currentTimeInputValue();
   });
   updateExtraGoalsToggle();
   setText(".time-card .counter-label", dict.countdown);
@@ -786,6 +823,8 @@ function normalizeTodos(todos) {
   return Array.from({ length: todoCount }, (_, index) => ({
     text: String(list[index]?.text ?? ""),
     done: Boolean(list[index]?.done),
+    type: list[index]?.type === "challenge" ? "challenge" : "normal",
+    deadline: /^\d{2}:\d{2}$/.test(String(list[index]?.deadline || "")) ? String(list[index].deadline) : "",
   }));
 }
 
@@ -793,9 +832,12 @@ function normalizeCompletedGoals(goals) {
   if (!Array.isArray(goals)) return [];
   return goals
     .map((goal) => ({
-      id: String(goal?.id || `${Date.now()}-${Math.random().toString(16).slice(2)}`),
-      text: String(goal?.text || "").trim(),
-      date: /^\d{4}-\d{2}-\d{2}$/.test(String(goal?.date || "")) ? String(goal.date) : localDateKey(),
+        id: String(goal?.id || `${Date.now()}-${Math.random().toString(16).slice(2)}`),
+        text: String(goal?.text || "").trim(),
+        type: goal?.type === "challenge" ? "challenge" : "normal",
+        deadline: /^\d{2}:\d{2}$/.test(String(goal?.deadline || "")) ? String(goal.deadline) : "",
+        exp: Math.max(0, Number.parseInt(goal?.exp, 10) || (goal?.type === "challenge" ? 50 : 20)),
+        date: /^\d{4}-\d{2}-\d{2}$/.test(String(goal?.date || "")) ? String(goal.date) : localDateKey(),
       completedAt: String(goal?.completedAt || new Date().toISOString()),
     }))
     .filter((goal) => goal.text);
@@ -810,7 +852,7 @@ function normalizeInspirations(items) {
       createdAt: String(item?.createdAt || new Date().toISOString()),
     }))
     .filter((item) => item.text)
-    .slice(0, 80);
+    .slice(0, 500);
 }
 
 function normalizeFutureEvents(events, legacyText = "") {
@@ -1361,6 +1403,11 @@ function formatCurrentTime(date = new Date()) {
   });
 }
 
+function currentTimeInputValue() {
+  const now = new Date();
+  return `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+}
+
 function xpNeed() {
   return state.level * 100;
 }
@@ -1528,11 +1575,40 @@ function renderTodos() {
       input.value = state.goals.todos[index]?.text ?? "";
     }
   });
+  els.todoTypes.forEach((select, index) => {
+    if (document.activeElement !== select) {
+      select.value = state.goals.todos[index]?.type === "challenge" ? "challenge" : "normal";
+    }
+    select.closest(".todo-item")?.classList.toggle("challenge", select.value === "challenge");
+  });
+  els.todoDeadlines.forEach((input, index) => {
+    input.min = currentTimeInputValue();
+    if (document.activeElement !== input) {
+      input.value = state.goals.todos[index]?.deadline ?? "";
+      if (input.value) validateTodoDeadline(input, false);
+    }
+  });
+}
+
+function isChallengeOnTime(deadline) {
+  const normalized = /^\d{2}:\d{2}$/.test(String(deadline || "")) ? deadline : "23:59";
+  const [hours, minutes] = normalized.split(":").map((part) => Number.parseInt(part, 10));
+  const due = new Date();
+  due.setHours(hours, minutes, 59, 999);
+  return Date.now() <= due.getTime();
+}
+
+function validateTodoDeadline(input, shouldAlert = true) {
+  input.min = currentTimeInputValue();
+  if (!input.value || isChallengeOnTime(input.value)) return true;
+  input.value = "";
+  if (shouldAlert) window.alert(t("todoPastDeadline"));
+  return false;
 }
 
 function renderInspirations() {
   els.inspirationList.innerHTML = "";
-  normalizeInspirations(state.inspirations).slice(0, 10).forEach((item) => {
+  normalizeInspirations(state.inspirations).forEach((item) => {
     const li = document.createElement("li");
     const time = document.createElement("time");
     const date = new Date(item.createdAt);
@@ -1572,21 +1648,27 @@ function saveTodos() {
   Array.from({ length: todoCount }, (_, index) => ({
     text: els.todoTexts[index].value.trim(),
     done: els.todoChecks[index].checked,
+    type: els.todoTypes[index].value === "challenge" ? "challenge" : "normal",
+    deadline: /^\d{2}:\d{2}$/.test(els.todoDeadlines[index].value) ? els.todoDeadlines[index].value : "",
   })).forEach((todo) => {
     if (todo.done && todo.text) {
+      const exp = todo.type === "challenge" && isChallengeOnTime(todo.deadline) ? 50 : 20;
       completedNow.push({
         id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
         text: todo.text,
+        type: todo.type,
+        deadline: todo.deadline,
+        exp,
         date: localDateKey(),
         completedAt: new Date().toISOString(),
       });
       return;
     }
-    if (todo.text) activeTodos.push({ text: todo.text, done: false });
+    if (todo.text) activeTodos.push({ text: todo.text, done: false, type: todo.type, deadline: todo.deadline });
   });
-  const newlyCompleted = completedNow.length;
-  if (newlyCompleted > 0) {
-    state.xp += newlyCompleted * 20;
+  const completedExp = completedNow.reduce((sum, todo) => sum + todo.exp, 0);
+  if (completedExp > 0) {
+    state.xp += completedExp;
     normalizeLevel();
     state.completedGoals = normalizeCompletedGoals([...completedNow, ...state.completedGoals]);
   }
@@ -1662,8 +1744,6 @@ function addFutureEvent() {
   });
   sortFutureEventsInState();
   els.futureTextInput.value = "";
-  state.futureSearchDate = date;
-  els.futureSearchDateInput.value = date;
   save();
   render();
 }
@@ -1992,6 +2072,16 @@ els.worldSwatches.forEach((swatch) => {
 });
 els.todoChecks.forEach((input) => input.addEventListener("change", saveTodos));
 els.todoTexts.forEach((input) => input.addEventListener("input", saveTodos));
+els.todoTypes.forEach((select) => select.addEventListener("change", saveTodos));
+els.todoDeadlines.forEach((input) => {
+  input.addEventListener("focus", () => {
+    input.min = currentTimeInputValue();
+  });
+  input.addEventListener("change", () => {
+    validateTodoDeadline(input);
+    saveTodos();
+  });
+});
 els.bgColorInput.addEventListener("change", saveTheme);
 els.textColorInput.addEventListener("change", saveTheme);
 els.lineColorInput.addEventListener("change", saveTheme);
