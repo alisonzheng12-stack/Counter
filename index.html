@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>&#20320;&#33021;&#20570;&#21040;</title>
-    <link rel="stylesheet" href="styles.css?v=20260517-53" />
+    <link rel="stylesheet" href="styles.css?v=20260517-54" />
   </head>
   <body>
     <aside class="tool-sidebar" data-open="false" aria-label="quick tools">
@@ -15,6 +15,7 @@
         <button type="button" data-tool="inspiration">&#38728;&#24863;</button>
         <button type="button" data-tool="layout">&#38754;&#26495;</button>
         <button type="button" data-tool="music">&#38899;&#27138;</button>
+        <button type="button" data-tool="reward">&#29518;&#21237;</button>
         <button type="button" data-tool="worlds">&#20061;&#30028;</button>
         <button id="dailyTodoSaveBtn" type="button">&#30446;&#27161;</button>
         <button id="syncToggleBtn" type="button" aria-expanded="false" aria-controls="syncPanel">&#21516;&#27493;</button>
@@ -44,6 +45,16 @@
         <input id="musicVolumeInput" type="range" min="0" max="100" value="70" aria-label="music volume" />
         <p id="musicStatus" class="music-status"></p>
         <audio id="musicAudio" preload="metadata"></audio>
+      </section>
+    </aside>
+    <aside class="reward-dock" data-open="false" aria-label="reward list">
+      <section id="rewardPanel" class="reward-panel">
+        <div class="reward-head">
+          <span>&#29518;&#21237;&#21015;&#34920;</span>
+          <small id="rewardPanelCount">0/0</small>
+          <button id="rewardCloseBtn" type="button" aria-label="&#38364;&#38281;">&times;</button>
+        </div>
+        <div id="rewardList" class="reward-list"></div>
       </section>
     </aside>
     <aside class="right-dock" data-collapsed="true" aria-label="side panels">
@@ -388,7 +399,7 @@
     </div>
 
     <script src="nippon-colors.js?v=20260516-21"></script>
-    <script src="app.js?v=20260517-53"></script>
+    <script src="app.js?v=20260517-54"></script>
   </body>
 </html>
 

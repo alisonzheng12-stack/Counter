@@ -981,6 +981,7 @@ body.focus-mode .sync-panel,
 body.focus-mode .inspiration-dock,
 body.focus-mode .layout-control,
 body.focus-mode .music-dock,
+body.focus-mode .reward-dock,
 body.focus-mode .theme-control {
   display: none;
 }
@@ -1937,6 +1938,18 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
   left: 418px;
 }
 
+.reward-dock {
+  position: fixed;
+  left: calc(18px + var(--dock-step) * 4);
+  bottom: 18px;
+  z-index: 24;
+  color: var(--ink);
+}
+
+.reward-dock[data-open="false"] {
+  display: none;
+}
+
 .music-toggle {
   display: grid;
   place-items: center;
@@ -1969,6 +1982,89 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
 
 .music-dock[data-open="true"] .music-panel {
   display: grid;
+}
+
+.reward-panel {
+  display: grid;
+  gap: 10px;
+  width: min(360px, calc(100vw - 28px));
+  max-height: min(68vh, 520px);
+  overflow: hidden;
+  padding: 12px;
+  border: var(--line-width) solid var(--line);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--paper) 96%, transparent);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--line) 22%, transparent);
+}
+
+.reward-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 8px;
+  align-items: center;
+  font-weight: 900;
+}
+
+.reward-head small {
+  padding: 4px 8px;
+  border: var(--line-width) solid color-mix(in srgb, var(--line) 58%, transparent);
+  border-radius: 999px;
+  font-size: 0.78rem;
+}
+
+.reward-head button {
+  min-width: 30px;
+  min-height: 30px;
+  padding: 0;
+  border-radius: 999px;
+}
+
+.reward-list {
+  display: grid;
+  gap: 8px;
+  max-height: min(54vh, 420px);
+  overflow: auto;
+}
+
+.reward-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 9px;
+  border: var(--line-width) solid color-mix(in srgb, var(--line) 58%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--paper) 90%, var(--line));
+  color: var(--ink);
+}
+
+.reward-item[data-claimed="true"] {
+  opacity: 0.62;
+}
+
+.reward-item input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent);
+}
+
+.reward-item span {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.reward-item strong,
+.reward-item small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reward-item small,
+.reward-empty {
+  color: color-mix(in srgb, var(--ink) 72%, transparent);
+  font-weight: 800;
 }
 
 .music-head,
@@ -2940,7 +3036,8 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
 .theme-control,
 .inspiration-dock,
 .layout-control,
-.music-dock {
+.music-dock,
+.reward-dock {
   left: 104px;
   top: 50%;
   bottom: auto;
@@ -2951,7 +3048,8 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
 .theme-control.collapsed,
 .inspiration-dock:not([data-open="true"]),
 .layout-control.collapsed,
-.music-dock:not([data-open="true"]) {
+.music-dock:not([data-open="true"]),
+.reward-dock:not([data-open="true"]) {
   display: none;
 }
 
@@ -2964,13 +3062,15 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
 
 .inspiration-panel,
 .layout-panel,
-.music-panel {
+.music-panel,
+.reward-panel {
   position: static;
   width: min(340px, calc(100vw - 128px));
 }
 
 .inspiration-dock[data-open="true"] .inspiration-panel,
-.music-dock[data-open="true"] .music-panel {
+.music-dock[data-open="true"] .music-panel,
+.reward-dock[data-open="true"] .reward-panel {
   display: grid;
 }
 
@@ -3055,7 +3155,8 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
   .theme-control,
   .inspiration-dock,
   .layout-control,
-  .music-dock {
+  .music-dock,
+  .reward-dock {
     left: 8px;
     right: auto;
     top: auto;
@@ -3069,7 +3170,8 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
 
   .inspiration-panel,
   .layout-panel,
-  .music-panel {
+  .music-panel,
+  .reward-panel {
     width: 100%;
   }
 }

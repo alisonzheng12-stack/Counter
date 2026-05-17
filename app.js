@@ -64,6 +64,10 @@ const translations = {
     currentGoalEmpty: "先輸入一個目標",
     rewardIncome: "娛樂收入",
     rewardEmpty: "尚未掉落",
+    rewardTool: "獎勵",
+    rewardTitle: "獎勵列表",
+    rewardClaimed: "已領取",
+    rewardUnclaimed: "未領取",
     goalResetHint: "每日00:00重置",
     completedGoals: "已完成",
     clear: "清空",
@@ -74,6 +78,7 @@ const translations = {
       inspiration: "靈感",
       layout: "面板",
       music: "音樂",
+      reward: "獎勵",
       worlds: "九界",
       routine: "目標",
       sync: "同步",
@@ -197,6 +202,10 @@ const translations = {
     currentGoalEmpty: "Add a goal first",
     rewardIncome: "Fun Income",
     rewardEmpty: "No drop yet",
+    rewardTool: "Reward",
+    rewardTitle: "Rewards",
+    rewardClaimed: "Claimed",
+    rewardUnclaimed: "Open",
     goalResetHint: "Resets daily at 00:00",
     completedGoals: "Done",
     clear: "Clear",
@@ -207,6 +216,7 @@ const translations = {
       inspiration: "Idea",
       layout: "Panel",
       music: "Music",
+      reward: "Reward",
       worlds: "World",
       routine: "Goal",
       sync: "Sync",
@@ -330,6 +340,10 @@ const translations = {
     currentGoalEmpty: "Erst ein Ziel eingeben",
     rewardIncome: "Freizeit-Ertrag",
     rewardEmpty: "Noch kein Fund",
+    rewardTool: "Bonus",
+    rewardTitle: "Belohnungen",
+    rewardClaimed: "Erhalten",
+    rewardUnclaimed: "Offen",
     goalResetHint: "Reset um 00:00",
     completedGoals: "Fertig",
     clear: "Leeren",
@@ -340,6 +354,7 @@ const translations = {
       inspiration: "Idee",
       layout: "Panel",
       music: "Mus",
+      reward: "Bonus",
       worlds: "Welt",
       routine: "Ziel",
       sync: "Sync",
@@ -463,6 +478,10 @@ const translations = {
     currentGoalEmpty: "先に目標を入力",
     rewardIncome: "娯楽収入",
     rewardEmpty: "まだドロップなし",
+    rewardTool: "報酬",
+    rewardTitle: "報酬リスト",
+    rewardClaimed: "受取済",
+    rewardUnclaimed: "未受取",
     goalResetHint: "毎日00:00にリセット",
     completedGoals: "完了",
     clear: "クリア",
@@ -473,6 +492,7 @@ const translations = {
       inspiration: "発想",
       layout: "面板",
       music: "音楽",
+      reward: "報酬",
       worlds: "九界",
       routine: "目標",
       sync: "同期",
@@ -797,6 +817,11 @@ const els = {
   nCoinValue: document.querySelector("#nCoinValue"),
   rewardGrowth: document.querySelector("#rewardGrowth"),
   rewardLatest: document.querySelector("#rewardLatest"),
+  rewardDock: document.querySelector(".reward-dock"),
+  rewardPanelTitle: document.querySelector(".reward-head span"),
+  rewardPanelCount: document.querySelector("#rewardPanelCount"),
+  rewardCloseBtn: document.querySelector("#rewardCloseBtn"),
+  rewardList: document.querySelector("#rewardList"),
   futureSearchDateInput: document.querySelector("#futureSearchDateInput"),
   futureClearSearchBtn: document.querySelector("#futureClearSearchBtn"),
   futureDateInput: document.querySelector("#futureDateInput"),
@@ -998,6 +1023,7 @@ function applyLanguage() {
   els.syncTokenInput.placeholder = dict.syncPasswordPlaceholder;
   els.syncSaveBtn.textContent = dict.syncSave;
   els.syncLoadBtn.textContent = dict.syncLoad;
+  if (els.rewardPanelTitle) els.rewardPanelTitle.textContent = dict.rewardTitle;
   els.inventoryToggleBtn.querySelector("span:first-child").textContent = dict.inventory;
   els.inspirationToggleBtn.textContent = dict.inspiration;
   setText(".inspiration-head span", dict.inspirationTitle);
@@ -1141,6 +1167,7 @@ function normalizeRewardHistory(items) {
       label: String(item?.label || "").trim(),
       coins: Math.max(0, Number.parseInt(item?.coins, 10) || 0),
       createdAt: String(item?.createdAt || new Date().toISOString()),
+      claimed: Boolean(item?.claimed),
     }))
     .filter((item) => item.label)
     .slice(0, 80);
@@ -1346,6 +1373,7 @@ function closeAllTools(except = "") {
   if (except !== "inspiration") setInspirationOpen(false);
   if (except !== "layout") setLayoutPanelOpen(false);
   if (except !== "music") setMusicOpen(false);
+  if (except !== "reward") setRewardOpen(false);
   if (except !== "worlds") setRightDockOpen(false);
   if (except !== "sync") setSyncPanelOpen(false);
 }
@@ -1355,8 +1383,9 @@ function toggleTool(tool) {
   const isInspirationOpen = els.inspirationDock.dataset.open === "true";
   const isLayoutOpen = !els.layoutControl.classList.contains("collapsed");
   const isMusicOpen = els.musicDock.dataset.open === "true";
+  const isRewardOpen = els.rewardDock.dataset.open === "true";
   const isWorldsOpen = els.rightDock.dataset.collapsed !== "true";
-  const openMap = { theme: isThemeOpen, inspiration: isInspirationOpen, layout: isLayoutOpen, music: isMusicOpen, worlds: isWorldsOpen };
+  const openMap = { theme: isThemeOpen, inspiration: isInspirationOpen, layout: isLayoutOpen, music: isMusicOpen, reward: isRewardOpen, worlds: isWorldsOpen };
   if (openMap[tool]) {
     closeAllTools();
     return;
@@ -1366,6 +1395,7 @@ function toggleTool(tool) {
   if (tool === "inspiration") setInspirationOpen(true);
   if (tool === "layout") setLayoutPanelOpen(true);
   if (tool === "music") setMusicOpen(true);
+  if (tool === "reward") setRewardOpen(true);
   if (tool === "worlds") setRightDockOpen(true);
 }
 
@@ -1376,6 +1406,7 @@ function updateToolSidebar() {
     inspiration: els.inspirationDock.dataset.open === "true",
     layout: !els.layoutControl.classList.contains("collapsed"),
     music: els.musicDock.dataset.open === "true",
+    reward: els.rewardDock.dataset.open === "true",
     worlds: els.rightDock.dataset.collapsed !== "true",
   };
   els.toolButtons.forEach((button) => {
@@ -1473,6 +1504,13 @@ function translateMusicPanel() {
 function setMusicOpen(isOpen) {
   els.musicDock.dataset.open = isOpen ? "true" : "false";
   els.musicToggleBtn.setAttribute("aria-expanded", String(isOpen));
+  updateToolSidebar();
+}
+
+function setRewardOpen(isOpen) {
+  if (!els.rewardDock) return;
+  els.rewardDock.dataset.open = isOpen ? "true" : "false";
+  if (isOpen) renderRewards();
   updateToolSidebar();
 }
 
@@ -2015,6 +2053,7 @@ function addRewardDrop() {
       label: reward.label,
       coins: reward.coins,
       createdAt: new Date().toISOString(),
+      claimed: false,
     },
     ...state.rewardHistory,
   ]);
@@ -2084,6 +2123,57 @@ function render() {
   renderFutureEvents();
   renderWorldKeys();
   renderInspirations();
+  renderRewards();
+}
+
+function formatRewardDate(isoText) {
+  const date = new Date(isoText);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toLocaleString(undefined, {
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function renderRewards() {
+  if (!els.rewardList) return;
+  const total = state.rewardHistory.length;
+  const claimed = state.rewardHistory.filter((item) => item.claimed).length;
+  if (els.rewardPanelCount) els.rewardPanelCount.textContent = `${claimed}/${total}`;
+  els.rewardList.innerHTML = "";
+  if (!total) {
+    const empty = document.createElement("p");
+    empty.className = "reward-empty";
+    empty.textContent = t("rewardEmpty");
+    els.rewardList.append(empty);
+    return;
+  }
+  state.rewardHistory.forEach((item, index) => {
+    const label = document.createElement("label");
+    label.className = "reward-item";
+    label.dataset.claimed = item.claimed ? "true" : "false";
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = Boolean(item.claimed);
+    checkbox.addEventListener("change", () => {
+      state.rewardHistory[index].claimed = checkbox.checked;
+      save();
+      renderRewards();
+    });
+
+    const textWrap = document.createElement("span");
+    const name = document.createElement("strong");
+    name.textContent = item.label;
+    const meta = document.createElement("small");
+    meta.textContent = `${formatRewardDate(item.createdAt)} · ${item.claimed ? t("rewardClaimed") : t("rewardUnclaimed")}`;
+    textWrap.append(name, meta);
+
+    label.append(checkbox, textWrap);
+    els.rewardList.append(label);
+  });
 }
 
 function renderNewsItems(items) {
@@ -2860,6 +2950,7 @@ els.layoutToggleBtn.addEventListener("click", () => setLayoutPanelOpen(els.layou
 els.layoutCloseBtn.addEventListener("click", () => setLayoutPanelOpen(false));
 els.musicToggleBtn.addEventListener("click", () => setMusicOpen(els.musicDock.dataset.open !== "true"));
 els.musicCloseBtn.addEventListener("click", () => setMusicOpen(false));
+els.rewardCloseBtn?.addEventListener("click", () => setRewardOpen(false));
 els.toolButtons.forEach((button) => {
   button.addEventListener("click", () => {
     toggleTool(button.dataset.tool);
