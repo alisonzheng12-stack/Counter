@@ -284,7 +284,7 @@ button {
 
 .device-panel {
   width: min(1040px, 100%);
-  min-height: min(720px, calc(100dvh - 24px));
+  min-height: auto;
   max-height: calc(100dvh - 24px);
   padding: clamp(14px, 2vw, 24px);
   border: var(--line-width) solid var(--line);
@@ -298,7 +298,7 @@ button {
   grid-template-columns: minmax(0, 1fr) minmax(150px, auto) minmax(124px, auto) minmax(76px, auto);
   gap: 12px;
   align-items: start;
-  min-height: 116px;
+  min-height: 0;
   padding-bottom: 12px;
   border-bottom: var(--line-width) solid var(--line);
 }
@@ -500,7 +500,7 @@ html[lang="de"] .sync-panel {
   display: grid;
   gap: 8px;
   margin-top: 12px;
-  min-height: 146px;
+  min-height: 0;
   padding: 10px;
   border: var(--line-width) solid var(--line);
   border-radius: 8px;
@@ -536,12 +536,14 @@ html[lang="de"] .sync-panel {
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
 .goal-head button {
   min-height: 30px;
-  padding: 0 12px;
+  padding: 0 10px;
+  white-space: nowrap;
 }
 
 .todo-grid {
@@ -708,9 +710,9 @@ html[lang="de"] .sync-panel {
 
 .counter-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 10px;
-  min-height: 350px;
+  min-height: 0;
   margin-top: 12px;
 }
 
@@ -718,7 +720,7 @@ html[lang="de"] .sync-panel {
   display: grid;
   grid-template-rows: auto minmax(56px, 1fr) auto auto;
   gap: 8px;
-  min-height: 214px;
+  min-height: 198px;
   padding: 12px;
   border: var(--line-width) solid var(--line);
   border-radius: 8px;
@@ -870,8 +872,88 @@ body.focus-mode .goal-panel,
 body.focus-mode .reflection-panel,
 body.focus-mode .sync-panel,
 body.focus-mode .inspiration-dock,
+body.focus-mode .layout-control,
+body.focus-mode .music-dock,
 body.focus-mode .theme-control {
   display: none;
+}
+
+body[data-show-level="false"] .level-mini,
+body[data-show-music="false"] .music-dock,
+body[data-show-goals="false"] .goal-panel,
+body[data-show-sync="false"] .sync-toggle-btn,
+body[data-show-sync="false"] .sync-panel,
+body[data-show-theme="false"] .theme-control,
+body[data-show-inspiration="false"] .inspiration-dock,
+body[data-show-worlds="false"] .right-dock > .color-swatch-grid,
+body[data-show-inventory="false"] .inventory-panel,
+body[data-show-timer="false"] .time-card,
+body[data-show-future="false"] .future-card,
+body[data-show-news="false"] .news-card {
+  display: none;
+}
+
+body[data-show-worlds="false"][data-show-inventory="false"] .right-dock {
+  display: none;
+}
+
+body:is(
+  [data-show-level="false"],
+  [data-show-goals="false"],
+  [data-show-timer="false"],
+  [data-show-future="false"],
+  [data-show-news="false"],
+  [data-show-sync="false"],
+  [data-show-theme="false"],
+  [data-show-inspiration="false"],
+  [data-show-worlds="false"],
+  [data-show-inventory="false"]
+) .device-panel {
+  width: min(940px, 100%);
+  padding: clamp(12px, 1.6vw, 18px);
+}
+
+body:is(
+  [data-show-level="false"],
+  [data-show-goals="false"],
+  [data-show-timer="false"],
+  [data-show-future="false"],
+  [data-show-news="false"]
+) .device-header {
+  padding-bottom: 10px;
+}
+
+body:is(
+  [data-show-timer="false"],
+  [data-show-future="false"],
+  [data-show-news="false"]
+) .counter-grid {
+  gap: 8px;
+}
+
+body:is(
+  [data-show-goals="false"],
+  [data-show-timer="false"],
+  [data-show-future="false"],
+  [data-show-news="false"]
+) .counter-card {
+  min-height: 166px;
+}
+
+body[data-show-goals="false"] .counter-grid {
+  margin-top: 10px;
+}
+
+body[data-show-timer="false"][data-show-future="false"][data-show-news="false"] .counter-grid {
+  display: none;
+}
+
+body[data-show-level="false"] .title-row {
+  gap: 6px;
+}
+
+body[data-show-goals="false"][data-show-timer="false"][data-show-future="false"][data-show-news="false"] .device-panel {
+  width: min(720px, 100%);
 }
 
 body.focus-mode .counter-grid {
@@ -1533,9 +1615,16 @@ button:focus-visible {
   box-shadow: none;
 }
 
+.theme-control.collapsed,
+.inspiration-dock,
+.layout-control,
+.music-dock {
+  --dock-step: 68px;
+}
+
 .inspiration-dock {
   position: fixed;
-  left: 86px;
+  left: calc(18px + var(--dock-step));
   bottom: 18px;
   z-index: 18;
   transition: left 180ms ease, bottom 180ms ease;
@@ -1593,6 +1682,245 @@ body:has(.theme-control:not(.collapsed)) .inspiration-dock {
 
 .inspiration-dock[data-open="true"] .inspiration-panel {
   display: grid;
+}
+
+.layout-control {
+  position: fixed;
+  left: calc(18px + var(--dock-step) * 2);
+  bottom: 18px;
+  z-index: 24;
+  color: var(--ink);
+}
+
+.layout-control:not(.collapsed) {
+  z-index: 80;
+}
+
+body:has(.theme-control:not(.collapsed)) .layout-control {
+  left: 350px;
+}
+
+.music-dock {
+  position: fixed;
+  left: calc(18px + var(--dock-step) * 3);
+  bottom: 18px;
+  z-index: 23;
+  color: var(--ink);
+  transition: left 180ms ease, bottom 180ms ease;
+}
+
+.music-dock[data-open="true"] {
+  z-index: 80;
+}
+
+body:has(.theme-control:not(.collapsed)) .music-dock {
+  left: 418px;
+}
+
+.music-toggle {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  min-height: 56px;
+  border: var(--line-width) solid var(--line);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  color: var(--ink);
+  font-size: 1.18rem;
+  font-weight: 900;
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--line) 18%, transparent);
+}
+
+.music-panel {
+  position: absolute;
+  left: 0;
+  bottom: 68px;
+  display: none;
+  width: min(300px, calc(100vw - 28px));
+  gap: 9px;
+  padding: 12px;
+  border: var(--line-width) solid var(--line);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--paper) 96%, transparent);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--line) 22%, transparent);
+}
+
+.music-dock[data-open="true"] .music-panel {
+  display: grid;
+}
+
+.music-head,
+.music-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.music-head {
+  font-size: 0.92rem;
+  font-weight: 900;
+}
+
+.music-head button {
+  min-width: 30px;
+  min-height: 30px;
+  padding: 0;
+}
+
+.music-panel select,
+.music-file-field input,
+.music-panel input[type="range"] {
+  width: 100%;
+  min-width: 0;
+}
+
+.music-file-field {
+  display: grid;
+  gap: 5px;
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.music-file-field input {
+  min-height: 36px;
+  padding: 6px;
+  border: var(--line-width) solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.76rem;
+}
+
+.music-panel select {
+  height: 36px;
+  padding: 0 8px;
+  border: var(--line-width) solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 900;
+}
+
+.music-actions {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.music-actions label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.music-status {
+  min-height: 1.2em;
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 800;
+  opacity: 0.78;
+}
+
+.layout-toggle {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  min-height: 56px;
+  border: var(--line-width) solid var(--line);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--paper) 90%, transparent);
+  color: var(--ink);
+  font-size: 1.18rem;
+  font-weight: 900;
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--line) 18%, transparent);
+}
+
+.layout-panel {
+  position: absolute;
+  left: 0;
+  bottom: 68px;
+  display: grid;
+  gap: 10px;
+  width: min(260px, calc(100vw - 24px));
+  padding: 12px;
+  border: var(--line-width) solid var(--line);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--paper) 96%, transparent);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--line) 22%, transparent);
+}
+
+.layout-control.collapsed .layout-panel {
+  display: none;
+}
+
+.layout-control:not(.collapsed) .layout-toggle {
+  justify-self: end;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  font-size: 0.92rem;
+}
+
+.layout-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.92rem;
+  font-weight: 900;
+}
+
+.layout-head button {
+  min-width: 30px;
+  min-height: 30px;
+  padding: 0;
+}
+
+.layout-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.layout-options label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  min-height: 34px;
+  padding: 0 8px;
+  border: var(--line-width) solid color-mix(in srgb, var(--line) 64%, transparent);
+  border-radius: 8px;
+  background: var(--paper);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.layout-options input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+  flex: 0 0 auto;
+}
+
+.layout-options span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .inspiration-head {
@@ -2028,7 +2356,7 @@ body:has(.theme-control:not(.collapsed)) .inspiration-dock {
   }
 
   html[lang="de"] .goal-actions {
-    max-width: 132px;
+    max-width: 220px;
     gap: 6px;
   }
 
@@ -2172,27 +2500,27 @@ body:has(.theme-control:not(.collapsed)) .inspiration-dock {
     max-height: none;
     overflow: visible;
     padding: 0;
-    left: -30px;
-    bottom: 82px;
+    left: -42px;
+    bottom: 76px;
   }
 
   .theme-control.collapsed .theme-toggle {
-    width: 54px;
-    height: 54px;
-    min-width: 54px;
-    min-height: 54px;
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    min-height: 50px;
     box-shadow: 6px 8px 16px rgba(62, 53, 42, 0.18);
   }
 
   .inspiration-dock {
-    left: -30px;
-    bottom: 146px;
+    left: -42px;
+    bottom: 132px;
     transform: none;
   }
 
   body:has(.theme-control:not(.collapsed)) .inspiration-dock {
-    left: -30px;
-    bottom: 82px;
+    left: -42px;
+    bottom: 76px;
     transform: none;
   }
 
@@ -2201,10 +2529,10 @@ body:has(.theme-control:not(.collapsed)) .inspiration-dock {
   }
 
   .inspiration-toggle {
-    width: 54px;
-    height: 54px;
-    min-width: 54px;
-    min-height: 54px;
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    min-height: 50px;
     box-shadow: 6px 8px 16px rgba(62, 53, 42, 0.18);
   }
 
@@ -2212,6 +2540,62 @@ body:has(.theme-control:not(.collapsed)) .inspiration-dock {
     left: 0;
     bottom: 64px;
     width: min(320px, calc(100vw - 44px));
+  }
+
+  .layout-control {
+    left: -42px;
+    bottom: 188px;
+  }
+
+  body:has(.theme-control:not(.collapsed)) .layout-control {
+    left: -42px;
+    bottom: 132px;
+  }
+
+  .layout-control:not(.collapsed) {
+    left: 10px;
+    bottom: 10px;
+  }
+
+  .layout-toggle {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    min-height: 50px;
+    box-shadow: 6px 8px 16px rgba(62, 53, 42, 0.18);
+  }
+
+  .layout-panel {
+    width: min(320px, calc(100vw - 20px));
+  }
+
+  .music-dock {
+    left: -42px;
+    bottom: 244px;
+  }
+
+  .music-toggle {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    min-height: 50px;
+    box-shadow: 6px 8px 16px rgba(62, 53, 42, 0.18);
+  }
+
+  body:has(.theme-control:not(.collapsed)) .music-dock {
+    left: -42px;
+    bottom: 188px;
+  }
+
+  .music-dock[data-open="true"] {
+    left: 10px;
+    bottom: 10px;
+  }
+
+  .music-panel {
+    left: 0;
+    bottom: 64px;
+    width: min(320px, calc(100vw - 20px));
   }
 
   .theme-control:not(.collapsed) .theme-toggle {
@@ -2222,10 +2606,149 @@ body:has(.theme-control:not(.collapsed)) .inspiration-dock {
     grid-column: auto;
   }
 
-  .theme-control label {
-    grid-template-columns: 1fr;
+.theme-control label {
+  grid-template-columns: 1fr;
+}
+
+}
+
+.tool-sidebar {
+  position: fixed;
+  left: 14px;
+  top: 50%;
+  z-index: 90;
+  display: grid;
+  gap: 10px;
+  width: 74px;
+  padding: 12px 10px;
+  transform: translateY(-50%);
+  border: var(--line-width) solid var(--line);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--paper) 94%, transparent);
+  box-shadow: 0 18px 40px color-mix(in srgb, var(--line) 20%, transparent);
+}
+
+.tool-sidebar strong {
+  color: var(--ink);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-align: center;
+  opacity: 0.72;
+}
+
+.tool-sidebar button {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  padding: 0;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--paper) 82%, var(--line));
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.tool-sidebar button.active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+.theme-control,
+.inspiration-dock,
+.layout-control,
+.music-dock {
+  left: 104px;
+  top: 50%;
+  bottom: auto;
+  transform: translateY(-50%);
+  z-index: 86;
+}
+
+.theme-control.collapsed,
+.inspiration-dock:not([data-open="true"]),
+.layout-control.collapsed,
+.music-dock:not([data-open="true"]) {
+  display: none;
+}
+
+.theme-control .theme-toggle,
+.inspiration-toggle,
+.layout-toggle,
+.music-toggle {
+  display: none;
+}
+
+.inspiration-panel,
+.layout-panel,
+.music-panel {
+  position: static;
+  width: min(340px, calc(100vw - 128px));
+}
+
+.inspiration-dock[data-open="true"] .inspiration-panel,
+.music-dock[data-open="true"] .music-panel {
+  display: grid;
+}
+
+.layout-control:not(.collapsed) .layout-panel {
+  display: grid;
+}
+
+@media (max-width: 760px) {
+  .tool-sidebar {
+    left: -54px;
+    top: 50%;
+    width: 66px;
+    padding: 8px 7px;
+    gap: 7px;
+    border-radius: 0 18px 18px 0;
+    opacity: 0.82;
+    transition: left 180ms ease, opacity 180ms ease;
   }
 
+  .tool-sidebar:focus-within,
+  .tool-sidebar:hover {
+    left: 8px;
+    opacity: 1;
+  }
+
+  .tool-sidebar strong {
+    display: none;
+  }
+
+  .tool-sidebar button {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 13px;
+  }
+
+  .theme-control,
+  .inspiration-dock,
+  .layout-control,
+  .music-dock {
+    left: 8px;
+    right: auto;
+    top: auto;
+    bottom: 8px;
+    transform: none;
+    width: min(330px, calc(100vw - 16px));
+    max-height: min(72dvh, 560px);
+    overflow: auto;
+    z-index: 95;
+  }
+
+  .inspiration-panel,
+  .layout-panel,
+  .music-panel {
+    width: 100%;
+  }
 }
 
 @media (max-width: 420px) {

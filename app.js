@@ -8,6 +8,10 @@ const newsSourceStorageKey = "minimal-study-counter-news-source-v1";
 const languageStorageKey = "minimal-study-counter-language-v1";
 const syncUrlStorageKey = "minimal-study-counter-sync-url-v1";
 const syncTokenStorageKey = "minimal-study-counter-sync-token-v1";
+const layoutVisibilityStorageKey = "minimal-study-counter-layout-visibility-v1";
+const musicSettingsStorageKey = "minimal-study-counter-music-settings-v1";
+const routineMaxCount = 50;
+const routineSelectedMax = 6;
 const defaultSyncUrl = "https://script.google.com/macros/s/AKfycbxFvPv6gazMnjheujk_gsx5ZtijmhJ5vz9N656YyUvT0517EXmSsteBTJ_gftCgtDsU/exec";
 const autoSyncDelayMs = 6000;
 const newsSources = {
@@ -32,11 +36,12 @@ const newsSources = {
 };
 let sharedAudio = null;
 let autoBackupTimer = null;
+let localMusicTracks = [];
 const translatedPresetNames = {
-  zh: ["日系", "櫻花可愛風", "美國復古風格", "夏日清霜"],
-  en: ["Japanese", "Sakura Cute", "American Retro", "Summer Frost"],
-  de: ["Japanisch", "Sakura süß", "Amerikanisch Retro", "Sommerfrost"],
-  ja: ["和風", "桜かわいい", "アメリカンレトロ", "夏の霜"],
+  zh: ["日系", "櫻花可愛風", "靜謐感氛圍", "夏日清霜"],
+  en: ["Japanese", "Sakura Cute", "Quiet Mood", "Summer Frost"],
+  de: ["Japanisch", "Sakura süß", "Stille Stimmung", "Sommerfrost"],
+  ja: ["和風", "桜かわいい", "静かな雰囲気", "夏の霜"],
 };
 const translations = {
   zh: {
@@ -49,6 +54,33 @@ const translations = {
     goalResetHint: "每日00:00重置",
     completedGoals: "已完成",
     clear: "清空",
+    layoutTitle: "面板顯示",
+    layoutToggle: "面",
+    layoutFeatures: {
+      music: "音樂",
+      level: "等級經驗",
+      goals: "今日目標",
+      timer: "倒數時間",
+      future: "未來活動",
+      news: "重點新聞",
+      sync: "同步",
+      theme: "色彩",
+      inspiration: "靈感",
+      worlds: "九界",
+      inventory: "背包",
+    },
+    music: "音樂",
+    musicPlay: "播放",
+    musicPause: "暫停",
+    musicLoop: "循環",
+    musicChoose: "選擇本機音檔",
+    musicEmpty: "請從你的裝置選擇音檔。",
+    musicLoadFail: "音樂清單載入失敗。",
+    musicSelected: "已選擇 {n} 首。重新開啟網頁後需再選一次。",
+    dailyTodoApply: "填入必做",
+    dailyTodoSave: "管理必做",
+    dailyTodoSaved: "每日必做已保存。",
+    dailyTodoEmpty: "先設定每日必做。",
     todoPlaceholder: "輸入今日要完成的事",
     todoNormal: "普通",
     todoChallenge: "限時",
@@ -140,6 +172,33 @@ const translations = {
     goalResetHint: "Resets daily at 00:00",
     completedGoals: "Done",
     clear: "Clear",
+    layoutTitle: "Panel Display",
+    layoutToggle: "Panel",
+    layoutFeatures: {
+      music: "Music",
+      level: "Level",
+      goals: "Goals",
+      timer: "Timer",
+      future: "Activities",
+      news: "News",
+      sync: "Sync",
+      theme: "Colors",
+      inspiration: "Ideas",
+      worlds: "Worlds",
+      inventory: "Bag",
+    },
+    music: "Music",
+    musicPlay: "Play",
+    musicPause: "Pause",
+    musicLoop: "Loop",
+    musicChoose: "Choose Local Audio",
+    musicEmpty: "Choose audio files from your device.",
+    musicLoadFail: "Music list failed to load.",
+    musicSelected: "{n} selected. Please choose again after reopening the page.",
+    dailyTodoApply: "Fill Routine",
+    dailyTodoSave: "Manage",
+    dailyTodoSaved: "Daily routine saved.",
+    dailyTodoEmpty: "Set your daily routine first.",
     todoPlaceholder: "Enter something to complete today",
     todoNormal: "Normal",
     todoChallenge: "Timed",
@@ -231,6 +290,33 @@ const translations = {
     goalResetHint: "Reset um 00:00",
     completedGoals: "Fertig",
     clear: "Leeren",
+    layoutTitle: "Anzeige",
+    layoutToggle: "Panel",
+    layoutFeatures: {
+      music: "Musik",
+      level: "Level",
+      goals: "Ziele",
+      timer: "Timer",
+      future: "Termine",
+      news: "Nachrichten",
+      sync: "Sync",
+      theme: "Farben",
+      inspiration: "Ideen",
+      worlds: "Welten",
+      inventory: "Tasche",
+    },
+    music: "Musik",
+    musicPlay: "Start",
+    musicPause: "Pause",
+    musicLoop: "Loop",
+    musicChoose: "Lokale Musik wählen",
+    musicEmpty: "Bitte Audiodateien von deinem Gerät auswählen.",
+    musicLoadFail: "Musikliste konnte nicht geladen werden.",
+    musicSelected: "{n} ausgewählt. Nach dem erneuten Öffnen bitte wieder auswählen.",
+    dailyTodoApply: "Routine",
+    dailyTodoSave: "Verwalten",
+    dailyTodoSaved: "Tägliche Routine gespeichert.",
+    dailyTodoEmpty: "Bitte zuerst die Routine festlegen.",
     todoPlaceholder: "Aufgabe für heute eingeben",
     todoNormal: "Normal",
     todoChallenge: "Zeit",
@@ -322,6 +408,33 @@ const translations = {
     goalResetHint: "毎日00:00にリセット",
     completedGoals: "完了",
     clear: "クリア",
+    layoutTitle: "表示パネル",
+    layoutToggle: "面",
+    layoutFeatures: {
+      music: "音楽",
+      level: "レベル",
+      goals: "今日の目標",
+      timer: "タイマー",
+      future: "予定",
+      news: "ニュース",
+      sync: "同期",
+      theme: "色彩",
+      inspiration: "ひらめき",
+      worlds: "九界",
+      inventory: "バッグ",
+    },
+    music: "音楽",
+    musicPlay: "再生",
+    musicPause: "一時停止",
+    musicLoop: "ループ",
+    musicChoose: "端末の音声を選択",
+    musicEmpty: "端末から音声ファイルを選択してください。",
+    musicLoadFail: "音楽リストを読み込めませんでした。",
+    musicSelected: "{n}曲を選択しました。再度開いたらもう一度選択してください。",
+    dailyTodoApply: "必須を入力",
+    dailyTodoSave: "管理",
+    dailyTodoSaved: "毎日の必須タスクを保存しました。",
+    dailyTodoEmpty: "先に毎日の必須タスクを設定してください。",
     todoPlaceholder: "今日やることを入力",
     todoNormal: "通常",
     todoChallenge: "時間",
@@ -487,7 +600,7 @@ const slot01Theme = {
   paper: "#FFFFFB",
   timer: "#FFFFFB",
 };
-const themeSlotNames = ["\u65e5\u7cfb", "\u6afb\u82b1\u53ef\u611b\u98a8", "\u7f8e\u570b\u5fa9\u53e4\u98a8\u683c", "\u590f\u65e5\u6e05\u971c"];
+const themeSlotNames = ["\u65e5\u7cfb", "\u6afb\u82b1\u53ef\u611b\u98a8", "\u975c\u8b10\u611f\u6c1b\u570d", "\u590f\u65e5\u6e05\u971c"];
 const defaultThemeMemory = [
   {
     bg: "#FCFAF2",
@@ -506,12 +619,12 @@ const defaultThemeMemory = [
     timer: "#F8C3CD",
   },
   {
-    bg: "#F9BF45",
-    text: "#08192D",
-    line: "#F75C2F",
-    lineWidth: "2px",
-    paper: "#FFFFFB",
-    timer: "#FCFAF2",
+    bg: "#07110D",
+    text: "#E8F0EA",
+    line: "#5F7A68",
+    lineWidth: "3px",
+    paper: "#14221B",
+    timer: "#0D1A14",
   },
   {
     bg: "#A5DEE4",
@@ -566,6 +679,8 @@ const state = {
       { text: "", done: false },
     ],
   },
+  dailyTodoTemplate: [],
+  dailyTodoPool: [],
   completedGoals: [],
   inspirations: [],
   unlockedWorlds: [],
@@ -584,6 +699,8 @@ const worldKeys = [
   { id: 9, level: 90, name: "Helheim", initial: "H" },
 ];
 const maxWorldKeyCount = worldKeys.length;
+const layoutFeatures = ["music", "level", "goals", "timer", "future", "news", "sync", "theme", "inspiration", "worlds", "inventory"];
+const defaultLayoutVisibility = Object.fromEntries(layoutFeatures.map((feature) => [feature, true]));
 
 function localDateKey(date = new Date()) {
   const year = date.getFullYear();
@@ -593,6 +710,7 @@ function localDateKey(date = new Date()) {
 }
 
 const els = {
+  toolButtons: document.querySelectorAll("[data-tool]"),
   choiceCount: document.querySelector("#choiceCount"),
   levelValue: document.querySelector("#levelValue"),
   xpValue: document.querySelector("#xpValue"),
@@ -623,6 +741,8 @@ const els = {
   timerResetBtn: document.querySelector("#timerResetBtn"),
   bombOverlay: document.querySelector("#bombOverlay"),
   bombCloseBtn: document.querySelector("#bombCloseBtn"),
+  dailyTodoApplyBtn: document.querySelector("#dailyTodoApplyBtn"),
+  dailyTodoSaveBtn: document.querySelector("#dailyTodoSaveBtn"),
   completedGoalsBtn: document.querySelector("#completedGoalsBtn"),
   goalResetBtn: document.querySelector("#goalResetBtn"),
   extraGoals: document.querySelector(".extra-goals"),
@@ -644,6 +764,21 @@ const els = {
   themeDeleteBtns: document.querySelectorAll("[data-theme-delete]"),
   themeControl: document.querySelector(".theme-control"),
   themeToggleBtn: document.querySelector("#themeToggleBtn"),
+  layoutControl: document.querySelector(".layout-control"),
+  layoutToggleBtn: document.querySelector("#layoutToggleBtn"),
+  layoutCloseBtn: document.querySelector("#layoutCloseBtn"),
+  layoutOptions: document.querySelector("#layoutOptions"),
+  musicDock: document.querySelector(".music-dock"),
+  musicToggleBtn: document.querySelector("#musicToggleBtn"),
+  musicCloseBtn: document.querySelector("#musicCloseBtn"),
+  musicFileInput: document.querySelector("#musicFileInput"),
+  musicSelect: document.querySelector("#musicSelect"),
+  musicPlayBtn: document.querySelector("#musicPlayBtn"),
+  musicPauseBtn: document.querySelector("#musicPauseBtn"),
+  musicLoopInput: document.querySelector("#musicLoopInput"),
+  musicVolumeInput: document.querySelector("#musicVolumeInput"),
+  musicStatus: document.querySelector("#musicStatus"),
+  musicAudio: document.querySelector("#musicAudio"),
   inspirationDock: document.querySelector(".inspiration-dock"),
   inspirationToggleBtn: document.querySelector("#inspirationToggleBtn"),
   inspirationCloseBtn: document.querySelector("#inspirationCloseBtn"),
@@ -700,8 +835,14 @@ function applyLanguage() {
   setHtml(".device-header h1", dict.brand);
   setText(".current-time span", dict.currentTime);
   setText(".language-control span", dict.language);
+  setText(".layout-head span", dict.layoutTitle);
+  els.layoutToggleBtn.textContent = dict.layoutToggle;
+  renderLayoutOptions();
+  translateMusicPanel();
   setText(".goal-title span", dict.todayGoals);
   setText(".goal-title small", dict.goalResetHint);
+  els.dailyTodoApplyBtn.textContent = dict.dailyTodoApply;
+  els.dailyTodoSaveBtn.textContent = dict.dailyTodoSave;
   els.completedGoalsBtn.textContent = dict.completedGoals;
   els.goalResetBtn.textContent = dict.clear;
   els.todoTexts.forEach((input) => {
@@ -808,6 +949,8 @@ function load() {
       ...(saved.goals && typeof saved.goals === "object" ? saved.goals : {}),
     };
     state.goals.todos = normalizeTodos(state.goals.todos);
+    state.dailyTodoTemplate = normalizeDailyTodoTemplate(saved.dailyTodoTemplate);
+    state.dailyTodoPool = normalizeDailyTodoPool(saved.dailyTodoPool, state.dailyTodoTemplate);
     state.completedGoals = normalizeCompletedGoals(saved.completedGoals);
     state.inspirations = normalizeInspirations(saved.inspirations);
     state.unlockedWorlds = normalizeWorldList(saved.unlockedWorlds);
@@ -826,6 +969,32 @@ function normalizeTodos(todos) {
     type: list[index]?.type === "challenge" ? "challenge" : "normal",
     deadline: /^\d{2}:\d{2}$/.test(String(list[index]?.deadline || "")) ? String(list[index].deadline) : "",
   }));
+}
+
+function normalizeDailyTodoTemplate(todos) {
+  if (!Array.isArray(todos)) return [];
+  return todos
+    .map((todo) => ({
+      text: String(todo?.text || "").trim(),
+      type: todo?.type === "challenge" ? "challenge" : "normal",
+      deadline: /^\d{2}:\d{2}$/.test(String(todo?.deadline || "")) ? String(todo.deadline) : "",
+    }))
+    .filter((todo) => todo.text)
+    .slice(0, routineSelectedMax);
+}
+
+function normalizeDailyTodoPool(pool, fallbackTemplate = []) {
+  const source = Array.isArray(pool) ? pool : fallbackTemplate;
+  return source
+    .map((todo, index) => ({
+      id: String(todo?.id || `routine-${index}-${Date.now()}`),
+      text: String(todo?.text || "").trim(),
+      type: todo?.type === "challenge" ? "challenge" : "normal",
+      deadline: /^\d{2}:\d{2}$/.test(String(todo?.deadline || "")) ? String(todo.deadline) : "",
+      selected: Boolean(todo?.selected || fallbackTemplate.some((item) => item.text && item.text === todo?.text)),
+    }))
+    .filter((todo) => todo.text)
+    .slice(0, routineMaxCount);
 }
 
 function normalizeCompletedGoals(goals) {
@@ -905,16 +1074,14 @@ function loadTheme() {
 }
 
 function sanitizeTheme(theme) {
-  const colors = getNipponColors();
-  if (!colors.length) return theme;
-  const values = new Set(colors.map((color) => color.value.toLowerCase()));
+  const colorOrDefault = (value, fallback) => (/^#[0-9a-f]{6}$/i.test(String(value || "")) ? value : fallback);
   return {
-    bg: values.has(String(theme.bg).toLowerCase()) ? theme.bg : defaultTheme.bg,
-    text: values.has(String(theme.text).toLowerCase()) ? theme.text : defaultTheme.text,
-    line: values.has(String(theme.line).toLowerCase()) ? theme.line : defaultTheme.line,
+    bg: colorOrDefault(theme.bg, defaultTheme.bg),
+    text: colorOrDefault(theme.text, defaultTheme.text),
+    line: colorOrDefault(theme.line, defaultTheme.line),
     lineWidth: ["1px", "2px", "3px", "4px"].includes(theme.lineWidth) ? theme.lineWidth : defaultTheme.lineWidth,
-    paper: values.has(String(theme.paper).toLowerCase()) ? theme.paper : defaultTheme.paper,
-    timer: values.has(String(theme.timer).toLowerCase()) ? theme.timer : defaultTheme.timer,
+    paper: colorOrDefault(theme.paper, defaultTheme.paper),
+    timer: colorOrDefault(theme.timer, defaultTheme.timer),
   };
 }
 
@@ -928,14 +1095,25 @@ function colorOptionLabel(color) {
 
 function populateColorSelect(select, selectedValue) {
   const colors = getNipponColors();
+  const normalizedSelected = String(selectedValue || "").toLowerCase();
   select.innerHTML = "";
+  const hasSelected = colors.some((color) => color.value.toLowerCase() === normalizedSelected);
+  if (!hasSelected && /^#[0-9a-f]{6}$/i.test(String(selectedValue || ""))) {
+    const option = document.createElement("option");
+    option.value = selectedValue;
+    option.textContent = `自訂 / CUSTOM ${selectedValue}`;
+    option.style.backgroundColor = selectedValue;
+    option.style.color = selectedValue.toLowerCase() === "#070605" ? "#ffffff" : "#111111";
+    option.selected = true;
+    select.append(option);
+  }
   colors.forEach((color) => {
     const option = document.createElement("option");
     option.value = color.value;
     option.textContent = colorOptionLabel(color);
     option.style.backgroundColor = color.value;
     option.style.color = "#ffffff";
-    if (color.value.toLowerCase() === selectedValue.toLowerCase()) option.selected = true;
+    if (color.value.toLowerCase() === normalizedSelected) option.selected = true;
     select.append(option);
   });
 }
@@ -1000,6 +1178,233 @@ function setThemeCollapsed(collapsed) {
     collapsed ? t("themeToggleOpen") : t("themeToggleClose"),
   );
   localStorage.setItem(themeCollapsedStorageKey, collapsed ? "1" : "0");
+  updateToolSidebar();
+}
+
+function loadLayoutVisibility() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(layoutVisibilityStorageKey) || "{}");
+    return {
+      ...defaultLayoutVisibility,
+      ...(saved && typeof saved === "object" ? saved : {}),
+    };
+  } catch {
+    return { ...defaultLayoutVisibility };
+  }
+}
+
+function saveLayoutVisibility(visibility) {
+  localStorage.setItem(layoutVisibilityStorageKey, JSON.stringify(visibility));
+}
+
+function applyLayoutVisibility() {
+  const visibility = loadLayoutVisibility();
+  layoutFeatures.forEach((feature) => {
+    const key = `show${feature[0].toUpperCase()}${feature.slice(1)}`;
+    document.body.dataset[key] = visibility[feature] ? "true" : "false";
+  });
+  if (!visibility.sync) setSyncPanelOpen(false);
+  if (!visibility.inspiration) setInspirationOpen(false);
+  if (!visibility.theme) setThemeCollapsed(true);
+  if (!visibility.music) {
+    setMusicOpen(false);
+    pauseMusic();
+  }
+}
+
+function setLayoutPanelOpen(isOpen) {
+  els.layoutControl.classList.toggle("collapsed", !isOpen);
+  els.layoutToggleBtn.setAttribute("aria-expanded", String(isOpen));
+  updateToolSidebar();
+}
+
+function closeAllTools(except = "") {
+  if (except !== "theme") setThemeCollapsed(true);
+  if (except !== "inspiration") setInspirationOpen(false);
+  if (except !== "layout") setLayoutPanelOpen(false);
+  if (except !== "music") setMusicOpen(false);
+}
+
+function toggleTool(tool) {
+  const isThemeOpen = !els.themeControl.classList.contains("collapsed");
+  const isInspirationOpen = els.inspirationDock.dataset.open === "true";
+  const isLayoutOpen = !els.layoutControl.classList.contains("collapsed");
+  const isMusicOpen = els.musicDock.dataset.open === "true";
+  const openMap = { theme: isThemeOpen, inspiration: isInspirationOpen, layout: isLayoutOpen, music: isMusicOpen };
+  if (openMap[tool]) {
+    closeAllTools();
+    return;
+  }
+  closeAllTools(tool);
+  if (tool === "theme") setThemeCollapsed(false);
+  if (tool === "inspiration") setInspirationOpen(true);
+  if (tool === "layout") setLayoutPanelOpen(true);
+  if (tool === "music") setMusicOpen(true);
+}
+
+function updateToolSidebar() {
+  if (!els.toolButtons?.length) return;
+  const active = {
+    theme: !els.themeControl.classList.contains("collapsed"),
+    inspiration: els.inspirationDock.dataset.open === "true",
+    layout: !els.layoutControl.classList.contains("collapsed"),
+    music: els.musicDock.dataset.open === "true",
+  };
+  els.toolButtons.forEach((button) => {
+    button.classList.toggle("active", Boolean(active[button.dataset.tool]));
+  });
+}
+
+function renderLayoutOptions() {
+  if (!els.layoutOptions) return;
+  const dict = translations[currentLanguage()];
+  const visibility = loadLayoutVisibility();
+  els.layoutOptions.innerHTML = "";
+  layoutFeatures.forEach((feature) => {
+    const label = document.createElement("label");
+    const input = document.createElement("input");
+    const span = document.createElement("span");
+    input.type = "checkbox";
+    input.checked = visibility[feature] !== false;
+    input.addEventListener("change", () => {
+      const next = loadLayoutVisibility();
+      next[feature] = input.checked;
+      saveLayoutVisibility(next);
+      applyLayoutVisibility();
+      renderLayoutOptions();
+      showSaved();
+    });
+    span.textContent = dict.layoutFeatures?.[feature] || feature;
+    label.append(input, span);
+    els.layoutOptions.append(label);
+  });
+}
+
+function loadMusicSettings() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(musicSettingsStorageKey) || "{}");
+    return {
+      src: typeof saved.src === "string" ? saved.src : "",
+      volume: Math.min(1, Math.max(0, Number(saved.volume) || 0.7)),
+      loop: Boolean(saved.loop),
+    };
+  } catch {
+    return { src: "", volume: 0.7, loop: false };
+  }
+}
+
+function saveMusicSettings() {
+  const selectedTrack = localMusicTracks[Number.parseInt(els.musicSelect.value, 10)];
+  localStorage.setItem(
+    musicSettingsStorageKey,
+    JSON.stringify({
+      src: selectedTrack?.name || "",
+      volume: Number(els.musicVolumeInput.value) / 100,
+      loop: els.musicLoopInput.checked,
+    }),
+  );
+}
+
+function musicNameFromPath(path) {
+  const file = decodeURIComponent(String(path || "").split("/").pop() || "");
+  return file.replace(/\.[a-z0-9]+$/i, "");
+}
+
+function normalizeMusicTracks(payload) {
+  const list = Array.isArray(payload?.tracks) ? payload.tracks : [];
+  return list
+    .map((track) => {
+      if (typeof track === "string") {
+        return { src: track, name: musicNameFromPath(track) };
+      }
+      const src = String(track?.src || "").trim();
+      return { src, name: String(track?.name || musicNameFromPath(src)).trim() };
+    })
+    .filter((track) => track.src);
+}
+
+function translateMusicPanel() {
+  if (!els.musicDock) return;
+  setText(".music-head span", t("music"));
+  els.musicToggleBtn.textContent = t("music").slice(0, 1);
+  els.musicPlayBtn.textContent = t("musicPlay");
+  els.musicPauseBtn.textContent = t("musicPause");
+  const fileLabel = els.musicFileInput?.closest("label")?.querySelector("span");
+  if (fileLabel) fileLabel.textContent = t("musicChoose");
+  const loopLabel = els.musicLoopInput?.closest("label")?.querySelector("span");
+  if (loopLabel) loopLabel.textContent = t("musicLoop");
+  if (!els.musicSelect.options.length) els.musicStatus.textContent = t("musicEmpty");
+}
+
+function setMusicOpen(isOpen) {
+  els.musicDock.dataset.open = isOpen ? "true" : "false";
+  els.musicToggleBtn.setAttribute("aria-expanded", String(isOpen));
+  updateToolSidebar();
+}
+
+function applyMusicSettings() {
+  const settings = loadMusicSettings();
+  els.musicVolumeInput.value = String(Math.round(settings.volume * 100));
+  els.musicAudio.volume = settings.volume;
+  els.musicLoopInput.checked = settings.loop;
+  els.musicAudio.loop = settings.loop;
+}
+
+async function loadMusicList() {
+  applyMusicSettings();
+  els.musicSelect.innerHTML = "";
+  els.musicAudio.removeAttribute("src");
+  els.musicAudio.load();
+  els.musicStatus.textContent = t("musicEmpty");
+}
+
+function renderLocalMusicTracks() {
+  const settings = loadMusicSettings();
+  els.musicSelect.innerHTML = "";
+  localMusicTracks.forEach((track, index) => {
+    const option = document.createElement("option");
+    option.value = String(index);
+    option.textContent = track.name;
+    els.musicSelect.append(option);
+  });
+  if (!localMusicTracks.length) {
+    els.musicStatus.textContent = t("musicEmpty");
+    return;
+  }
+  const savedIndex = localMusicTracks.findIndex((track) => track.name === settings.src);
+  els.musicSelect.value = String(savedIndex >= 0 ? savedIndex : 0);
+  changeMusicTrack();
+  els.musicStatus.textContent = t("musicSelected").replace("{n}", String(localMusicTracks.length));
+}
+
+function changeMusicTrack() {
+  const track = localMusicTracks[Number.parseInt(els.musicSelect.value, 10)];
+  if (!track) return;
+  els.musicAudio.src = track.url;
+  els.musicStatus.textContent = track.name;
+  saveMusicSettings();
+}
+
+function chooseLocalMusicFiles() {
+  localMusicTracks.forEach((track) => URL.revokeObjectURL(track.url));
+  localMusicTracks = Array.from(els.musicFileInput.files || [])
+    .filter((file) => file.type.startsWith("audio/") || /\.webm$/i.test(file.name))
+    .map((file) => ({
+      name: file.name.replace(/\.[a-z0-9]+$/i, ""),
+      url: URL.createObjectURL(file),
+    }));
+  renderLocalMusicTracks();
+}
+
+function playMusic() {
+  if (!els.musicAudio.src && els.musicSelect.value) changeMusicTrack();
+  els.musicAudio.play().catch(() => {
+    els.musicStatus.textContent = t("musicLoadFail");
+  });
+}
+
+function pauseMusic() {
+  els.musicAudio.pause();
 }
 
 function translateThemePanel() {
@@ -1053,6 +1458,7 @@ function setInspirationOpen(isOpen) {
     renderInspirations();
     window.setTimeout(() => els.inspirationInput.focus(), 0);
   }
+  updateToolSidebar();
 }
 
 function toggleInventory() {
@@ -1253,6 +1659,8 @@ function syncPayload() {
     theme: JSON.parse(localStorage.getItem(themeStorageKey) || "{}"),
     themeMemory: JSON.parse(localStorage.getItem(themeMemoryStorageKey) || "[]"),
     themeCollapsed: localStorage.getItem(themeCollapsedStorageKey) || "0",
+    layoutVisibility: JSON.parse(localStorage.getItem(layoutVisibilityStorageKey) || "{}"),
+    musicSettings: JSON.parse(localStorage.getItem(musicSettingsStorageKey) || "{}"),
     newsSource: localStorage.getItem(newsSourceStorageKey) || "tw",
     language: localStorage.getItem(languageStorageKey) || "zh",
     savedAt: new Date().toISOString(),
@@ -1362,6 +1770,8 @@ async function restoreFromGoogle() {
       if (data.theme) localStorage.setItem(themeStorageKey, JSON.stringify(data.theme));
       if (data.themeMemory) localStorage.setItem(themeMemoryStorageKey, JSON.stringify(data.themeMemory));
       if (data.themeCollapsed) localStorage.setItem(themeCollapsedStorageKey, data.themeCollapsed);
+      if (data.layoutVisibility) localStorage.setItem(layoutVisibilityStorageKey, JSON.stringify(data.layoutVisibility));
+      if (data.musicSettings) localStorage.setItem(musicSettingsStorageKey, JSON.stringify(data.musicSettings));
       if (data.newsSource) localStorage.setItem(newsSourceStorageKey, data.newsSource);
       if (data.language) localStorage.setItem(languageStorageKey, data.language);
       setSyncStatus(t("syncRestored"));
@@ -1641,16 +2051,61 @@ function clearInspirationDraft() {
   els.inspirationInput.focus();
 }
 
-function saveTodos() {
-  resetGoalsIfNewDay(false);
-  const completedNow = [];
-  const activeTodos = [];
-  Array.from({ length: todoCount }, (_, index) => ({
+function currentTodosFromInputs() {
+  return Array.from({ length: todoCount }, (_, index) => ({
     text: els.todoTexts[index].value.trim(),
     done: els.todoChecks[index].checked,
     type: els.todoTypes[index].value === "challenge" ? "challenge" : "normal",
     deadline: /^\d{2}:\d{2}$/.test(els.todoDeadlines[index].value) ? els.todoDeadlines[index].value : "",
-  })).forEach((todo) => {
+  }));
+}
+
+function sanitizeDailyTodoForToday(todo) {
+  const normalized = {
+    text: String(todo?.text || "").trim(),
+    type: todo?.type === "challenge" ? "challenge" : "normal",
+    deadline: /^\d{2}:\d{2}$/.test(String(todo?.deadline || "")) ? String(todo.deadline) : "",
+  };
+  if (normalized.type === "challenge" && normalized.deadline && !isChallengeOnTime(normalized.deadline)) {
+    normalized.deadline = "";
+  }
+  return normalized;
+}
+
+function saveDailyTodoTemplate() {
+  window.location.href = "routine.html";
+}
+
+function applyDailyTodoTemplate() {
+  const template = normalizeDailyTodoTemplate(state.dailyTodoTemplate).map(sanitizeDailyTodoForToday);
+  if (!template.length) {
+    window.alert(t("dailyTodoEmpty"));
+    window.location.href = "routine.html";
+    return;
+  }
+  const current = currentTodosFromInputs()
+    .filter((todo) => todo.text)
+    .map((todo) => ({ ...todo, done: false }));
+  const seen = new Set(current.map((todo) => todo.text));
+  state.completedGoals
+    .filter((goal) => goal.date === localDateKey())
+    .forEach((goal) => seen.add(goal.text));
+  template.forEach((todo) => {
+    if (current.length >= todoCount || seen.has(todo.text)) return;
+    current.push({ ...todo, done: false });
+    seen.add(todo.text);
+  });
+  state.goals.todos = normalizeTodos(current);
+  state.goalsDate = localDateKey();
+  save();
+  render();
+}
+
+function saveTodos() {
+  resetGoalsIfNewDay(false);
+  const completedNow = [];
+  const activeTodos = [];
+  currentTodosFromInputs().forEach((todo) => {
     if (todo.done && todo.text) {
       const exp = todo.type === "challenge" && isChallengeOnTime(todo.deadline) ? 50 : 20;
       completedNow.push({
@@ -2057,6 +2512,8 @@ document.addEventListener("keydown", (event) => {
 els.timerToggleBtn.addEventListener("click", toggleTimer);
 els.timerResetBtn.addEventListener("click", resetTimer);
 els.bombCloseBtn.addEventListener("click", hideBomb);
+els.dailyTodoApplyBtn.addEventListener("click", applyDailyTodoTemplate);
+els.dailyTodoSaveBtn.addEventListener("click", saveDailyTodoTemplate);
 els.completedGoalsBtn.addEventListener("click", openCompletedGoalsPage);
 els.goalResetBtn.addEventListener("click", resetGoals);
 els.extraGoalsToggleBtn.addEventListener("click", toggleExtraGoals);
@@ -2124,6 +2581,25 @@ els.themeDeleteBtns.forEach((button) => {
   button.addEventListener("click", () => deleteThemeSlot(Number.parseInt(button.dataset.themeDelete, 10) || 0));
 });
 els.themeToggleBtn.addEventListener("click", () => setThemeCollapsed(!els.themeControl.classList.contains("collapsed")));
+els.layoutToggleBtn.addEventListener("click", () => setLayoutPanelOpen(els.layoutControl.classList.contains("collapsed")));
+els.layoutCloseBtn.addEventListener("click", () => setLayoutPanelOpen(false));
+els.musicToggleBtn.addEventListener("click", () => setMusicOpen(els.musicDock.dataset.open !== "true"));
+els.musicCloseBtn.addEventListener("click", () => setMusicOpen(false));
+els.toolButtons.forEach((button) => {
+  button.addEventListener("click", () => toggleTool(button.dataset.tool));
+});
+els.musicFileInput.addEventListener("change", chooseLocalMusicFiles);
+els.musicSelect.addEventListener("change", changeMusicTrack);
+els.musicPlayBtn.addEventListener("click", playMusic);
+els.musicPauseBtn.addEventListener("click", pauseMusic);
+els.musicLoopInput.addEventListener("change", () => {
+  els.musicAudio.loop = els.musicLoopInput.checked;
+  saveMusicSettings();
+});
+els.musicVolumeInput.addEventListener("input", () => {
+  els.musicAudio.volume = Number(els.musicVolumeInput.value) / 100;
+  saveMusicSettings();
+});
 els.inspirationToggleBtn.addEventListener("click", () => setInspirationOpen(els.inspirationDock.dataset.open !== "true"));
 els.inspirationCloseBtn.addEventListener("click", () => setInspirationOpen(false));
 els.inspirationSaveBtn.addEventListener("click", saveInspiration);
@@ -2146,7 +2622,9 @@ seedBundledThemeMemory();
 saveSlot01Preset();
 setThemeCollapsed(localStorage.getItem(themeCollapsedStorageKey) === "1");
 applyLanguage();
+applyLayoutVisibility();
 renderCurrentTime();
+loadMusicList();
 loadNews();
 window.addEventListener("pagehide", () => {
   if (hasSyncCredentials()) backupToGoogle({ automatic: true });

@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>每日必做</title>
+    <link rel="stylesheet" href="styles.css?v=20260517-24" />
+    <style>
+      body {
+        min-height: 100vh;
+        padding: 24px;
+        background: var(--bg, #fcfaf2);
+        color: var(--ink, #2d2a26);
+      }
+
+      .routine-page {
+        width: min(960px, 100%);
+        margin: 0 auto;
+        display: grid;
+        gap: 14px;
+      }
+
+      .routine-header,
+      .routine-toolbar,
+      .routine-list {
+        border: var(--line-width, 2px) solid var(--line, #caa94d);
+        border-radius: 8px;
+        background: color-mix(in srgb, var(--paper, #fffffb) 90%, transparent);
+      }
+
+      .routine-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 14px;
+      }
+
+      .routine-title {
+        display: grid;
+        gap: 4px;
+      }
+
+      .routine-title h1 {
+        margin: 0;
+        font-size: clamp(1.4rem, 4vw, 2rem);
+        letter-spacing: 0;
+      }
+
+      .routine-title p {
+        margin: 0;
+        font-size: 0.88rem;
+        font-weight: 800;
+        opacity: 0.72;
+      }
+
+      .routine-actions,
+      .routine-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .routine-toolbar {
+        padding: 12px;
+      }
+
+      .routine-toolbar input,
+      .routine-row input[type="text"],
+      .routine-row input[type="time"],
+      .routine-row select {
+        min-height: 36px;
+        border: var(--line-width, 2px) solid var(--line, #caa94d);
+        border-radius: 8px;
+        background: var(--paper, #fffffb);
+        color: var(--ink, #2d2a26);
+        font: inherit;
+        font-weight: 800;
+      }
+
+      .routine-toolbar input {
+        flex: 1 1 260px;
+        min-width: 0;
+        padding: 0 10px;
+      }
+
+      .routine-list {
+        display: grid;
+        gap: 8px;
+        padding: 10px;
+      }
+
+      .routine-row {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) 96px 96px auto;
+        gap: 8px;
+        align-items: center;
+        min-height: 52px;
+        padding: 8px;
+        border: var(--line-width, 2px) solid color-mix(in srgb, var(--line, #caa94d) 58%, transparent);
+        border-radius: 8px;
+        background: var(--paper, #fffffb);
+      }
+
+      .routine-row[data-selected="true"] {
+        border-color: color-mix(in srgb, #e03a72 68%, var(--line, #caa94d));
+        background: linear-gradient(135deg, color-mix(in srgb, #e03a72 14%, var(--paper, #fffffb)), var(--paper, #fffffb) 76%);
+        box-shadow: inset 4px 0 0 color-mix(in srgb, #e03a72 74%, var(--line, #caa94d));
+      }
+
+      .routine-row input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        accent-color: #e03a72;
+      }
+
+      .routine-row input[type="text"] {
+        width: 100%;
+        min-width: 0;
+        padding: 0 10px;
+      }
+
+      .routine-row input[type="time"],
+      .routine-row select {
+        width: 100%;
+        padding: 0 6px;
+      }
+
+      .routine-empty {
+        padding: 24px 10px;
+        text-align: center;
+        font-weight: 900;
+        opacity: 0.68;
+      }
+
+      .routine-limit {
+        margin-left: auto;
+        font-size: 0.85rem;
+        font-weight: 900;
+        opacity: 0.76;
+      }
+
+      @media (max-width: 720px) {
+        body {
+          padding: 12px;
+        }
+
+        .routine-header {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .routine-actions,
+        .routine-actions button {
+          width: 100%;
+        }
+
+        .routine-row {
+          grid-template-columns: auto minmax(0, 1fr) auto;
+          gap: 6px;
+        }
+
+        .routine-row select,
+        .routine-row input[type="time"] {
+          grid-column: 2;
+        }
+
+        .routine-row button {
+          grid-column: 3;
+          grid-row: 1 / 4;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="routine-page">
+      <header class="routine-header">
+        <div class="routine-title">
+          <h1 data-i18n="title">每日必做管理</h1>
+          <p data-i18n="hint">最多保存 50 個目標，勾選 6 個作為每日固定必做。</p>
+        </div>
+        <div class="routine-actions">
+          <button id="backBtn" type="button" data-i18n="back">回主頁</button>
+          <button id="saveBtn" type="button" data-i18n="save">保存設定</button>
+        </div>
+      </header>
+
+      <section class="routine-toolbar" aria-label="add routine">
+        <input id="newRoutineInput" type="text" data-i18n-placeholder="placeholder" placeholder="輸入每日必做目標" />
+        <button id="addBtn" type="button" data-i18n="add">新增</button>
+        <span class="routine-limit" id="routineCount">0/50 · 0/6</span>
+      </section>
+
+      <section class="routine-list" id="routineList" aria-label="routine list"></section>
+    </main>
+
+    <script>
+      const storageKey = "minimal-study-counter-v1";
+      const themeStorageKey = "minimal-study-counter-theme-v1";
+      const languageStorageKey = "minimal-study-counter-language-v1";
+      const maxRoutine = 50;
+      const maxSelected = 6;
+
+      const text = {
+        zh: {
+          htmlLang: "zh-Hant",
+          title: "每日必做管理",
+          hint: "最多保存 50 個目標，勾選 6 個作為每日固定必做。",
+          back: "回主頁",
+          save: "保存設定",
+          add: "新增",
+          placeholder: "輸入每日必做目標",
+          normal: "普通",
+          challenge: "限時",
+          empty: "尚未加入每日必做",
+          delete: "刪除",
+          full: "最多只能保存 50 個目標。",
+          selectedFull: "最多只能勾選 6 個每日必做。",
+          saved: "已保存。之後主頁會使用這組每日必做。",
+          past: "不能設定已經過去的時間。",
+        },
+        en: {
+          htmlLang: "en",
+          title: "Daily Routine",
+          hint: "Save up to 50 goals and choose 6 as your fixed daily routine.",
+          back: "Home",
+          save: "Save",
+          add: "Add",
+          placeholder: "Enter a routine goal",
+          normal: "Normal",
+          challenge: "Timed",
+          empty: "No routine goals yet",
+          delete: "Delete",
+          full: "You can save up to 50 goals.",
+          selectedFull: "You can choose up to 6 daily goals.",
+          saved: "Saved. The home page will use this daily routine.",
+          past: "You cannot set a time that has already passed.",
+        },
+        de: {
+          htmlLang: "de",
+          title: "Tägliche Routine",
+          hint: "Bis zu 50 Ziele speichern und 6 als tägliche Routine auswählen.",
+          back: "Start",
+          save: "Speichern",
+          add: "Neu",
+          placeholder: "Routine-Ziel eingeben",
+          normal: "Normal",
+          challenge: "Zeit",
+          empty: "Noch keine Routine-Ziele",
+          delete: "Löschen",
+          full: "Maximal 50 Ziele sind möglich.",
+          selectedFull: "Maximal 6 tägliche Ziele auswählen.",
+          saved: "Gespeichert. Die Startseite nutzt diese Routine.",
+          past: "Vergangene Zeiten sind nicht erlaubt.",
+        },
+        ja: {
+          htmlLang: "ja",
+          title: "毎日の必須管理",
+          hint: "最大50個保存し、6個を毎日の固定タスクに選べます。",
+          back: "ホーム",
+          save: "保存",
+          add: "追加",
+          placeholder: "毎日の必須目標を入力",
+          normal: "通常",
+          challenge: "時間",
+          empty: "まだ毎日の必須がありません",
+          delete: "削除",
+          full: "保存できる目標は最大50個です。",
+          selectedFull: "選べる毎日の必須は最大6個です。",
+          saved: "保存しました。ホームでこの設定を使います。",
+          past: "過ぎた時間は設定できません。",
+        },
+      };
+
+      const lang = text[localStorage.getItem(languageStorageKey)] ? localStorage.getItem(languageStorageKey) : "zh";
+      const dict = text[lang];
+      document.documentElement.lang = dict.htmlLang;
+
+      const els = {
+        list: document.querySelector("#routineList"),
+        input: document.querySelector("#newRoutineInput"),
+        add: document.querySelector("#addBtn"),
+        save: document.querySelector("#saveBtn"),
+        back: document.querySelector("#backBtn"),
+        count: document.querySelector("#routineCount"),
+      };
+
+      function applyLanguage() {
+        document.querySelectorAll("[data-i18n]").forEach((node) => {
+          node.textContent = dict[node.dataset.i18n] || node.textContent;
+        });
+        document.querySelectorAll("[data-i18n-placeholder]").forEach((node) => {
+          node.placeholder = dict[node.dataset.i18nPlaceholder] || node.placeholder;
+        });
+      }
+
+      function applyTheme() {
+        try {
+          const theme = JSON.parse(localStorage.getItem(themeStorageKey) || "{}");
+          const root = document.documentElement;
+          root.style.setProperty("--bg", theme.bg || "#FCFAF2");
+          root.style.setProperty("--ink", theme.text || "#2D2A26");
+          root.style.setProperty("--line", theme.line || "#CAA94D");
+          root.style.setProperty("--line-width", theme.lineWidth || "2px");
+          root.style.setProperty("--paper", theme.paper || "#FFFFFB");
+        } catch {
+          return;
+        }
+      }
+
+      function loadStorage() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(storageKey) || "{}");
+          return saved && typeof saved === "object" ? saved : {};
+        } catch {
+          return {};
+        }
+      }
+
+      function normalizeItem(item, index) {
+        return {
+          id: String(item?.id || `routine-${Date.now()}-${index}`),
+          text: String(item?.text || "").trim(),
+          type: item?.type === "challenge" ? "challenge" : "normal",
+          deadline: /^\d{2}:\d{2}$/.test(String(item?.deadline || "")) ? String(item.deadline) : "",
+          selected: Boolean(item?.selected),
+        };
+      }
+
+      function normalizePool(pool, template) {
+        const source = Array.isArray(pool) ? pool : [];
+        const selectedTexts = new Set((Array.isArray(template) ? template : []).map((item) => String(item?.text || "")));
+        const base = source.length ? source : (Array.isArray(template) ? template : []);
+        return base
+          .map((item, index) => {
+            const normalized = normalizeItem(item, index);
+            normalized.selected = Boolean(item?.selected || selectedTexts.has(normalized.text));
+            return normalized;
+          })
+          .filter((item) => item.text)
+          .slice(0, maxRoutine);
+      }
+
+      const storage = loadStorage();
+      let routines = normalizePool(storage.dailyTodoPool, storage.dailyTodoTemplate);
+
+      function selectedCount() {
+        return routines.filter((item) => item.selected).length;
+      }
+
+      function currentTimeInputValue() {
+        const now = new Date();
+        return `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+      }
+
+      function isChallengeOnTime(value) {
+        if (!/^\d{2}:\d{2}$/.test(String(value || ""))) return true;
+        const [hours, minutes] = value.split(":").map((part) => Number.parseInt(part, 10));
+        const due = new Date();
+        due.setHours(hours, minutes, 59, 999);
+        return Date.now() <= due.getTime();
+      }
+
+      function updateCount() {
+        els.count.textContent = `${routines.length}/${maxRoutine} · ${selectedCount()}/${maxSelected}`;
+      }
+
+      function render() {
+        els.list.innerHTML = "";
+        updateCount();
+        if (!routines.length) {
+          const empty = document.createElement("div");
+          empty.className = "routine-empty";
+          empty.textContent = dict.empty;
+          els.list.append(empty);
+          return;
+        }
+
+        routines.forEach((item, index) => {
+          const row = document.createElement("article");
+          row.className = "routine-row";
+          row.dataset.selected = item.selected ? "true" : "false";
+
+          const check = document.createElement("input");
+          check.type = "checkbox";
+          check.checked = item.selected;
+          check.addEventListener("change", () => {
+            if (check.checked && selectedCount() >= maxSelected) {
+              check.checked = false;
+              window.alert(dict.selectedFull);
+              return;
+            }
+            item.selected = check.checked;
+            render();
+          });
+
+          const input = document.createElement("input");
+          input.type = "text";
+          input.value = item.text;
+          input.placeholder = dict.placeholder;
+          input.addEventListener("input", () => {
+            item.text = input.value;
+          });
+
+          const type = document.createElement("select");
+          [["normal", dict.normal], ["challenge", dict.challenge]].forEach(([value, label]) => {
+            const option = document.createElement("option");
+            option.value = value;
+            option.textContent = label;
+            type.append(option);
+          });
+          type.value = item.type;
+          type.addEventListener("change", () => {
+            item.type = type.value;
+            render();
+          });
+
+          const time = document.createElement("input");
+          time.type = "time";
+          time.min = currentTimeInputValue();
+          time.value = item.deadline;
+          time.disabled = item.type !== "challenge";
+          time.addEventListener("change", () => {
+            if (time.value && !isChallengeOnTime(time.value)) {
+              time.value = "";
+              window.alert(dict.past);
+            }
+            item.deadline = time.value;
+          });
+
+          const remove = document.createElement("button");
+          remove.type = "button";
+          remove.textContent = dict.delete;
+          remove.addEventListener("click", () => {
+            routines.splice(index, 1);
+            render();
+          });
+
+          row.append(check, input, type, time, remove);
+          els.list.append(row);
+        });
+      }
+
+      function addRoutine() {
+        const value = els.input.value.trim();
+        if (!value) return;
+        if (routines.length >= maxRoutine) {
+          window.alert(dict.full);
+          return;
+        }
+        routines.push({
+          id: `routine-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+          text: value,
+          type: "normal",
+          deadline: "",
+          selected: selectedCount() < maxSelected,
+        });
+        els.input.value = "";
+        render();
+      }
+
+      function saveRoutine() {
+        const cleaned = routines
+          .map((item, index) => normalizeItem(item, index))
+          .filter((item) => item.text)
+          .slice(0, maxRoutine);
+        let selectedSeen = 0;
+        cleaned.forEach((item) => {
+          if (item.selected && selectedSeen < maxSelected) {
+            selectedSeen += 1;
+            return;
+          }
+          item.selected = false;
+        });
+        const selected = cleaned
+          .filter((item) => item.selected)
+          .map(({ text, type, deadline }) => ({ text, type, deadline }));
+        const nextStorage = {
+          ...loadStorage(),
+          dailyTodoPool: cleaned,
+          dailyTodoTemplate: selected,
+        };
+        localStorage.setItem(storageKey, JSON.stringify(nextStorage));
+        routines = cleaned;
+        render();
+        window.alert(dict.saved);
+      }
+
+      applyTheme();
+      applyLanguage();
+      render();
+
+      els.add.addEventListener("click", addRoutine);
+      els.input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          addRoutine();
+        }
+      });
+      els.save.addEventListener("click", saveRoutine);
+      els.back.addEventListener("click", () => {
+        window.location.href = "index.html";
+      });
+    </script>
+  </body>
+</html>
