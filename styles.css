@@ -2649,6 +2649,11 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
   background: color-mix(in srgb, var(--paper) 82%, var(--line));
   font-size: 1rem;
   font-weight: 900;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-align: center;
+  letter-spacing: 0;
 }
 
 .tool-sidebar button.active {
@@ -2701,19 +2706,20 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
 
 @media (max-width: 760px) {
   .tool-sidebar {
-    left: -54px;
+    left: -40px;
     top: 50%;
-    width: 66px;
-    padding: 8px 7px;
-    gap: 7px;
+    width: 84px;
+    padding: 9px 8px;
+    gap: 8px;
     border-radius: 0 18px 18px 0;
-    opacity: 0.82;
+    opacity: 0.94;
     transition: left 180ms ease, opacity 180ms ease;
+    touch-action: manipulation;
   }
 
   .tool-sidebar:focus-within,
   .tool-sidebar:hover {
-    left: 8px;
+    left: 6px;
     opacity: 1;
   }
 
@@ -2722,11 +2728,12 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
   }
 
   .tool-sidebar button {
-    width: 44px;
-    height: 44px;
-    min-width: 44px;
-    min-height: 44px;
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    min-height: 50px;
     border-radius: 13px;
+    font-size: 1.05rem;
   }
 
   .theme-control,
