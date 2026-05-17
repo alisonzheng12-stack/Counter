@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>&#27511;&#21490;&#29554;&#24471;</title>
+    <link rel="stylesheet" href="styles.css?v=20260517-58" />
+    <style>
+      body {
+        min-height: 100vh;
+        padding: 24px;
+        background: var(--bg, #fcfaf2);
+        color: var(--ink, #2d2a26);
+      }
+
+      .reward-history-page {
+        display: grid;
+        gap: 14px;
+        width: min(860px, 100%);
+        margin: 0 auto;
+      }
+
+      .history-header,
+      .history-list {
+        border: var(--line-width, 2px) solid var(--line, #caa94d);
+        border-radius: 12px;
+        background: color-mix(in srgb, var(--paper, #fffffb) 94%, transparent);
+      }
+
+      .history-header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: center;
+        padding: 16px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(1.5rem, 4vw, 2.1rem);
+      }
+
+      .history-count {
+        margin: 4px 0 0;
+        font-weight: 900;
+        opacity: 0.72;
+      }
+
+      .history-list {
+        display: grid;
+        gap: 8px;
+        min-height: 80px;
+        padding: 12px;
+      }
+
+      .history-item {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: center;
+        padding: 10px;
+        border: var(--line-width, 2px) solid color-mix(in srgb, var(--line, #caa94d) 58%, transparent);
+        border-radius: 10px;
+        background: color-mix(in srgb, var(--paper, #fffffb) 88%, var(--line, #caa94d));
+      }
+
+      .history-item strong,
+      .history-item small {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .history-item small,
+      .history-empty {
+        color: color-mix(in srgb, var(--ink, #2d2a26) 72%, transparent);
+        font-weight: 800;
+      }
+
+      @media (max-width: 560px) {
+        body {
+          padding: 12px;
+        }
+
+        .history-header {
+          grid-template-columns: 1fr;
+        }
+
+        .history-header button,
+        .history-item {
+          width: 100%;
+        }
+
+        .history-item {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="reward-history-page">
+      <header class="history-header">
+        <div>
+          <h1 id="pageTitle">&#27511;&#21490;&#29554;&#24471;</h1>
+          <p id="historyCount" class="history-count">0</p>
+        </div>
+        <button id="backBtn" type="button">&#36820;&#22238;</button>
+      </header>
+      <section id="historyList" class="history-list"></section>
+    </main>
+
+    <script>
+      const storageKey = "minimal-study-counter-v1";
+      const themeStorageKey = "minimal-study-counter-theme-v1";
+      const languageStorageKey = "minimal-study-counter-language";
+      const text = {
+        zh: {
+          htmlLang: "zh-Hant",
+          title: "\u6b77\u53f2\u7372\u5f97",
+          back: "\u8fd4\u56de",
+          count: "\u5df2\u9818\u53d6 {n} \u7b46",
+          empty: "\u9084\u6c92\u6709\u5df2\u9818\u53d6\u7684\u734e\u52f5",
+          gained: "\u6389\u843d",
+          claimed: "\u9818\u53d6",
+        },
+        en: {
+          htmlLang: "en",
+          title: "Reward History",
+          back: "Back",
+          count: "{n} claimed",
+          empty: "No claimed rewards yet",
+          gained: "Dropped",
+          claimed: "Claimed",
+        },
+        de: {
+          htmlLang: "de",
+          title: "Belohnungsverlauf",
+          back: "Zurueck",
+          count: "{n} erhalten",
+          empty: "Noch keine erhaltenen Belohnungen",
+          gained: "Fund",
+          claimed: "Erhalten",
+        },
+        ja: {
+          htmlLang: "ja",
+          title: "\u7372\u5f97\u5c65\u6b74",
+          back: "\u623b\u308b",
+          count: "{n}\u4ef6\u53d7\u53d6\u6e08",
+          empty: "\u53d7\u3051\u53d6\u3063\u305f\u5831\u916c\u306f\u307e\u3060\u3042\u308a\u307e\u305b\u3093",
+          gained: "\u30c9\u30ed\u30c3\u30d7",
+          claimed: "\u53d7\u53d6",
+        },
+      };
+
+      const savedLanguage = localStorage.getItem(languageStorageKey);
+      const lang = text[savedLanguage] ? savedLanguage : "zh";
+      const dict = text[lang];
+      document.documentElement.lang = dict.htmlLang;
+      document.title = dict.title;
+
+      function applyTheme() {
+        try {
+          const theme = JSON.parse(localStorage.getItem(themeStorageKey) || "{}");
+          const root = document.documentElement;
+          root.style.setProperty("--bg", theme.bg || "#FCFAF2");
+          root.style.setProperty("--ink", theme.text || "#2D2A26");
+          root.style.setProperty("--line", theme.line || "#CAA94D");
+          root.style.setProperty("--line-width", theme.lineWidth || "2px");
+          root.style.setProperty("--paper", theme.paper || "#FFFFFB");
+        } catch {
+          return;
+        }
+      }
+
+      function normalizeRewards(items) {
+        if (!Array.isArray(items)) return [];
+        return items
+          .map((item) => ({
+            label: String(item?.label || "").trim(),
+            coins: Math.max(0, Number.parseInt(item?.coins, 10) || 0),
+            createdAt: String(item?.createdAt || new Date().toISOString()),
+            claimedAt: item?.claimedAt ? String(item.claimedAt) : "",
+          }))
+          .filter((item) => item.label);
+      }
+
+      function formatDate(isoText) {
+        const date = new Date(isoText);
+        if (Number.isNaN(date.getTime())) return "";
+        return date.toLocaleString(undefined, {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      }
+
+      function render() {
+        const saved = JSON.parse(localStorage.getItem(storageKey) || "{}");
+        const rewards = normalizeRewards(saved.claimedRewardHistory);
+        document.querySelector("#pageTitle").textContent = dict.title;
+        document.querySelector("#backBtn").textContent = dict.back;
+        document.querySelector("#historyCount").textContent = dict.count.replace("{n}", rewards.length);
+        const list = document.querySelector("#historyList");
+        list.innerHTML = "";
+        if (!rewards.length) {
+          const empty = document.createElement("p");
+          empty.className = "history-empty";
+          empty.textContent = dict.empty;
+          list.append(empty);
+          return;
+        }
+        rewards.forEach((reward) => {
+          const row = document.createElement("article");
+          row.className = "history-item";
+          const textWrap = document.createElement("div");
+          const name = document.createElement("strong");
+          name.textContent = reward.label;
+          const meta = document.createElement("small");
+          const dropText = formatDate(reward.createdAt);
+          const claimText = formatDate(reward.claimedAt);
+          meta.textContent = `${dict.gained}: ${dropText}${claimText ? ` · ${dict.claimed}: ${claimText}` : ""}`;
+          textWrap.append(name, meta);
+          const coins = document.createElement("small");
+          coins.textContent = reward.coins ? `+${reward.coins} N` : "";
+          row.append(textWrap, coins);
+          list.append(row);
+        });
+      }
+
+      document.querySelector("#backBtn").addEventListener("click", () => {
+        window.location.href = "index.html";
+      });
+
+      applyTheme();
+      render();
+    </script>
+  </body>
+</html>

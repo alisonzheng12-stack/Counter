@@ -67,6 +67,7 @@ const translations = {
     rewardEmpty: "尚未掉落",
     rewardTool: "獎勵",
     rewardTitle: "獎勵列表",
+    rewardHistoryTitle: "歷史獲得",
     rewardClaimed: "已領取",
     rewardUnclaimed: "未領取",
     goalResetHint: "每日00:00重置",
@@ -205,6 +206,7 @@ const translations = {
     rewardEmpty: "No drop yet",
     rewardTool: "Reward",
     rewardTitle: "Rewards",
+    rewardHistoryTitle: "History",
     rewardClaimed: "Claimed",
     rewardUnclaimed: "Open",
     goalResetHint: "Resets daily at 00:00",
@@ -343,6 +345,7 @@ const translations = {
     rewardEmpty: "Noch kein Fund",
     rewardTool: "Bonus",
     rewardTitle: "Belohnungen",
+    rewardHistoryTitle: "Verlauf",
     rewardClaimed: "Erhalten",
     rewardUnclaimed: "Offen",
     goalResetHint: "Reset um 00:00",
@@ -481,6 +484,7 @@ const translations = {
     rewardEmpty: "まだドロップなし",
     rewardTool: "報酬",
     rewardTitle: "報酬リスト",
+    rewardHistoryTitle: "獲得履歴",
     rewardClaimed: "受取済",
     rewardUnclaimed: "未受取",
     goalResetHint: "毎日00:00にリセット",
@@ -754,6 +758,7 @@ const state = {
   lastNCoinGain: 0,
   lastNCoinGrowth: 0,
   rewardHistory: [],
+  claimedRewardHistory: [],
   remainingWrongCount: 0,
   totalWrongCount: 0,
   futureActivities: "",
@@ -821,6 +826,7 @@ const els = {
   rewardDock: document.querySelector(".reward-dock"),
   rewardPanelTitle: document.querySelector(".reward-head span"),
   rewardPanelCount: document.querySelector("#rewardPanelCount"),
+  rewardHistoryBtn: document.querySelector("#rewardHistoryBtn"),
   rewardCloseBtn: document.querySelector("#rewardCloseBtn"),
   rewardList: document.querySelector("#rewardList"),
   futureSearchDateInput: document.querySelector("#futureSearchDateInput"),
@@ -1025,6 +1031,7 @@ function applyLanguage() {
   els.syncSaveBtn.textContent = dict.syncSave;
   els.syncLoadBtn.textContent = dict.syncLoad;
   if (els.rewardPanelTitle) els.rewardPanelTitle.textContent = dict.rewardTitle;
+  if (els.rewardHistoryBtn) els.rewardHistoryBtn.textContent = dict.rewardHistoryTitle;
   els.inventoryToggleBtn.querySelector("span:first-child").textContent = dict.inventory;
   els.inspirationToggleBtn.textContent = dict.inspiration;
   setText(".inspiration-head span", dict.inspirationTitle);
@@ -1060,7 +1067,13 @@ function load() {
     state.nCoins = Math.max(0, Number.parseInt(saved.nCoins, 10) || 0);
     state.lastNCoinGain = Math.max(0, Number.parseInt(saved.lastNCoinGain, 10) || 0);
     state.lastNCoinGrowth = Math.max(0, Number(saved.lastNCoinGrowth) || 0);
-    state.rewardHistory = normalizeRewardHistory(saved.rewardHistory);
+    const loadedRewardHistory = normalizeRewardHistory(saved.rewardHistory);
+    const alreadyClaimed = loadedRewardHistory.filter((reward) => reward.claimed);
+    state.rewardHistory = loadedRewardHistory.filter((reward) => !reward.claimed);
+    state.claimedRewardHistory = [
+      ...alreadyClaimed,
+      ...normalizeRewardHistory(saved.claimedRewardHistory, Infinity),
+    ];
     normalizeLevel();
     const oldCorrectionCount = Math.max(0, Number.parseInt(saved.correctionCount, 10) || 0);
     state.totalWrongCount = Math.max(0, Number.parseInt(saved.totalWrongCount, 10) || oldCorrectionCount);
@@ -1161,17 +1174,18 @@ function normalizeInspirations(items) {
     .slice(0, 500);
 }
 
-function normalizeRewardHistory(items) {
+function normalizeRewardHistory(items, limit = 80) {
   if (!Array.isArray(items)) return [];
-  return items
+  const normalized = items
     .map((item) => ({
       label: String(item?.label || "").trim(),
       coins: Math.max(0, Number.parseInt(item?.coins, 10) || 0),
       createdAt: String(item?.createdAt || new Date().toISOString()),
       claimed: Boolean(item?.claimed),
+      claimedAt: item?.claimedAt ? String(item.claimedAt) : "",
     }))
     .filter((item) => item.label)
-    .slice(0, 80);
+  return Number.isFinite(limit) ? normalized.slice(0, limit) : normalized;
 }
 
 function normalizeFutureEvents(events, legacyText = "") {
@@ -2141,8 +2155,7 @@ function formatRewardDate(isoText) {
 function renderRewards() {
   if (!els.rewardList) return;
   const total = state.rewardHistory.length;
-  const claimed = state.rewardHistory.filter((item) => item.claimed).length;
-  if (els.rewardPanelCount) els.rewardPanelCount.textContent = `${claimed}/${total}`;
+  if (els.rewardPanelCount) els.rewardPanelCount.textContent = `${total}`;
   els.rewardList.innerHTML = "";
   if (!total) {
     const empty = document.createElement("p");
@@ -2160,7 +2173,18 @@ function renderRewards() {
     checkbox.type = "checkbox";
     checkbox.checked = Boolean(item.claimed);
     checkbox.addEventListener("change", () => {
-      state.rewardHistory[index].claimed = checkbox.checked;
+      if (!checkbox.checked) return;
+      const [claimedReward] = state.rewardHistory.splice(index, 1);
+      if (claimedReward) {
+        state.claimedRewardHistory = [
+          {
+            ...claimedReward,
+            claimed: true,
+            claimedAt: new Date().toISOString(),
+          },
+          ...normalizeRewardHistory(state.claimedRewardHistory, Infinity),
+        ];
+      }
       save();
       renderRewards();
     });
@@ -2169,7 +2193,7 @@ function renderRewards() {
     const name = document.createElement("strong");
     name.textContent = item.label;
     const meta = document.createElement("small");
-    meta.textContent = `${formatRewardDate(item.createdAt)} · ${item.claimed ? t("rewardClaimed") : t("rewardUnclaimed")}`;
+    meta.textContent = `${formatRewardDate(item.createdAt)} · ${t("rewardUnclaimed")}`;
     textWrap.append(name, meta);
 
     label.append(checkbox, textWrap);
@@ -2618,6 +2642,7 @@ function resetLevel() {
   state.lastNCoinGain = 0;
   state.lastNCoinGrowth = 0;
   state.rewardHistory = [];
+  state.claimedRewardHistory = [];
   save();
   render();
 }
@@ -2952,6 +2977,9 @@ els.layoutCloseBtn.addEventListener("click", () => setLayoutPanelOpen(false));
 els.musicToggleBtn.addEventListener("click", () => setMusicOpen(els.musicDock.dataset.open !== "true"));
 els.musicCloseBtn.addEventListener("click", () => setMusicOpen(false));
 els.rewardCloseBtn?.addEventListener("click", () => setRewardOpen(false));
+els.rewardHistoryBtn?.addEventListener("click", () => {
+  window.location.href = "rewards.html";
+});
 els.toolButtons.forEach((button) => {
   button.addEventListener("click", () => {
     toggleTool(button.dataset.tool);

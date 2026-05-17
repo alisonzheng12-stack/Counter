@@ -1999,7 +1999,7 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
 
 .reward-head {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
   gap: 8px;
   align-items: center;
   font-weight: 900;
@@ -2015,8 +2015,9 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
 .reward-head button {
   min-width: 30px;
   min-height: 30px;
-  padding: 0;
+  padding: 0 9px;
   border-radius: 999px;
+  font-size: 0.78rem;
 }
 
 .reward-list {
