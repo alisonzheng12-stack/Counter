@@ -2737,8 +2737,9 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
 
 @media (max-width: 760px) {
   .tool-sidebar {
-    left: -8px;
-    top: 50%;
+    left: auto;
+    right: -8px;
+    top: 142px;
     width: auto;
     padding: 0;
     gap: 0;
@@ -2747,7 +2748,8 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
     background: transparent;
     box-shadow: none;
     opacity: 1;
-    transition: left 180ms ease, opacity 180ms ease;
+    transform: none;
+    transition: right 180ms ease, opacity 180ms ease;
     touch-action: manipulation;
   }
 
@@ -2758,8 +2760,8 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
     height: 54px;
     min-width: 52px;
     min-height: 54px;
-    padding: 0 0 0 8px;
-    border-radius: 0 16px 16px 0;
+    padding: 0 8px 0 0;
+    border-radius: 16px 0 0 16px;
     background: var(--accent);
     color: var(--accent-ink);
     font-size: 1rem;
@@ -2774,7 +2776,8 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
   .tool-sidebar-items {
     display: none;
     position: absolute;
-    left: 58px;
+    left: auto;
+    right: 58px;
     top: 50%;
     gap: 8px;
     padding: 8px;
@@ -2794,7 +2797,7 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
     height: 54px;
     min-width: 52px;
     min-height: 54px;
-    border-radius: 0 16px 16px 0;
+    border-radius: 16px 0 0 16px;
   }
 
   .tool-sidebar .tool-sidebar-items button {
