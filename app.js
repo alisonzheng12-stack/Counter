@@ -710,6 +710,8 @@ function localDateKey(date = new Date()) {
 }
 
 const els = {
+  toolSidebar: document.querySelector(".tool-sidebar"),
+  toolSidebarToggleBtn: document.querySelector("#toolSidebarToggleBtn"),
   toolButtons: document.querySelectorAll("[data-tool]"),
   choiceCount: document.querySelector("#choiceCount"),
   levelValue: document.querySelector("#levelValue"),
@@ -1253,6 +1255,12 @@ function updateToolSidebar() {
   els.toolButtons.forEach((button) => {
     button.classList.toggle("active", Boolean(active[button.dataset.tool]));
   });
+}
+
+function setToolSidebarOpen(isOpen) {
+  if (!els.toolSidebar) return;
+  els.toolSidebar.dataset.open = isOpen ? "true" : "false";
+  els.toolSidebarToggleBtn?.setAttribute("aria-expanded", String(isOpen));
 }
 
 function renderLayoutOptions() {
@@ -2586,7 +2594,13 @@ els.layoutCloseBtn.addEventListener("click", () => setLayoutPanelOpen(false));
 els.musicToggleBtn.addEventListener("click", () => setMusicOpen(els.musicDock.dataset.open !== "true"));
 els.musicCloseBtn.addEventListener("click", () => setMusicOpen(false));
 els.toolButtons.forEach((button) => {
-  button.addEventListener("click", () => toggleTool(button.dataset.tool));
+  button.addEventListener("click", () => {
+    toggleTool(button.dataset.tool);
+    if (window.matchMedia("(max-width: 760px)").matches) setToolSidebarOpen(false);
+  });
+});
+els.toolSidebarToggleBtn?.addEventListener("click", () => {
+  setToolSidebarOpen(els.toolSidebar.dataset.open !== "true");
 });
 els.musicFileInput.addEventListener("change", chooseLocalMusicFiles);
 els.musicSelect.addEventListener("change", changeMusicTrack);

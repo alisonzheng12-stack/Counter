@@ -2659,6 +2659,15 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
   opacity: 0.72;
 }
 
+.tool-sidebar-toggle {
+  display: none;
+}
+
+.tool-sidebar-items {
+  display: grid;
+  gap: 10px;
+}
+
 .tool-sidebar button {
   display: grid;
   place-items: center;
@@ -2728,28 +2737,67 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
 
 @media (max-width: 760px) {
   .tool-sidebar {
-    left: -40px;
+    left: -8px;
     top: 50%;
-    width: 84px;
-    padding: 9px 8px;
-    gap: 8px;
-    border-radius: 0 18px 18px 0;
-    opacity: 0.94;
+    width: auto;
+    padding: 0;
+    gap: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    opacity: 1;
     transition: left 180ms ease, opacity 180ms ease;
     touch-action: manipulation;
   }
 
-  .tool-sidebar:focus-within,
-  .tool-sidebar:hover {
-    left: 6px;
-    opacity: 1;
+  .tool-sidebar-toggle {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 54px;
+    min-width: 52px;
+    min-height: 54px;
+    padding: 0 0 0 8px;
+    border-radius: 0 16px 16px 0;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-size: 1rem;
+    font-weight: 900;
+    box-shadow: 0 10px 22px rgba(62, 53, 42, 0.16);
   }
 
   .tool-sidebar strong {
     display: none;
   }
 
-  .tool-sidebar button {
+  .tool-sidebar-items {
+    display: none;
+    position: absolute;
+    left: 58px;
+    top: 50%;
+    gap: 8px;
+    padding: 8px;
+    transform: translateY(-50%);
+    border: var(--line-width) solid var(--line);
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--paper) 96%, transparent);
+    box-shadow: 0 14px 34px color-mix(in srgb, var(--line) 24%, transparent);
+  }
+
+  .tool-sidebar[data-open="true"] .tool-sidebar-items {
+    display: grid;
+  }
+
+  .tool-sidebar .tool-sidebar-toggle {
+    width: 52px;
+    height: 54px;
+    min-width: 52px;
+    min-height: 54px;
+    border-radius: 0 16px 16px 0;
+  }
+
+  .tool-sidebar .tool-sidebar-items button {
     width: 50px;
     height: 50px;
     min-width: 50px;
