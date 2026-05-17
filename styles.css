@@ -2342,11 +2342,33 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
   }
 
   .goal-head {
+    display: grid;
+    grid-template-columns: 1fr;
     align-items: flex-start;
+    gap: 8px;
+  }
+
+  .goal-title {
+    display: grid;
+    gap: 2px;
+  }
+
+  .goal-title small {
+    white-space: normal;
+    line-height: 1.25;
   }
 
   .goal-actions {
-    flex-shrink: 0;
+    width: 100%;
+    justify-content: stretch;
+    gap: 6px;
+  }
+
+  .goal-actions button {
+    flex: 1 1 calc(50% - 6px);
+    min-width: 0;
+    padding: 0 6px;
+    font-size: 0.78rem;
   }
 
   html[lang="de"] .goal-head {
