@@ -46,6 +46,7 @@ const rewardDropTable = [
   { label: "+50N幣", weight: 0.9, coins: 50 },
   { label: "Tomica小車", weight: 0.1, coins: 0 },
 ];
+const rewardDropExpUnit = 20;
 const translatedPresetNames = {
   zh: ["日系", "櫻花可愛風", "靜謐感氛圍", "夏日清霜"],
   en: ["Japanese", "Sakura Cute", "Quiet Mood", "Summer Frost"],
@@ -1141,7 +1142,7 @@ function normalizeCompletedGoals(goals) {
         text: String(goal?.text || "").trim(),
         type: goal?.type === "challenge" ? "challenge" : "normal",
         deadline: /^\d{2}:\d{2}$/.test(String(goal?.deadline || "")) ? String(goal.deadline) : "",
-        exp: Math.max(0, Number.parseInt(goal?.exp, 10) || (goal?.type === "challenge" ? 50 : 20)),
+        exp: Math.max(0, Number.parseInt(goal?.exp, 10) || (goal?.type === "challenge" ? 40 : 20)),
         date: /^\d{4}-\d{2}-\d{2}$/.test(String(goal?.date || "")) ? String(goal.date) : localDateKey(),
       completedAt: String(goal?.completedAt || new Date().toISOString()),
     }))
@@ -2064,7 +2065,7 @@ function addExperience(amount) {
   if (exp <= 0) return;
   const beforeUnits = state.rewardExpUnits;
   state.rewardExpUnits += exp;
-  const drops = Math.floor(state.rewardExpUnits / 10) - Math.floor(beforeUnits / 10);
+  const drops = Math.floor(state.rewardExpUnits / rewardDropExpUnit) - Math.floor(beforeUnits / rewardDropExpUnit);
   for (let index = 0; index < drops; index += 1) addRewardDrop();
   state.xp += exp;
   normalizeLevel();
@@ -2451,7 +2452,7 @@ function saveTodos() {
   const activeTodos = [];
   currentTodosFromInputs().forEach((todo) => {
     if (todo.done && todo.text) {
-      const exp = todo.type === "challenge" && isChallengeOnTime(todo.deadline) ? 50 : 20;
+      const exp = todo.type === "challenge" && isChallengeOnTime(todo.deadline) ? 40 : 20;
       completedNow.push({
         id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
         text: todo.text,
