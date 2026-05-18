@@ -2565,24 +2565,31 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
 @media (min-width: 761px) and (max-width: 1180px) {
   .device-shell {
     place-items: start center;
-    padding-top: calc(96px + env(safe-area-inset-top));
-    padding-left: clamp(14px, 2vw, 24px);
+    padding-top: calc(18px + env(safe-area-inset-top));
+    padding-left: calc(104px + env(safe-area-inset-left));
     padding-right: clamp(14px, 2vw, 24px);
   }
 
   .tool-sidebar {
-    left: 50%;
+    left: 0;
     right: auto;
-    top: calc(12px + env(safe-area-inset-top));
+    top: 50%;
     bottom: auto;
-    transform: translateX(-50%);
+    transform: translate(calc(-100% + 48px), -50%);
     z-index: 60;
     display: grid;
     align-items: center;
-    width: min(520px, calc(100vw - 32px));
-    padding: 10px;
-    border-radius: 22px;
+    width: 92px;
+    max-height: calc(100dvh - 32px);
+    padding: 12px 10px 12px calc(10px + env(safe-area-inset-left));
+    border-radius: 0 22px 22px 0;
     backdrop-filter: blur(14px);
+    transition: transform 180ms ease, box-shadow 180ms ease;
+  }
+
+  .tool-sidebar[data-open="true"] {
+    transform: translate(0, -50%);
+    box-shadow: 0 18px 38px rgba(20, 18, 14, 0.16);
   }
 
   .tool-sidebar strong {
@@ -2591,7 +2598,7 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
 
   .tool-sidebar-items {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: 1fr;
     gap: 10px;
   }
 
@@ -2599,13 +2606,13 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
   .tool-sidebar .tool-sidebar-items .tool-sidebar-toggle {
     position: relative;
     display: grid;
-    width: 100%;
+    width: 58px;
     height: 58px;
-    min-width: 0;
+    min-width: 58px;
     min-height: 58px;
-    padding: 27px 8px 7px;
+    padding: 29px 5px 6px;
     border-radius: 16px;
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     line-height: 1.05;
   }
 
@@ -2634,17 +2641,19 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
   .tool-more-items {
     display: none;
     position: absolute;
-    left: 10px;
-    right: 10px;
-    top: calc(100% + 10px);
+    left: calc(100% + 10px);
+    right: auto;
+    top: 50%;
     bottom: auto;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: min(260px, calc(100vw - 140px));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
     padding: 10px;
     border: var(--line-width) solid var(--line);
     border-radius: 18px;
     background: color-mix(in srgb, var(--paper) 94%, transparent);
     box-shadow: 0 16px 34px rgba(20, 18, 14, 0.14);
+    transform: translateY(-50%);
   }
 
   .tool-sidebar[data-open="true"] .tool-more-items {
@@ -3664,6 +3673,7 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
     display: grid;
   }
 }
+
 
 
 
