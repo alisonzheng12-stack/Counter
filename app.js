@@ -85,6 +85,7 @@ const translations = {
       routine: "目標",
       sync: "同步",
     },
+    moreTool: "更多",
     toolMenu: "工具",
     layoutFeatures: {
       music: "音樂",
@@ -224,6 +225,7 @@ const translations = {
       routine: "Goal",
       sync: "Sync",
     },
+    moreTool: "More",
     toolMenu: "Tools",
     layoutFeatures: {
       music: "Music",
@@ -363,6 +365,7 @@ const translations = {
       routine: "Ziel",
       sync: "Sync",
     },
+    moreTool: "Mehr",
     toolMenu: "Tool",
     layoutFeatures: {
       music: "Musik",
@@ -502,6 +505,7 @@ const translations = {
       routine: "目標",
       sync: "同期",
     },
+    moreTool: "もっと",
     toolMenu: "道具",
     layoutFeatures: {
       music: "音楽",
@@ -953,7 +957,7 @@ function applyLanguage() {
   setText(".layout-head span", dict.layoutTitle);
   els.layoutToggleBtn.textContent = dict.layoutToggle;
   if (els.toolSidebarToggleBtn) {
-    const toolMenuLabel = dict.toolMenu || "工具";
+    const toolMenuLabel = dict.moreTool || dict.toolMenu || "更多";
     els.toolSidebarToggleBtn.textContent = toolMenuLabel;
     els.toolSidebarToggleBtn.title = toolMenuLabel;
   }
