@@ -958,13 +958,17 @@ function applyLanguage() {
   els.layoutToggleBtn.textContent = dict.layoutToggle;
   if (els.toolSidebarToggleBtn) {
     const toolMenuLabel = dict.moreTool || dict.toolMenu || "更多";
-    els.toolSidebarToggleBtn.textContent = toolMenuLabel;
+    const labelNode = els.toolSidebarToggleBtn.querySelector(".tool-label");
+    if (labelNode) labelNode.textContent = toolMenuLabel;
+    else els.toolSidebarToggleBtn.textContent = toolMenuLabel;
     els.toolSidebarToggleBtn.title = toolMenuLabel;
   }
   els.toolButtons.forEach((button) => {
     const key = button.dataset.tool;
     const label = dict.toolLabels?.[key] || button.textContent;
-    button.textContent = label;
+    const labelNode = button.querySelector(".tool-label");
+    if (labelNode) labelNode.textContent = label;
+    else button.textContent = label;
     button.title = label;
   });
   renderLayoutOptions();

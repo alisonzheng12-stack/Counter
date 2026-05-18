@@ -3395,32 +3395,24 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
 
   .tool-sidebar .tool-sidebar-items button::before,
   .tool-sidebar .tool-sidebar-items .tool-sidebar-toggle::before {
-    content: "";
+    content: none;
+  }
+
+  .tool-icon {
     position: absolute;
     top: 7px;
     left: 50%;
+    display: block;
     width: 22px;
     height: 22px;
+    object-fit: contain;
     transform: translateX(-50%);
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: contain;
+    pointer-events: none;
   }
 
-  .tool-sidebar .tool-sidebar-items [data-tool="inspiration"]::before {
-    background-image: url("assets/icons/inspiration.png");
-  }
-
-  .tool-sidebar .tool-sidebar-items [data-tool="music"]::before {
-    background-image: url("assets/icons/music.png");
-  }
-
-  .tool-sidebar .tool-sidebar-items [data-tool="reward"]::before {
-    background-image: url("assets/icons/reward.png");
-  }
-
-  .tool-sidebar .tool-sidebar-items .tool-sidebar-toggle::before {
-    background-image: url("assets/icons/more.png");
+  .tool-label {
+    display: block;
+    min-width: 0;
   }
 
   .tool-sidebar .tool-more-items button {
