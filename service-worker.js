@@ -1,4 +1,4 @@
-const CACHE_NAME = "study-counter-app-20260518-05";
+const CACHE_NAME = "study-counter-app-20260518-06";
 const ASSETS = [
   "./",
   "./index.html",
@@ -11,6 +11,10 @@ const ASSETS = [
   "./news.json",
   "./manifest.webmanifest",
   "./app-icon.svg"
+  ,"./assets/icons/inspiration.png"
+  ,"./assets/icons/music.png"
+  ,"./assets/icons/reward.png"
+  ,"./assets/icons/more.png"
 ];
 
 self.addEventListener("install", (event) => {
