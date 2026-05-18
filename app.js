@@ -2054,6 +2054,14 @@ function updateDateFieldHints() {
   });
 }
 
+function formatHeaderTime(date = new Date()) {
+  return date.toLocaleTimeString("zh-TW", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+}
+
 function currentTimeInputValue() {
   const now = new Date();
   return `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
@@ -2329,7 +2337,7 @@ function selectNewsSource(key) {
 }
 
 function renderCurrentTime() {
-  els.currentTime.textContent = formatCurrentTime();
+  els.currentTime.textContent = formatHeaderTime();
 }
 
 function activeTodoEntries() {
