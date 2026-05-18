@@ -3402,36 +3402,25 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
     width: 22px;
     height: 22px;
     transform: translateX(-50%);
-    background-color: currentColor;
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
-    -webkit-mask-position: center;
-    mask-position: center;
-    -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat;
-    -webkit-mask-size: contain;
-    mask-size: contain;
   }
 
   .tool-sidebar .tool-sidebar-items [data-tool="inspiration"]::before {
-    -webkit-mask-image: url("assets/icons/inspiration.png");
-    mask-image: url("assets/icons/inspiration.png");
+    background-image: url("assets/icons/inspiration.png");
   }
 
   .tool-sidebar .tool-sidebar-items [data-tool="music"]::before {
-    -webkit-mask-image: url("assets/icons/music.png");
-    mask-image: url("assets/icons/music.png");
+    background-image: url("assets/icons/music.png");
   }
 
   .tool-sidebar .tool-sidebar-items [data-tool="reward"]::before {
-    -webkit-mask-image: url("assets/icons/reward.png");
-    mask-image: url("assets/icons/reward.png");
+    background-image: url("assets/icons/reward.png");
   }
 
   .tool-sidebar .tool-sidebar-items .tool-sidebar-toggle::before {
-    -webkit-mask-image: url("assets/icons/more.png");
-    mask-image: url("assets/icons/more.png");
+    background-image: url("assets/icons/more.png");
   }
 
   .tool-sidebar .tool-more-items button {
