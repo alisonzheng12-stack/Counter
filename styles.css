@@ -3013,6 +3013,14 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
   gap: 10px;
 }
 
+.tool-icon {
+  display: none;
+}
+
+.tool-label {
+  display: inline;
+}
+
 .tool-sidebar button {
   display: grid;
   place-items: center;
