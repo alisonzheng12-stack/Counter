@@ -300,7 +300,7 @@ button {
 
 .device-header {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(150px, auto) minmax(124px, auto);
+  grid-template-columns: minmax(0, 1fr) minmax(150px, auto);
   gap: var(--ui-gap);
   align-items: stretch;
   min-height: 0;
@@ -468,6 +468,7 @@ button {
   display: grid;
   gap: 4px;
   justify-items: end;
+  justify-self: end;
   min-width: 150px;
   min-height: 0;
   padding: 2px 0;
@@ -483,10 +484,13 @@ button {
 }
 
 .current-time b {
-  font-family: "Consolas", "SFMono-Regular", "Microsoft JhengHei", monospace;
+  font-family: "Digital-7", "DSEG7 Classic", "DS-Digital", "Share Tech Mono", "Consolas", "SFMono-Regular", monospace;
   font-size: clamp(1.25rem, 2.8vw, 1.72rem);
   font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
   line-height: 1;
+  text-align: right;
+  text-shadow: 0 0 8px color-mix(in srgb, var(--accent) 22%, transparent);
 }
 
 .language-control {
@@ -532,7 +536,7 @@ button {
 }
 
 html[lang="de"] .device-header {
-  grid-template-columns: minmax(0, 1fr) minmax(150px, auto) minmax(124px, auto);
+  grid-template-columns: minmax(0, 1fr) minmax(150px, auto);
   gap: 10px;
 }
 
@@ -856,14 +860,15 @@ html[lang="de"] .sync-panel {
 }
 
 .time-card strong {
-  font-family: "Consolas", "SFMono-Regular", "Microsoft JhengHei", monospace;
+  font-family: "Digital-7", "DSEG7 Classic", "DS-Digital", "Share Tech Mono", "Consolas", "SFMono-Regular", monospace;
   width: 100%;
   justify-content: center;
   gap: 6px;
   padding: 8px 10px;
   border-radius: 8px;
   font-size: clamp(1.52rem, 2.5vw, 2.25rem);
-  letter-spacing: 0;
+  letter-spacing: 0.06em;
+  text-shadow: 0 0 8px color-mix(in srgb, var(--accent) 22%, transparent);
 }
 
 .time-card {

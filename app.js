@@ -2054,9 +2054,11 @@ function updateDateFieldHints() {
 }
 
 function formatHeaderTime(date = new Date()) {
+  const isDesktopClock = window.matchMedia("(min-width: 1181px)").matches;
   return date.toLocaleTimeString("zh-TW", {
     hour: "2-digit",
     minute: "2-digit",
+    ...(isDesktopClock ? { second: "2-digit" } : {}),
     hour12: false,
   });
 }
