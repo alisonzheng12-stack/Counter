@@ -7,9 +7,9 @@
     <meta name="theme-color" content="#ffffff" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="&#20320;&#33021;&#20570;&#21040;" />
-    <link rel="manifest" href="manifest.webmanifest?v=20260518-11" />
-    <link rel="apple-touch-icon" href="app-icon.svg?v=20260518-11" />
-    <link rel="stylesheet" href="styles.css?v=20260518-11" />
+    <link rel="manifest" href="manifest.webmanifest?v=20260518-12" />
+    <link rel="apple-touch-icon" href="app-icon.svg?v=20260518-12" />
+    <link rel="stylesheet" href="styles.css?v=20260518-12" />
   </head>
   <body>
     <aside class="tool-sidebar" data-open="false" aria-label="quick tools">
@@ -26,6 +26,15 @@
         <button type="button" data-tool="worlds">&#20061;&#30028;</button>
         <button id="dailyTodoSaveBtn" type="button">&#30446;&#27161;</button>
         <button id="syncToggleBtn" type="button" aria-expanded="false" aria-controls="syncPanel">&#21516;&#27493;</button>
+        <label class="language-control tool-language-control">
+          <span>&#35486;&#35328;</span>
+          <select id="languageSelect">
+            <option value="zh">&#20013;&#25991;</option>
+            <option value="en">English</option>
+            <option value="de">Deutsch</option>
+            <option value="ja">&#26085;&#26412;&#35486;</option>
+          </select>
+        </label>
       </div>
     </aside>
 
@@ -123,15 +132,6 @@
             <span>&#29694;&#22312;&#26178;&#38291;</span>
             <b id="currentTime">--:--:--</b>
           </div>
-          <label class="language-control">
-            <span>&#35486;&#35328;</span>
-            <select id="languageSelect">
-              <option value="zh">&#20013;&#25991;</option>
-              <option value="en">English</option>
-              <option value="de">Deutsch</option>
-              <option value="ja">&#26085;&#26412;&#35486;</option>
-            </select>
-          </label>
         </header>
 
         <section id="syncPanel" class="sync-panel" data-open="false" aria-label="sync">
@@ -412,16 +412,17 @@
     </div>
 
     <script src="nippon-colors.js?v=20260516-21"></script>
-    <script src="app.js?v=20260518-11"></script>
+    <script src="app.js?v=20260518-12"></script>
     <script>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
-          navigator.serviceWorker.register("./service-worker.js?v=20260518-11").catch(() => {});
+          navigator.serviceWorker.register("./service-worker.js?v=20260518-12").catch(() => {});
         });
       }
     </script>
   </body>
 </html>
+
 
 
 
