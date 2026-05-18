@@ -1143,6 +1143,7 @@ body.timer-running:not(.focus-mode) .device-panel {
 }
 
 body.timer-running:not(.focus-mode) .device-header,
+body.timer-running:not(.focus-mode) .goal-panel,
 body.timer-running:not(.focus-mode) .sync-panel,
 body.timer-running:not(.focus-mode) .theme-control,
 body.timer-running:not(.focus-mode) .inspiration-dock,

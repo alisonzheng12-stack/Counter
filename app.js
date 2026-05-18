@@ -983,7 +983,6 @@ function applyLanguage() {
   els.dailyTodoApplyBtn.textContent = dict.dailyTodoApply;
   els.dailyTodoSaveBtn.textContent = dict.toolLabels?.routine || dict.dailyTodoSave;
   els.dailyTodoSaveBtn.title = dict.dailyTodoSave;
-  setText(".current-goal-picker span", dict.currentGoal);
   els.completedGoalsBtn.textContent = dict.completedGoals;
   els.goalResetBtn.textContent = dict.clear;
   els.todoTexts.forEach((input) => {
@@ -2140,7 +2139,7 @@ function applyFocusTimeRewards() {
 
 function render() {
   document.body.classList.toggle("timer-running", state.active);
-  setText(".goal-title span", state.active ? t("currentGoal") : t("todayGoals"));
+  setText(".goal-title span", t("todayGoals"));
   if (els.choiceCount) els.choiceCount.textContent = state.choiceCount;
   els.levelValue.textContent = state.level;
   els.xpValue.textContent = state.xp;
@@ -2376,11 +2375,9 @@ function renderCurrentGoalSelect(currentGoalIndex) {
 }
 
 function renderTodos() {
-  const currentGoalIndex = selectedCurrentGoalIndex();
-  renderCurrentGoalSelect(currentGoalIndex);
   els.todoChecks.forEach((input, index) => {
     input.checked = Boolean(state.goals.todos[index]?.done);
-    input.closest(".todo-item")?.classList.toggle("current-goal", index === currentGoalIndex);
+    input.closest(".todo-item")?.classList.remove("current-goal");
   });
   els.todoTexts.forEach((input, index) => {
     if (document.activeElement !== input) {
@@ -2937,12 +2934,14 @@ els.timerResetBtn.addEventListener("click", resetTimer);
 els.bombCloseBtn.addEventListener("click", hideBomb);
 els.dailyTodoApplyBtn.addEventListener("click", applyDailyTodoTemplate);
 els.dailyTodoSaveBtn.addEventListener("click", saveDailyTodoTemplate);
-els.currentGoalSelect.addEventListener("change", () => {
-  const index = Number.parseInt(els.currentGoalSelect.value, 10);
-  state.currentGoalText = state.goals.todos[index]?.text || "";
-  save();
-  render();
-});
+if (els.currentGoalSelect) {
+  els.currentGoalSelect.addEventListener("change", () => {
+    const index = Number.parseInt(els.currentGoalSelect.value, 10);
+    state.currentGoalText = state.goals.todos[index]?.text || "";
+    save();
+    render();
+  });
+}
 els.completedGoalsBtn.addEventListener("click", openCompletedGoalsPage);
 els.goalResetBtn.addEventListener("click", resetGoals);
 els.extraGoalsToggleBtn.addEventListener("click", toggleExtraGoals);
