@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = "study-counter-app-20260518-14";
+﻿const CACHE_NAME = "study-counter-app-20260518-15";
 const ASSETS = [
   "./",
   "./index.html",
@@ -43,6 +43,7 @@ self.addEventListener("fetch", (event) => {
       .catch(() => caches.match(event.request).then((cached) => cached || caches.match("./index.html")))
   );
 });
+
 
 
 
