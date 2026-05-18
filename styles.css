@@ -3282,4 +3282,123 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
   }
 }
 
+@media (max-width: 760px) {
+  body {
+    min-height: 100dvh;
+    padding-bottom: calc(96px + env(safe-area-inset-bottom));
+    background: var(--bg);
+  }
+
+  .device-shell {
+    padding: 10px 10px calc(108px + env(safe-area-inset-bottom));
+  }
+
+  .device-panel {
+    width: 100%;
+    border-radius: 18px;
+    box-shadow: 0 14px 32px color-mix(in srgb, var(--line) 12%, transparent);
+  }
+
+  .tool-sidebar {
+    left: 10px;
+    right: 10px;
+    top: auto;
+    bottom: max(8px, env(safe-area-inset-bottom));
+    z-index: 120;
+    width: auto;
+    padding: 8px;
+    border: var(--line-width) solid color-mix(in srgb, var(--line) 54%, transparent);
+    border-radius: 22px;
+    background: color-mix(in srgb, var(--paper) 94%, transparent);
+    box-shadow: 0 -10px 34px color-mix(in srgb, var(--line) 18%, transparent);
+    backdrop-filter: blur(16px);
+  }
+
+  .tool-sidebar-toggle {
+    display: none;
+  }
+
+  .tool-sidebar-items,
+  .tool-sidebar[data-open="true"] .tool-sidebar-items {
+    display: grid;
+    position: static;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .tool-sidebar .tool-sidebar-items button {
+    width: 100%;
+    height: 46px;
+    min-width: 0;
+    min-height: 46px;
+    border-radius: 15px;
+    font-size: 0.78rem;
+    background: color-mix(in srgb, var(--paper) 88%, var(--line));
+  }
+
+  .tool-sidebar button.active {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .theme-control,
+  .inspiration-dock,
+  .layout-control,
+  .music-dock,
+  .reward-dock {
+    left: 10px;
+    right: 10px;
+    bottom: calc(92px + env(safe-area-inset-bottom));
+    top: auto;
+    width: auto;
+    max-height: min(62dvh, 520px);
+    transform: none;
+    z-index: 115;
+  }
+
+  .theme-control.collapsed,
+  .inspiration-dock:not([data-open="true"]),
+  .layout-control.collapsed,
+  .music-dock:not([data-open="true"]),
+  .reward-dock:not([data-open="true"]) {
+    display: none;
+  }
+
+  .theme-control {
+    grid-template-columns: 1fr;
+    padding: 12px;
+    border-radius: 18px;
+  }
+
+  .theme-control .theme-toggle,
+  .inspiration-toggle,
+  .layout-toggle,
+  .music-toggle {
+    display: none;
+  }
+
+  .inspiration-panel,
+  .layout-panel,
+  .music-panel,
+  .reward-panel {
+    position: static;
+    width: 100%;
+    max-height: min(62dvh, 520px);
+    overflow: auto;
+    border-radius: 18px;
+  }
+
+  .inspiration-dock[data-open="true"] .inspiration-panel,
+  .music-dock[data-open="true"] .music-panel,
+  .reward-dock[data-open="true"] .reward-panel,
+  .layout-control:not(.collapsed) .layout-panel {
+    display: grid;
+  }
+}
+
 
