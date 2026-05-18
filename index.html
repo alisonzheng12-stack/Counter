@@ -7,9 +7,9 @@
     <meta name="theme-color" content="#ffffff" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="&#20320;&#33021;&#20570;&#21040;" />
-    <link rel="manifest" href="manifest.webmanifest?v=20260518-10" />
-    <link rel="apple-touch-icon" href="app-icon.svg?v=20260518-10" />
-    <link rel="stylesheet" href="styles.css?v=20260518-10" />
+    <link rel="manifest" href="manifest.webmanifest?v=20260518-11" />
+    <link rel="apple-touch-icon" href="app-icon.svg?v=20260518-11" />
+    <link rel="stylesheet" href="styles.css?v=20260518-11" />
   </head>
   <body>
     <aside class="tool-sidebar" data-open="false" aria-label="quick tools">
@@ -234,9 +234,14 @@
             <span class="counter-label">&#20498;&#25976;&#26178;&#38291;</span>
             <label class="countdown-setting">
               <span>&#35373;&#23450;&#20998;&#37912;</span>
-              <div>
-                <input id="countdownMinutesInput" type="number" min="1" step="1" inputmode="numeric" />
-                <button id="countdownSetBtn" type="button">&#35373;&#32622;</button>
+              <div class="countdown-setting-controls">
+                <input id="countdownMinutesInput" type="hidden" min="1" step="1" value="25" />
+                <div class="countdown-preset-row" aria-label="countdown presets">
+                  <button type="button" data-countdown-minutes="2">2&#20998;</button>
+                  <button type="button" data-countdown-minutes="10">10&#20998;</button>
+                  <button type="button" data-countdown-minutes="30">30&#20998;</button>
+                  <button type="button" data-countdown-minutes="60">60&#20998;</button>
+                </div>
               </div>
             </label>
             <strong><span id="studyTime">25:00</span></strong>
@@ -407,16 +412,17 @@
     </div>
 
     <script src="nippon-colors.js?v=20260516-21"></script>
-    <script src="app.js?v=20260518-10"></script>
+    <script src="app.js?v=20260518-11"></script>
     <script>
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
-          navigator.serviceWorker.register("./service-worker.js?v=20260518-10").catch(() => {});
+          navigator.serviceWorker.register("./service-worker.js?v=20260518-11").catch(() => {});
         });
       }
     </script>
   </body>
 </html>
+
 
 
 

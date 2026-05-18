@@ -124,6 +124,7 @@ const translations = {
     set: "設置",
     focusTotal: "已累積專注時間",
     minuteUnit: "分鐘",
+    minuteShortUnit: "分",
     focusMode: "專注模式",
     exit: "退出",
     start: "開始",
@@ -264,6 +265,7 @@ const translations = {
     set: "Set",
     focusTotal: "Accumulated Focus Time",
     minuteUnit: "min",
+    minuteShortUnit: "min",
     focusMode: "Focus Mode",
     exit: "Exit",
     start: "Start",
@@ -404,6 +406,7 @@ const translations = {
     set: "Setzen",
     focusTotal: "Fokuszeit gesamt",
     minuteUnit: "Min.",
+    minuteShortUnit: "Min.",
     focusMode: "Fokusmodus",
     exit: "Beenden",
     start: "Start",
@@ -544,6 +547,7 @@ const translations = {
     set: "設定",
     focusTotal: "累積集中時間",
     minuteUnit: "分",
+    minuteShortUnit: "分",
     focusMode: "集中モード",
     exit: "退出",
     start: "開始",
@@ -851,6 +855,7 @@ const els = {
   levelResetBtn: document.querySelector("#levelResetBtn"),
   quickActionBtns: document.querySelectorAll(".quick-actions button[data-counter]"),
   countdownMinutesInput: document.querySelector("#countdownMinutesInput"),
+  countdownPresetBtns: document.querySelectorAll("[data-countdown-minutes]"),
   countdownSetBtn: document.querySelector("#countdownSetBtn"),
   focusModeInput: document.querySelector("#focusModeInput"),
   focusExitBtn: document.querySelector("#focusExitBtn"),
@@ -1006,7 +1011,7 @@ function applyLanguage() {
   updateExtraGoalsToggle();
   setText(".time-card .counter-label", dict.countdown);
   setText(".countdown-setting > span", dict.setMinutes);
-  els.countdownSetBtn.textContent = dict.set;
+  if (els.countdownSetBtn) els.countdownSetBtn.textContent = dict.set;
   setText(".focus-total > span", dict.focusTotal);
   els.focusTotalUnit.textContent = dict.minuteUnit;
   setText(".focus-toggle span", dict.focusMode);
@@ -2152,6 +2157,12 @@ function render() {
   if (document.activeElement !== els.countdownMinutesInput) {
     els.countdownMinutesInput.value = state.countdownMinutes;
   }
+  els.countdownPresetBtns.forEach((button) => {
+    const minutes = Number.parseInt(button.dataset.countdownMinutes, 10);
+    button.textContent = `${minutes}${t("minuteShortUnit") || t("minuteUnit")}`;
+    button.classList.toggle("active", minutes === state.countdownMinutes);
+    button.setAttribute("aria-pressed", String(minutes === state.countdownMinutes));
+  });
   els.timerToggleBtn.textContent = state.active ? t("pause") : t("start");
   renderTodos();
   renderFutureEvents();
@@ -2723,8 +2734,9 @@ function resetTimer() {
   render();
 }
 
-function updateCountdownSetting() {
-  state.countdownMinutes = Math.max(1, Number.parseInt(els.countdownMinutesInput.value, 10) || 1);
+function updateCountdownSetting(minutes) {
+  const nextMinutes = Number.parseInt(minutes ?? els.countdownMinutesInput.value, 10);
+  state.countdownMinutes = Math.max(1, nextMinutes || 1);
   state.active = false;
   state.startedAt = null;
   state.remainingMs = state.countdownMinutes * 60 * 1000;
@@ -2893,12 +2905,11 @@ els.newsRefreshBtn.addEventListener("click", loadNews);
 els.newsSourceBtns.forEach((button) => {
   button.addEventListener("click", () => selectNewsSource(button.dataset.newsSource));
 });
-els.countdownSetBtn.addEventListener("click", updateCountdownSetting);
-els.countdownMinutesInput.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") {
-    event.preventDefault();
-    updateCountdownSetting();
-  }
+if (els.countdownSetBtn) {
+  els.countdownSetBtn.addEventListener("click", () => updateCountdownSetting());
+}
+els.countdownPresetBtns.forEach((button) => {
+  button.addEventListener("click", () => updateCountdownSetting(button.dataset.countdownMinutes));
 });
 els.focusModeInput.addEventListener("change", () => setFocusMode(els.focusModeInput.checked));
 els.focusExitBtn.addEventListener("click", () => setFocusMode(false));

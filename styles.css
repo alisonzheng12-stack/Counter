@@ -907,21 +907,34 @@ html[lang="de"] .sync-panel {
   overflow-wrap: anywhere;
 }
 
-.countdown-setting div {
+.countdown-setting-controls {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(56px, auto);
   gap: 6px;
 }
 
-.countdown-setting input {
-  width: 100%;
+.countdown-preset-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 5px;
+  min-width: 0;
+}
+
+.countdown-preset-row button {
   height: 32px;
-  padding: 0 10px;
+  min-width: 0;
+  padding: 0 6px;
   border: var(--line-width) solid var(--line);
   border-radius: 6px;
   background: var(--paper);
   color: var(--ink);
   font: inherit;
+  font-weight: 800;
+}
+
+.countdown-preset-row button.active {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
 }
 
 #countdownSetBtn {
@@ -3233,7 +3246,7 @@ body:has(.theme-control:not(.collapsed)) .music-dock {
   }
 
   .language-control select,
-  .countdown-setting div,
+  .countdown-setting-controls,
   .future-tools,
   .future-add,
   .news-actions,
