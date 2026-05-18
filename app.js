@@ -697,12 +697,12 @@ const slot01Theme = {
 const themeSlotNames = ["\u65e5\u7cfb", "\u6afb\u82b1\u53ef\u611b\u98a8", "\u975c\u8b10\u611f\u6c1b\u570d", "\u590f\u65e5\u6e05\u971c"];
 const defaultThemeMemory = [
   {
-    bg: "#FCFAF2",
-    text: "#1C1C1C",
-    line: "#B4A582",
+    bg: "#FFFFFF",
+    text: "#5B3D31",
+    line: "#6F4B3E",
     lineWidth: "2px",
-    paper: "#FFFFFB",
-    timer: "#FFFFFB",
+    paper: "#FFFFFF",
+    timer: "#F3F1F1",
   },
   {
     bg: "#FEDFE1",
@@ -1310,6 +1310,7 @@ function saveTheme() {
   const theme = currentThemeFromInputs();
   localStorage.setItem(themeStorageKey, JSON.stringify(theme));
   applyTheme(theme);
+  collapseThemeAfterMobileChange();
 }
 
 function currentThemeFromInputs() {
@@ -1433,6 +1434,14 @@ function setToolSidebarOpen(isOpen) {
   if (!els.toolSidebar) return;
   els.toolSidebar.dataset.open = isOpen ? "true" : "false";
   els.toolSidebarToggleBtn?.setAttribute("aria-expanded", String(isOpen));
+}
+
+function isMobileViewport() {
+  return window.matchMedia("(max-width: 760px)").matches;
+}
+
+function collapseThemeAfterMobileChange() {
+  if (isMobileViewport()) window.setTimeout(() => setThemeCollapsed(true), 120);
 }
 
 function renderLayoutOptions() {
@@ -1779,6 +1788,7 @@ function applyThemePreset(index) {
   applyTheme(theme);
   markActiveThemeControl(els.themePresetBtns[index]);
   showSaved();
+  collapseThemeAfterMobileChange();
 }
 
 function saveThemeSlot(index) {
@@ -1806,6 +1816,7 @@ function loadThemeSlot(index) {
   applyTheme(theme);
   markActiveThemeControl(els.themeLoadBtns[index].closest(".theme-slot"));
   showSaved();
+  collapseThemeAfterMobileChange();
 }
 
 function deleteThemeSlot(index) {
